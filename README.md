@@ -21,6 +21,22 @@ The hosted version at **[redbison.dev](https://redbison.dev)** (also reachable v
 redbison.tools) carries these same tools plus 500+ more calculators and converters,
 guides, multi-language versions and an [MCP server for AI assistants](https://redbison.dev/mcp).
 
+## Why we open-sourced this
+
+Developer utilities handle sensitive material — tokens, keys, connection strings,
+customer data — yet most people paste that material into random tools found through a
+search, with no way to know what the page actually does with it. A convincing-looking
+converter can exfiltrate what you type, and a malicious one looks identical to an honest
+one.
+
+We open-sourced these 100 tools so organizations and developers don't have to take that
+risk on trust. Here you can **read the code, audit it, and run it yourself** — on
+localhost, on your own infrastructure, or behind your firewall. Every tool works
+client-side with no telemetry, the full test suite ships with it, and the build is a
+static site you control end to end. If your security policy says "no pasting secrets
+into unknown websites", this repo is the alternative: the same tools, with nothing
+hidden.
+
 ## Tools included
 
 Text processing, diff and list comparison, code formatters (SQL, HTML, CSS, JS, XML,
