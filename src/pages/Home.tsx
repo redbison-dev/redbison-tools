@@ -22,9 +22,19 @@ const Home = () => {
       <OssHeader />
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 md:px-8">
         <h1 className="mb-2 text-3xl font-bold text-foreground">100 free developer tools</h1>
-        <p className="mb-8 max-w-3xl text-muted-foreground">
+        <p className="mb-2 max-w-3xl text-muted-foreground">
           The open-source core of redbison.dev: formatters, converters, encoders, security, SQL,
           GraphQL and network utilities. Everything runs in your browser — nothing you type is uploaded.
+        </p>
+        <p className="mb-8 text-sm text-muted-foreground">
+          <a
+            href="https://github.com/redbison-dev/redbison-tools/blob/main/TOOLS.md"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline underline-offset-2 hover:text-foreground"
+          >
+            Full tool list with links to each tool's source code
+          </a>
         </p>
         <div className="space-y-8">
           {[...groups.entries()].map(([subcategory, tools]) => (

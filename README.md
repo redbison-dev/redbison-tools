@@ -29,7 +29,29 @@ cURL → code), security (hashing, HMAC, AES, RSA/EC keys, JWT, TOTP, X.509, SAM
 passwords), SQL and database design tools, GraphQL tooling, an API tester, network
 utilities (subnet calculator, DNS, IP tools), binary/data-format tools (hex editor,
 protobuf, Avro, Parquet, compression), time tools, and web/devops helpers (cron
-expressions, .gitignore, chmod, Docker compose). The full list is on the home page.
+expressions, .gitignore, chmod, Docker compose).
+
+**[TOOLS.md](TOOLS.md)** lists every tool with its description, a link to its source
+file, and a link to try it on the hosted site.
+
+## About RedBison
+
+[RedBison](https://www.redbison.dev) is a serverless, browser-based ecosystem of over
+600 free developer utility tools, converters and specialized calculators, built for
+professional speed and privacy. Tools execute entirely client-side on your device —
+whether you're generating keys, converting formats, manipulating JSON or using the
+[MCP endpoints for AI assistants](https://redbison.dev/mcp), your data stays local and
+never leaves your screen.
+
+**Core principles:**
+
+- **Privacy first** — 100% client-side execution for most tools.
+- **Frictionless utility** — zero ads, zero pop-ups, zero sign-ups.
+- **Comprehensive scope** — from deep developer utilities and encoding tools to
+  advanced calculators for finance, health, engineering and mathematics.
+
+Built for engineers and professionals who need reliable, fast utilities without the
+bloat. This repo is its open-source core.
 
 ## Run it locally
 

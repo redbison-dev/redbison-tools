@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { catalog } from '@/catalog';
 import { toolRoutes } from '@/toolRoutes';
@@ -20,5 +22,13 @@ describe('catalog', () => {
   it('has a route component for every tool and no orphan routes', () => {
     for (const tool of catalog) expect(toolRoutes[tool.id], tool.id).toBeTruthy();
     for (const id of Object.keys(toolRoutes)) expect(catalog.some((t) => t.id === id), id).toBe(true);
+  });
+
+  it('TOOLS.md documents every tool', () => {
+    const md = readFileSync(resolve(__dirname, '../../TOOLS.md'), 'utf8');
+    for (const tool of catalog) {
+      expect(md, tool.id).toContain(`**${tool.name}**`);
+      expect(md, tool.id).toContain(`https://redbison.dev/${tool.id})`);
+    }
   });
 });
