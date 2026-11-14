@@ -66,9 +66,10 @@ new runtime dependency that phones home — you must do all three:
    `### External calls`. Name the exact domain(s), what is sent, what comes back, and why
    the feature cannot work locally. A PR that adds a call without saying so will be
    closed rather than reviewed.
-2. **Document it on the privacy page** (`src/pages/Privacy.tsx`): add a row to
-   `NETWORK_TOOLS` naming the tool, the service, what is sent, and the exact user action
-   that triggers it. That page is the complete list, and it must stay complete.
+2. **Document it in the privacy disclosures**
+   (`src/components/layout/privacyContent.tsx`): add a row to `NETWORK_TOOLS` naming the
+   tool, the service, what is sent, and the exact user action that triggers it. That list
+   is shown both in the footer popup and on the /privacy page, and it must stay complete.
 3. **Tell the user in the tool's own UI**, before they act: the interface says which
    service will be contacted, and nothing is sent until the user presses a button.
 

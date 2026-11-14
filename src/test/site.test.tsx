@@ -40,6 +40,60 @@ describe('privacy page', () => {
   });
 });
 
+describe('footer', () => {
+  const footerHtml = () => {
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <AppRoutes />
+      </MemoryRouter>,
+    );
+    return document.querySelector('footer')!;
+  };
+
+  it('offers the privacy, local-storage and third-party popups', () => {
+    const footer = footerHtml();
+    for (const label of ['Privacy', 'Local storage', 'Third-party services & libraries']) {
+      const trigger = [...footer.querySelectorAll('button')].find((b) => b.textContent?.trim() === label);
+      expect(trigger, `footer is missing the "${label}" popup trigger`).toBeTruthy();
+      expect(trigger!.getAttribute('aria-haspopup')).toBe('dialog');
+    }
+  });
+
+  it('carries the repo, hosted-version, tool-list, bug and fortune links', () => {
+    const footer = footerHtml();
+    const text = footer.textContent ?? '';
+    for (const label of ['GitHub', 'Hosted version', 'Full tool list with source links', 'Report a bug', 'Fortune cookie', 'Full privacy page']) {
+      expect(text, `footer is missing "${label}"`).toContain(label);
+    }
+    expect(footer.querySelector('a[href$="TOOLS.md"]'), 'tool list link').toBeTruthy();
+  });
+});
+
+describe('privacy disclosures', () => {
+  it('state the privacy-only nature, local storage and third-party libraries', async () => {
+    const { PrivacySection, LocalStorageSection, ThirdPartySection } = await import('@/components/layout/privacyContent');
+    const { bundledLibraries } = await import('@/thirdParty');
+
+    render(<PrivacySection />);
+    expect(document.body.textContent).toContain('Nothing you type is uploaded');
+    expect(document.body.textContent).toMatch(/no analytics and no\s+telemetry/);
+    document.body.innerHTML = '';
+
+    render(<LocalStorageSection />);
+    expect(document.body.textContent).toContain('redbison-tools.bookmarks');
+    document.body.innerHTML = '';
+
+    render(
+      <MemoryRouter>
+        <ThirdPartySection />
+      </MemoryRouter>,
+    );
+    expect(bundledLibraries.length).toBeGreaterThan(20);
+    expect(document.body.textContent).toContain(bundledLibraries[0].name);
+    expect(document.body.textContent).toContain('No other tool makes any network request');
+  });
+});
+
 describe('home page chrome', () => {
   it('shows the title centered header and keeps repo links in the footer only', () => {
     render(

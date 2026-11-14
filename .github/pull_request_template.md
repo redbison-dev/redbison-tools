@@ -15,7 +15,7 @@ REQUIRED. Pick one:
   | api.example.com | the IP the user typed | geolocation JSON | pressing "Look up" |
 
   and confirm:
-  - [ ] added to `NETWORK_TOOLS` in `src/pages/Privacy.tsx`
+  - [ ] added to `NETWORK_TOOLS` in `src/components/layout/privacyContent.tsx`
   - [ ] named in the tool's own UI before the user acts
   - [ ] nothing is sent on page load, only on an explicit action
   - [ ] (MCP tools only) declared in `src/mcp/README.md`

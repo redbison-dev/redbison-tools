@@ -34,10 +34,15 @@ function componentPaths(): Record<string, string> {
   return out;
 }
 
+const PRIVACY_CONTENT = 'components/layout/privacyContent.tsx';
+
 function documentedTools(): string[] {
-  const privacy = readFileSync(resolve(SRC, 'pages/Privacy.tsx'), 'utf8');
-  const block = privacy.split('NETWORK_TOOLS')[1] ?? '';
-  return [...block.matchAll(/id:\s*'([a-z0-9-]+)'/g)].map((m) => m[1]);
+  const text = readFileSync(resolve(SRC, PRIVACY_CONTENT), 'utf8');
+  // The array literal of the NETWORK_TOOLS declaration, not the doc comment
+  // above it or the uses below it.
+  const decl = text.match(/export const NETWORK_TOOLS[^=]*=\s*\[([\s\S]*?)\n\];/);
+  expect(decl, `NETWORK_TOOLS declaration not found in ${PRIVACY_CONTENT}`).toBeTruthy();
+  return [...decl![1].matchAll(/id:\s*'([a-z0-9-]+)'/g)].map((m) => m[1]);
 }
 
 describe('network calls are documented', () => {
@@ -60,7 +65,7 @@ describe('network calls are documented', () => {
     expect(
       undocumented,
       `These tools can reach the network but are not on the privacy page: ${undocumented.join(', ')}. ` +
-        'Add a NETWORK_TOOLS row in src/pages/Privacy.tsx (see CONTRIBUTING.md).',
+        `Add a NETWORK_TOOLS row in src/${PRIVACY_CONTENT} (see CONTRIBUTING.md).`,
     ).toEqual([]);
   });
 
