@@ -8,6 +8,8 @@
 encoders, SQL, GraphQL, network utilities and more. This is the open-source core of
 [redbison.dev](https://redbison.dev).
 
+![RedBison Tools running locally: the home page listing the tools by category](docs/local-home.png)
+
 ## What this repo is
 
 The top 100 developer tools from redbison.dev as a standalone React app: the tool
