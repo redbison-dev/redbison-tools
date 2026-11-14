@@ -3,6 +3,7 @@
 [![CI](https://github.com/redbison-dev/redbison-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/redbison-dev/redbison-tools/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/redbison-dev/redbison-tools/branch/main/graph/badge.svg)](https://codecov.io/gh/redbison-dev/redbison-tools)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-ffdd00?logo=buymeacoffee&logoColor=000)](https://buymeacoffee.com/redbison.dev)
 
 **100 free developer tools that run entirely in your browser** — JSON, regex, hashing,
 encoders, SQL, GraphQL, network utilities and more. This is the open-source core of
@@ -151,6 +152,12 @@ Contributions are welcome — fixes, new tools, tests, docs. See
 [ARCHITECTURE.md](ARCHITECTURE.md) for the code organization and tool categorization,
 and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for conduct expectations. You are also free
 to fork and host your own copy under the MIT license.
+
+## Support this project
+
+These tools are free, ad-free and will stay that way. If they saved you some time and
+you'd like to say thanks, you can [buy me a coffee](https://buymeacoffee.com/redbison.dev).
+Entirely optional: bug reports and pull requests are just as welcome, and often more useful.
 
 ## License
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Cookie, Github, HardDrive, Package, ShieldCheck } from 'lucide-react';
+import { Coffee, Cookie, Github, HardDrive, Package, ShieldCheck } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import PrivacyDialog from '@/components/layout/PrivacyDialog';
 import type { PrivacySectionKey } from '@/components/layout/privacyContent';
@@ -56,6 +56,9 @@ const OssFooter = () => {
             className={linkClass}
           >
             Report a bug
+          </a>
+          <a href="https://buymeacoffee.com/redbison.dev" target="_blank" rel="noopener noreferrer" className={linkClass}>
+            <Coffee className="h-4 w-4" aria-hidden="true" /> Buy me a coffee
           </a>
           <button type="button" onClick={() => setFortune(randomOf(FORTUNES))} className={linkClass} aria-haspopup="dialog">
             <Cookie className="h-4 w-4" aria-hidden="true" /> Fortune cookie

@@ -62,10 +62,11 @@ describe('footer', () => {
   it('carries the repo, hosted-version, tool-list, bug and fortune links', () => {
     const footer = footerHtml();
     const text = footer.textContent ?? '';
-    for (const label of ['GitHub', 'Hosted version', 'Full tool list with source links', 'Report a bug', 'Fortune cookie', 'Full privacy page']) {
+    for (const label of ['GitHub', 'Hosted version', 'Full tool list with source links', 'Report a bug', 'Buy me a coffee', 'Fortune cookie', 'Full privacy page']) {
       expect(text, `footer is missing "${label}"`).toContain(label);
     }
     expect(footer.querySelector('a[href$="TOOLS.md"]'), 'tool list link').toBeTruthy();
+    expect(footer.querySelector('a[href="https://buymeacoffee.com/redbison.dev"]'), 'coffee link').toBeTruthy();
   });
 });
 
