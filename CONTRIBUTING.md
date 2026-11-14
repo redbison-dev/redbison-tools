@@ -46,12 +46,40 @@ bun run test
   exact definitions (cite the source in a comment when it isn't obvious). A fix without
   a regression test will be asked to add one.
 - **Browser-only.** No backends, no telemetry, no network calls except to public APIs a
-  tool already documents in its UI.
+  tool documents in its own UI. See the rule below before adding any.
 - **One tool, one `<h1>`.** Each tool page owns exactly one level-1 heading — the
   integration suite enforces that every page mounts with one.
 - **New tools** need: the component in `src/components/tools/`, pure logic in
   `src/lib/tools/` with unit tests, a row in `src/catalog.ts` and `src/toolRoutes.tsx`,
   and a passing integration run. See "Adding a tool" in ARCHITECTURE.md.
+
+## Calls to external domains and APIs
+
+People use this repo precisely because they can verify that nothing leaves their machine.
+A new outbound request breaks that expectation silently, so it never arrives unannounced.
+
+**If your change makes the app contact any domain it did not contact before** — a `fetch`,
+an `XMLHttpRequest`, a WebSocket, a remote font or script, an `<img>` pointing off-site, a
+new runtime dependency that phones home — you must do all three:
+
+1. **Call it out in the PR description**, at the top, under a heading such as
+   `### External calls`. Name the exact domain(s), what is sent, what comes back, and why
+   the feature cannot work locally. A PR that adds a call without saying so will be
+   closed rather than reviewed.
+2. **Document it on the privacy page** (`src/pages/Privacy.tsx`): add a row to
+   `NETWORK_TOOLS` naming the tool, the service, what is sent, and the exact user action
+   that triggers it. That page is the complete list, and it must stay complete.
+3. **Tell the user in the tool's own UI**, before they act: the interface says which
+   service will be contacted, and nothing is sent until the user presses a button.
+
+Requests must also be opt-in by design (never on page load), must not carry anything the
+user did not enter for that purpose, and must degrade gracefully when the service is
+unreachable or blocked. Maintainers weigh whether the feature earns the call at all; a
+tool that can do its job locally should do its job locally.
+
+The same applies to the MCP server: a tool added to `src/mcp/tools.ts` that reaches the
+network is declared in `src/mcp/README.md` alongside its description, since assistants
+call these without a human watching.
 
 ## Bugs
 

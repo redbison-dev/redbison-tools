@@ -15,7 +15,9 @@ encoders, SQL, GraphQL, network utilities and more. This is the open-source core
 The top 100 developer tools from redbison.dev as a standalone React app: the tool
 components, their logic and their tests, with a minimal home page that lists everything.
 No analytics, no accounts, no ads — every tool does its work client-side, so nothing you
-type ever leaves your machine.
+type ever leaves your machine. The running site documents the full privacy model,
+including what lives in local storage and the complete list of network calls, on its
+/privacy page.
 
 The hosted version at **[redbison.dev](https://redbison.dev)** (also reachable via
 redbison.tools) carries these same tools plus 500+ more calculators and converters,
