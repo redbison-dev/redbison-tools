@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { catalog } from '@/catalog';
+import { subcategoryIcons, toolIcons } from '@/catalogIcons';
 import { toolRoutes } from '@/toolRoutes';
 
 describe('catalog', () => {
@@ -22,6 +23,13 @@ describe('catalog', () => {
   it('has a route component for every tool and no orphan routes', () => {
     for (const tool of catalog) expect(toolRoutes[tool.id], tool.id).toBeTruthy();
     for (const id of Object.keys(toolRoutes)) expect(catalog.some((t) => t.id === id), id).toBe(true);
+  });
+
+  it('every tool and subcategory has an icon', () => {
+    for (const tool of catalog) {
+      expect(toolIcons[tool.id], `${tool.id} has no icon`).toBeTruthy();
+      expect(subcategoryIcons[tool.subcategory], `${tool.subcategory} has no icon`).toBeTruthy();
+    }
   });
 
   it('TOOLS.md documents every tool', () => {

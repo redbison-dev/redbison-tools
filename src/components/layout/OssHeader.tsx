@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Bookmark, Search, Share2, Smile } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { catalog } from '@/catalog';
+import { toolIcons } from '@/catalogIcons';
 import { searchCatalog } from '@/lib/searchCatalog';
 import { isBookmarked, toggleBookmark } from '@/lib/bookmarks';
 import { JOKES, randomOf } from '@/components/layout/easterEggs';
@@ -106,18 +107,24 @@ const OssHeader = () => {
           {open && query.trim() && (
             <ul className="absolute left-0 right-0 top-11 z-50 overflow-hidden rounded-lg border border-border bg-background shadow-lg">
               {results.length === 0 && <li className="px-3 py-2 text-sm text-muted-foreground">No tools match "{query}"</li>}
-              {results.map((tool) => (
-                <li key={tool.id}>
-                  <button
-                    type="button"
-                    onClick={() => go(tool.id)}
-                    className="flex w-full flex-col px-3 py-2 text-left hover:bg-muted"
-                  >
-                    <span className="text-sm font-medium text-foreground">{tool.name}</span>
-                    <span className="truncate text-xs text-muted-foreground">{tool.desc}</span>
-                  </button>
-                </li>
-              ))}
+              {results.map((tool) => {
+                const Icon = toolIcons[tool.id];
+                return (
+                  <li key={tool.id}>
+                    <button
+                      type="button"
+                      onClick={() => go(tool.id)}
+                      className="flex w-full items-start gap-2.5 px-3 py-2 text-left hover:bg-muted"
+                    >
+                      {Icon && <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[#ff3131]" aria-hidden="true" />}
+                      <span className="min-w-0">
+                        <span className="block text-sm font-medium text-foreground">{tool.name}</span>
+                        <span className="block truncate text-xs text-muted-foreground">{tool.desc}</span>
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>

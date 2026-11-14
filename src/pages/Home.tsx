@@ -4,21 +4,44 @@ import { Bookmark } from 'lucide-react';
 import OssHeader from '@/components/layout/OssHeader';
 import OssFooter from '@/components/layout/OssFooter';
 import { catalog } from '@/catalog';
+import { subcategoryIcons, toolIcons } from '@/catalogIcons';
 import { getBookmarks } from '@/lib/bookmarks';
 
 const ToolCard = ({ id }: { id: string }) => {
   const tool = catalog.find((t) => t.id === id);
   if (!tool) return null;
+  const Icon = toolIcons[tool.id];
   return (
     <li>
       <Link
         to={`/${tool.id}`}
-        className="block rounded-lg border border-border p-3 transition-colors hover:border-foreground/30 hover:bg-muted/50"
+        className="flex items-start gap-3 rounded-lg border border-border p-3 transition-colors hover:border-[#ff3131]/40 hover:bg-muted/50"
       >
-        <span className="block text-sm font-medium text-foreground">{tool.name}</span>
-        <span className="mt-0.5 block text-xs text-muted-foreground">{tool.desc}</span>
+        {Icon && (
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-muted">
+            <Icon className="h-4 w-4 text-[#ff3131]" aria-hidden="true" />
+          </span>
+        )}
+        <span className="min-w-0">
+          <span className="block text-sm font-medium text-foreground">{tool.name}</span>
+          <span className="mt-0.5 block text-xs text-muted-foreground">{tool.desc}</span>
+        </span>
       </Link>
     </li>
+  );
+};
+
+const GroupHeading = ({ name, id }: { name: string; id: string }) => {
+  const Icon = subcategoryIcons[name];
+  return (
+    <h2 id={id} className="mb-3 flex items-center gap-2 text-xl font-bold text-foreground">
+      {Icon && (
+        <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-[#5ce1e6]">
+          <Icon className="h-4 w-4 text-white" aria-hidden="true" />
+        </span>
+      )}
+      {name}
+    </h2>
   );
 };
 
@@ -54,8 +77,11 @@ const Home = () => {
         </div>
         {bookmarks.length > 0 && (
           <section aria-labelledby="group-bookmarked" className="mb-8">
-            <h2 id="group-bookmarked" className="mb-3 inline-flex items-center gap-2 text-xl font-bold text-foreground">
-              <Bookmark className="h-5 w-5" aria-hidden="true" /> Bookmarked
+            <h2 id="group-bookmarked" className="mb-3 flex items-center gap-2 text-xl font-bold text-foreground">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-[#5ce1e6]">
+                <Bookmark className="h-4 w-4 text-white" aria-hidden="true" />
+              </span>
+              Bookmarked
             </h2>
             <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {bookmarks.map((id) => (
@@ -67,9 +93,7 @@ const Home = () => {
         <div className="space-y-8">
           {[...groups.entries()].map(([subcategory, tools]) => (
             <section key={subcategory} aria-labelledby={`group-${subcategory}`}>
-              <h2 id={`group-${subcategory}`} className="mb-3 text-xl font-bold text-foreground">
-                {subcategory}
-              </h2>
+              <GroupHeading name={subcategory} id={`group-${subcategory}`} />
               <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {tools.map((tool) => (
                   <ToolCard key={tool.id} id={tool.id} />
