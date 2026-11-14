@@ -74,10 +74,12 @@ or in Claude Desktop's `claude_desktop_config.json`:
 { "mcpServers": { "redbison-tools": { "command": "bun", "args": ["run", "/path/to/redbison-tools/src/mcp/server.ts"] } } }
 ```
 
-Adding a tool to the server is one entry in `src/mcp/tools.ts` (description, JSON schema,
-a `run()` that calls the same `src/lib/tools` function the page uses, and an example the
-test suite executes). The hosted version at redbison.dev offers a larger remote MCP server
-with 90+ tools at [redbison.dev/mcp](https://redbison.dev/mcp).
+Full documentation — every tool with its arguments and examples, registration snippets
+for each client, and how to add a tool — is in [src/mcp/README.md](src/mcp/README.md).
+Prefer zero setup? Use our hosted MCP server instead: endpoint `https://mcp.redbison.dev`
+(90+ tools, docs at [redbison.dev/mcp](https://redbison.dev/mcp)). Guides:
+[setting up MCP servers in AI clients](https://redbison.dev/blog/how-to-set-up-mcp-servers-in-ai-clients) ·
+[building your own MCP server](https://redbison.dev/blog/how-to-build-an-mcp-server).
 
 ## Tests and coverage
 

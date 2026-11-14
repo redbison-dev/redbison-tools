@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { TOOLS } from '@/mcp/tools';
 
@@ -20,6 +22,13 @@ describe('mcp tool registry', () => {
     expect((TOOLS.base64_convert.run({ mode: 'encode', text: 'hello' }) as { result: string }).result).toBe('aGVsbG8=');
     expect((TOOLS.jwt_decode.run(TOOLS.jwt_decode.example) as { payload: { name: string } }).payload.name).toBe('John Doe');
     expect((TOOLS.cron_describe.run({ expression: '0 9 * * 1' }) as { description: string }).description).toContain('Monday');
+  });
+
+  it('every tool is documented in src/mcp/README.md', () => {
+    const readme = readFileSync(resolve(__dirname, '../mcp/README.md'), 'utf8');
+    for (const name of Object.keys(TOOLS)) {
+      expect(readme, name).toContain(`\`${name}\``);
+    }
   });
 
   it('bad input surfaces as an error, not a wrong answer', () => {
