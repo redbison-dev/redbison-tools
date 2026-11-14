@@ -43,6 +43,8 @@ lib/
 
 hooks/                  shared React hooks (use-toast, useCalculatorParams for
                         URL-synced inputs, useUrlParams, use-mobile, ...)
+mcp/                    local MCP server for AI assistants: tools.ts (the registry —
+                        description, JSON schema, run()) and server.ts (stdio JSON-RPC)
 i18n/                   English-only msg()/t() layer (same API as the hosted site)
 utils/                  no-op analytics stubs (see "Relationship to redbison.dev")
 

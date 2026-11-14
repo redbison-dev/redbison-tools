@@ -51,6 +51,34 @@ Cloudflare Pages, an S3 bucket or any web server. One note: routes are client-si
 configure your host to serve `index.html` for unknown paths (Netlify: a `/* /index.html 200`
 redirect; GitHub Pages: a `404.html` copy of `index.html`).
 
+## AI assistants (MCP)
+
+The repo ships a local [MCP](https://modelcontextprotocol.io) server (`src/mcp/server.ts`,
+no SDK, no network, no telemetry) that exposes a curated set of the tools — case
+conversion, regex testing, hashing, JSON/YAML/CSV conversion, Base64, binary/hex, epoch,
+JWT decoding, cron explanations, number bases, Markdown→HTML — to any MCP client over stdio:
+
+```sh
+bun run mcp        # or: npx tsx src/mcp/server.ts
+```
+
+Register it with Claude Code:
+
+```sh
+claude mcp add redbison-tools -- bun run /path/to/redbison-tools/src/mcp/server.ts
+```
+
+or in Claude Desktop's `claude_desktop_config.json`:
+
+```json
+{ "mcpServers": { "redbison-tools": { "command": "bun", "args": ["run", "/path/to/redbison-tools/src/mcp/server.ts"] } } }
+```
+
+Adding a tool to the server is one entry in `src/mcp/tools.ts` (description, JSON schema,
+a `run()` that calls the same `src/lib/tools` function the page uses, and an example the
+test suite executes). The hosted version at redbison.dev offers a larger remote MCP server
+with 90+ tools at [redbison.dev/mcp](https://redbison.dev/mcp).
+
 ## Tests and coverage
 
 ```sh
