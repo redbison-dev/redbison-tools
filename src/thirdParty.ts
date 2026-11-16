@@ -99,7 +99,7 @@ export const bundledLibraries: BundledLibrary[] = [
   },
   {
     "name": "ajv",
-    "version": "8.17.1",
+    "version": "8.20.0",
     "purpose": "JSON Schema validation"
   },
   {
@@ -187,7 +187,7 @@ export const bundledLibraries: BundledLibrary[] = [
   },
   {
     "name": "mathjs",
-    "version": "14.5.3",
+    "version": "15.2.0",
     "purpose": "maths evaluation in calculators"
   },
   {
@@ -227,7 +227,7 @@ export const bundledLibraries: BundledLibrary[] = [
   },
   {
     "name": "react-router-dom",
-    "version": "6.26.2",
+    "version": "7.18.5",
     "purpose": "client-side routing between tool pages"
   },
   {
@@ -237,7 +237,7 @@ export const bundledLibraries: BundledLibrary[] = [
   },
   {
     "name": "smol-toml",
-    "version": "1.4.2",
+    "version": "1.9.1",
     "purpose": "TOML parsing"
   },
   {
@@ -261,7 +261,7 @@ export const bundledLibraries: BundledLibrary[] = [
   },
   {
     "name": "xlsx",
-    "version": "0.18.5",
+    "version": "0.20.3",
     "purpose": "spreadsheet reading"
   },
   {
