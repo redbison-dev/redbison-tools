@@ -217,13 +217,13 @@ const PasswordGenerator = () => {
   return (
     <>
 
-      <div className="w-full px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
+      <div className="max-w-7xl mx-auto w-full px-4 sm:px-8 pt-1 pb-6 sm:pb-8 space-y-3">
         <ToolBreadcrumb
           category={{ label: t('Development & Tech'), href: "/category/development-tech" }}
           subcategory={{ label: t('Security Tools'), href: "/category/development-tech/security-tools" }}
           toolName="Password Generator"
         />
-        <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between mt-6">
+        <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-2">
             <h1 className="text-2xl sm:text-3xl font-bold text-black flex items-center gap-3">
               <Zap className="h-8 w-8 text-blue-600" />

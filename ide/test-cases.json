@@ -1,0 +1,1747 @@
+{
+  "_comment": [
+    "Behaviour cases for the tools the plugins answer locally. Both suites read",
+    "this file: the VS Code tests run them against runLocal, the IntelliJ tests",
+    "against LocalTools for the tools it implements. One table, two editors, so",
+    "a shared command cannot behave differently in each.",
+    "",
+    "'expect' is the exact output. 'contains' is for output whose exact shape is",
+    "not the point. 'throws' is a fragment of the message a bad input must",
+    "produce, because refusing clearly is a feature: a tool that silently",
+    "mangles input is worse than one that declines.",
+    "",
+    "Every option value a tool offers has a case here, and so do the edges that",
+    "bite: empty input, whitespace only, unicode outside the basic plane,",
+    "already-encoded input, and the malformed input each tool is most likely to",
+    "be handed."
+  ],
+  "json-format": [
+    {
+      "name": "formats with two spaces",
+      "input": "{\"b\":1,\"a\":2}",
+      "expect": "{\n  \"b\": 1,\n  \"a\": 2\n}"
+    },
+    {
+      "name": "keeps key order rather than sorting",
+      "input": "{\"z\":1,\"a\":2}",
+      "expect": "{\n  \"z\": 1,\n  \"a\": 2\n}"
+    },
+    {
+      "name": "handles a bare array",
+      "input": "[1,2]",
+      "expect": "[\n  1,\n  2\n]"
+    },
+    {
+      "name": "handles a bare scalar",
+      "input": "42",
+      "expect": "42"
+    },
+    {
+      "name": "preserves unicode rather than escaping it",
+      "input": "{\"a\":\"café\"}",
+      "expect": "{\n  \"a\": \"café\"\n}"
+    },
+    {
+      "name": "refuses a trailing comma",
+      "input": "{\"a\":1,}",
+      "throws": "JSON"
+    },
+    {
+      "name": "refuses single quotes",
+      "input": "{'a':1}",
+      "throws": "JSON"
+    },
+    {
+      "name": "refuses empty input",
+      "input": "",
+      "throws": "JSON"
+    }
+  ],
+  "json-minify": [
+    {
+      "name": "strips all whitespace",
+      "input": "{\n  \"a\": 1\n}",
+      "expect": "{\"a\":1}"
+    },
+    {
+      "name": "leaves an already minified document alone",
+      "input": "{\"a\":1}",
+      "expect": "{\"a\":1}"
+    },
+    {
+      "name": "keeps whitespace inside strings",
+      "input": "{\"a\":\"x  y\"}",
+      "expect": "{\"a\":\"x  y\"}"
+    },
+    {
+      "name": "refuses invalid JSON",
+      "input": "{a:1}",
+      "throws": "JSON"
+    }
+  ],
+  "json-validate": [
+    {
+      "name": "reports an object",
+      "input": "{\"a\":1}",
+      "contains": "Valid JSON"
+    },
+    {
+      "name": "names the top level type",
+      "input": "[1,2,3]",
+      "contains": "array of 3"
+    },
+    {
+      "name": "refuses invalid JSON",
+      "input": "{",
+      "throws": "JSON"
+    }
+  ],
+  "base64-encode": [
+    {
+      "name": "standard alphabet",
+      "input": "RedBison Tools",
+      "expect": "UmVkQmlzb24gVG9vbHM="
+    },
+    {
+      "name": "url-safe alphabet",
+      "input": "??>>",
+      "options": {
+        "variant": "url"
+      },
+      "expect": "Pz8-Pg"
+    },
+    {
+      "name": "standard keeps + and /",
+      "input": "??>>",
+      "options": {
+        "variant": "standard"
+      },
+      "expect": "Pz8+Pg=="
+    },
+    {
+      "name": "empty input gives empty output",
+      "input": "",
+      "expect": ""
+    },
+    {
+      "name": "encodes multi-byte characters as UTF-8",
+      "input": "é",
+      "expect": "w6k="
+    }
+  ],
+  "base64-decode": [
+    {
+      "name": "decodes standard",
+      "input": "UmVkQmlzb24=",
+      "expect": "RedBison"
+    },
+    {
+      "name": "decodes url-safe without padding",
+      "input": "Pz8-Pg",
+      "expect": "??>>"
+    },
+    {
+      "name": "decodes multi-byte",
+      "input": "w6k=",
+      "expect": "é"
+    },
+    {
+      "name": "tolerates surrounding whitespace",
+      "input": "  UmVkQmlzb24=  ",
+      "expect": "RedBison"
+    },
+    {
+      "name": "refuses characters outside the alphabet",
+      "input": "not base64!!",
+      "throws": "Base64"
+    }
+  ],
+  "url-encode": [
+    {
+      "name": "component escapes separators",
+      "input": "a b&c=d",
+      "expect": "a%20b%26c%3Dd"
+    },
+    {
+      "name": "whole-url form keeps the structure",
+      "input": "https://x.dev/a b?q=1",
+      "options": {
+        "variant": "uri"
+      },
+      "expect": "https://x.dev/a%20b?q=1"
+    },
+    {
+      "name": "leaves unreserved characters alone",
+      "input": "abc-_.~",
+      "expect": "abc-_.~"
+    },
+    {
+      "name": "encodes multi-byte as UTF-8 percent escapes",
+      "input": "é",
+      "expect": "%C3%A9"
+    }
+  ],
+  "url-decode": [
+    {
+      "name": "decodes escapes",
+      "input": "a%20b%26c",
+      "expect": "a b&c"
+    },
+    {
+      "name": "decodes multi-byte",
+      "input": "%C3%A9",
+      "expect": "é"
+    },
+    {
+      "name": "refuses a malformed escape",
+      "input": "%zz",
+      "throws": "percent-escape"
+    }
+  ],
+  "hash": [
+    {
+      "name": "sha256 hex is the default",
+      "input": "abc",
+      "options": {
+        "algorithm": "sha256",
+        "encoding": "hex"
+      },
+      "expect": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+    },
+    {
+      "name": "md5",
+      "input": "abc",
+      "options": {
+        "algorithm": "md5",
+        "encoding": "hex"
+      },
+      "expect": "900150983cd24fb0d6963f7d28e17f72"
+    },
+    {
+      "name": "sha1",
+      "input": "abc",
+      "options": {
+        "algorithm": "sha1",
+        "encoding": "hex"
+      },
+      "expect": "a9993e364706816aba3e25717850c26c9cd0d89d"
+    },
+    {
+      "name": "sha512 is 128 hex characters",
+      "input": "abc",
+      "options": {
+        "algorithm": "sha512",
+        "encoding": "hex"
+      },
+      "matches": "^[0-9a-f]{128}$"
+    },
+    {
+      "name": "sha384 is 96 hex characters",
+      "input": "abc",
+      "options": {
+        "algorithm": "sha384",
+        "encoding": "hex"
+      },
+      "matches": "^[0-9a-f]{96}$"
+    },
+    {
+      "name": "base64 encoding",
+      "input": "abc",
+      "options": {
+        "algorithm": "sha256",
+        "encoding": "base64"
+      },
+      "expect": "ungWv48Bz+pBQUDeXa4iI7ADYaOWF3qctBD/YfIAFa0="
+    },
+    {
+      "name": "empty input still hashes",
+      "input": "",
+      "options": {
+        "algorithm": "sha256",
+        "encoding": "hex"
+      },
+      "expect": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "refuses an unknown algorithm",
+      "input": "abc",
+      "options": {
+        "algorithm": "sha3"
+      },
+      "throws": "md5"
+    }
+  ],
+  "hmac": [
+    {
+      "name": "RFC 4231 test case 1",
+      "input": "Hi There",
+      "options": {
+        "key": "secret",
+        "algorithm": "sha256",
+        "encoding": "hex"
+      },
+      "matches": "^[0-9a-f]{64}$"
+    },
+    {
+      "name": "a different key gives a different result",
+      "input": "abc",
+      "options": {
+        "key": "k1",
+        "algorithm": "sha256"
+      },
+      "differsFrom": {
+        "input": "abc",
+        "options": {
+          "key": "k2",
+          "algorithm": "sha256"
+        }
+      }
+    },
+    {
+      "name": "base64 encoding",
+      "input": "abc",
+      "options": {
+        "key": "k",
+        "algorithm": "sha256",
+        "encoding": "base64"
+      },
+      "matches": "^[A-Za-z0-9+/]+=*$"
+    },
+    {
+      "name": "refuses a missing key",
+      "input": "abc",
+      "options": {},
+      "throws": "key"
+    }
+  ],
+  "jwt-decode": [
+    {
+      "name": "decodes header and payload",
+      "input": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjMiLCJuYW1lIjoiSmFuZSJ9.sig",
+      "contains": "\"alg\": \"HS256\""
+    },
+    {
+      "name": "shows the payload claims",
+      "input": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjMiLCJuYW1lIjoiSmFuZSJ9.sig",
+      "contains": "\"name\": \"Jane\""
+    },
+    {
+      "name": "says the signature is not verified",
+      "input": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjMifQ.sig",
+      "contains": "NOT verified"
+    },
+    {
+      "name": "refuses something that is not a token",
+      "input": "hello",
+      "throws": "JWT"
+    },
+    {
+      "name": "refuses a segment that is not JSON",
+      "input": "aGVsbG8.aGVsbG8.sig",
+      "throws": "JSON"
+    }
+  ],
+  "case-convert": [
+    {
+      "name": "camel",
+      "input": "hello world test",
+      "options": {
+        "style": "camel"
+      },
+      "expect": "helloWorldTest"
+    },
+    {
+      "name": "pascal",
+      "input": "hello world test",
+      "options": {
+        "style": "pascal"
+      },
+      "expect": "HelloWorldTest"
+    },
+    {
+      "name": "snake",
+      "input": "hello world test",
+      "options": {
+        "style": "snake"
+      },
+      "expect": "hello_world_test"
+    },
+    {
+      "name": "kebab",
+      "input": "hello world test",
+      "options": {
+        "style": "kebab"
+      },
+      "expect": "hello-world-test"
+    },
+    {
+      "name": "constant",
+      "input": "hello world test",
+      "options": {
+        "style": "constant"
+      },
+      "expect": "HELLO_WORLD_TEST"
+    },
+    {
+      "name": "title",
+      "input": "hello world test",
+      "options": {
+        "style": "title"
+      },
+      "expect": "Hello World Test"
+    },
+    {
+      "name": "upper",
+      "input": "hello",
+      "options": {
+        "style": "upper"
+      },
+      "expect": "HELLO"
+    },
+    {
+      "name": "lower",
+      "input": "HELLO",
+      "options": {
+        "style": "lower"
+      },
+      "expect": "hello"
+    },
+    {
+      "name": "splits an existing camelCase input",
+      "input": "helloWorldTest",
+      "options": {
+        "style": "snake"
+      },
+      "expect": "hello_world_test"
+    },
+    {
+      "name": "splits snake_case input",
+      "input": "hello_world",
+      "options": {
+        "style": "camel"
+      },
+      "expect": "helloWorld"
+    },
+    {
+      "name": "returns empty input unchanged",
+      "input": "",
+      "options": {
+        "style": "camel"
+      },
+      "expect": ""
+    }
+  ],
+  "slugify": [
+    {
+      "name": "lowercases and hyphenates",
+      "input": "Hello World",
+      "expect": "hello-world"
+    },
+    {
+      "name": "strips punctuation",
+      "input": "RedBison: 700+ Free Tools!",
+      "expect": "redbison-700-free-tools"
+    },
+    {
+      "name": "folds accents",
+      "input": "Café Résumé",
+      "expect": "cafe-resume"
+    },
+    {
+      "name": "collapses runs of separators",
+      "input": "a   ---   b",
+      "expect": "a-b"
+    },
+    {
+      "name": "trims leading and trailing hyphens",
+      "input": "  -hello-  ",
+      "expect": "hello"
+    }
+  ],
+  "sort-lines": [
+    {
+      "name": "ascending is the default",
+      "input": "cherry\napple\nbanana",
+      "options": {
+        "order": "asc"
+      },
+      "expect": "apple\nbanana\ncherry"
+    },
+    {
+      "name": "descending",
+      "input": "a\nb\nc",
+      "options": {
+        "order": "desc"
+      },
+      "expect": "c\nb\na"
+    },
+    {
+      "name": "natural puts file9 before file10",
+      "input": "file10\nfile9\nfile1",
+      "options": {
+        "order": "natural"
+      },
+      "expect": "file1\nfile9\nfile10"
+    },
+    {
+      "name": "plain sort would get that wrong",
+      "input": "file10\nfile9",
+      "options": {
+        "order": "asc"
+      },
+      "expect": "file10\nfile9"
+    },
+    {
+      "name": "by length",
+      "input": "ccc\na\nbb",
+      "options": {
+        "order": "length"
+      },
+      "expect": "a\nbb\nccc"
+    },
+    {
+      "name": "a single line is unchanged",
+      "input": "only",
+      "options": {
+        "order": "asc"
+      },
+      "expect": "only"
+    },
+    {
+      "name": "keeps blank lines as entries",
+      "input": "b\n\na",
+      "options": {
+        "order": "asc"
+      },
+      "expect": "\na\nb"
+    }
+  ],
+  "reverse-lines": [
+    {
+      "name": "reverses order",
+      "input": "a\nb\nc",
+      "expect": "c\nb\na"
+    },
+    {
+      "name": "a single line is unchanged",
+      "input": "only",
+      "expect": "only"
+    },
+    {
+      "name": "does not touch line contents",
+      "input": "ab\ncd",
+      "expect": "cd\nab"
+    }
+  ],
+  "number-lines": [
+    {
+      "name": "numbers from one",
+      "input": "a\nb",
+      "expect": "1. a\n2. b"
+    },
+    {
+      "name": "right-aligns the gutter past nine",
+      "input": "a\nb\nc\nd\ne\nf\ng\nh\ni\nj",
+      "contains": " 1. a"
+    },
+    {
+      "name": "ten reaches two columns",
+      "input": "a\nb\nc\nd\ne\nf\ng\nh\ni\nj",
+      "contains": "10. j"
+    }
+  ],
+  "trim-lines": [
+    {
+      "name": "trims both ends",
+      "input": "  a  \n  b  ",
+      "expect": "a\nb"
+    },
+    {
+      "name": "leaves inner spacing alone",
+      "input": "  a  b  ",
+      "expect": "a  b"
+    },
+    {
+      "name": "empties a whitespace-only line",
+      "input": "   ",
+      "expect": ""
+    }
+  ],
+  "wrap-lines": [
+    {
+      "name": "wraps on word boundaries",
+      "input": "the quick brown fox jumps over the lazy dog",
+      "options": {
+        "width": 20
+      },
+      "contains": "\n"
+    },
+    {
+      "name": "no line exceeds the width",
+      "input": "the quick brown fox jumps over the lazy dog",
+      "options": {
+        "width": 20
+      },
+      "maxLineLength": 20
+    },
+    {
+      "name": "words are preserved in order",
+      "input": "the quick brown fox jumps over the lazy dog",
+      "options": {
+        "width": 20
+      },
+      "joinedEquals": "the quick brown fox jumps over the lazy dog"
+    },
+    {
+      "name": "a short line is untouched",
+      "input": "short",
+      "options": {
+        "width": 20
+      },
+      "expect": "short"
+    }
+  ],
+  "reverse-text": [
+    {
+      "name": "reverses characters",
+      "input": "abc",
+      "expect": "cba"
+    },
+    {
+      "name": "keeps an astral character whole",
+      "input": "a😀b",
+      "expect": "b😀a"
+    },
+    {
+      "name": "empty input is unchanged",
+      "input": "",
+      "expect": ""
+    }
+  ],
+  "rot13": [
+    {
+      "name": "rotates letters",
+      "input": "Hello, World!",
+      "expect": "Uryyb, Jbeyq!"
+    },
+    {
+      "name": "is its own inverse",
+      "input": "Uryyb, Jbeyq!",
+      "expect": "Hello, World!"
+    },
+    {
+      "name": "leaves digits and punctuation alone",
+      "input": "abc 123 !?",
+      "expect": "nop 123 !?"
+    }
+  ],
+  "remove-accents": [
+    {
+      "name": "folds common accents",
+      "input": "café résumé naïve",
+      "expect": "cafe resume naive"
+    },
+    {
+      "name": "leaves plain ASCII alone",
+      "input": "plain text",
+      "expect": "plain text"
+    },
+    {
+      "name": "handles uppercase accents",
+      "input": "ÉCOLE",
+      "expect": "ECOLE"
+    }
+  ],
+  "strip-html": [
+    {
+      "name": "removes tags and keeps text",
+      "input": "<p>Hello <b>world</b></p>",
+      "expect": "Hello world"
+    },
+    {
+      "name": "drops script contents entirely",
+      "input": "<p>a</p><script>alert(1)</script>",
+      "expect": "a"
+    },
+    {
+      "name": "drops style contents entirely",
+      "input": "<style>.a{color:red}</style><p>b</p>",
+      "expect": "b"
+    },
+    {
+      "name": "decodes entities",
+      "input": "<p>Tom &amp; Jerry</p>",
+      "expect": "Tom & Jerry"
+    }
+  ],
+  "html-escape": [
+    {
+      "name": "escapes the five characters",
+      "input": "<a href=\"x\">Tom & Jerry</a>",
+      "expect": "&lt;a href=&quot;x&quot;&gt;Tom &amp; Jerry&lt;/a&gt;"
+    },
+    {
+      "name": "escapes the ampersand first",
+      "input": "&lt;",
+      "expect": "&amp;lt;"
+    },
+    {
+      "name": "plain text is unchanged",
+      "input": "plain",
+      "expect": "plain"
+    }
+  ],
+  "html-unescape": [
+    {
+      "name": "decodes named entities",
+      "input": "&lt;b&gt;bold&lt;/b&gt;",
+      "expect": "<b>bold</b>"
+    },
+    {
+      "name": "decodes numeric entities",
+      "input": "&#65;&#66;",
+      "expect": "AB"
+    },
+    {
+      "name": "decodes hex entities",
+      "input": "&#x41;",
+      "expect": "A"
+    },
+    {
+      "name": "round-trips with escape",
+      "input": "&amp;lt;",
+      "expect": "&lt;"
+    }
+  ],
+  "to-hex": [
+    {
+      "name": "encodes ASCII",
+      "input": "Hi",
+      "expect": "48 69"
+    },
+    {
+      "name": "encodes multi-byte as UTF-8",
+      "input": "é",
+      "expect": "c3 a9"
+    },
+    {
+      "name": "empty input gives empty output",
+      "input": "",
+      "expect": ""
+    }
+  ],
+  "from-hex": [
+    {
+      "name": "decodes spaced hex",
+      "input": "48 69",
+      "expect": "Hi"
+    },
+    {
+      "name": "decodes unspaced hex",
+      "input": "4869",
+      "expect": "Hi"
+    },
+    {
+      "name": "ignores 0x prefixes",
+      "input": "0x48 0x69",
+      "expect": "Hi"
+    },
+    {
+      "name": "refuses an odd number of digits",
+      "input": "abc",
+      "throws": "even"
+    },
+    {
+      "name": "refuses input with no hex at all",
+      "input": "zzz",
+      "throws": "No hex"
+    }
+  ],
+  "extract-urls": [
+    {
+      "name": "finds a URL",
+      "input": "see https://redbison.dev now",
+      "expect": "https://redbison.dev"
+    },
+    {
+      "name": "de-duplicates",
+      "input": "https://a.dev and https://a.dev",
+      "expect": "https://a.dev"
+    },
+    {
+      "name": "stops at a trailing bracket",
+      "input": "(https://a.dev)",
+      "expect": "https://a.dev"
+    },
+    {
+      "name": "says so when there are none",
+      "input": "no links here",
+      "contains": "no URLs"
+    }
+  ],
+  "extract-emails": [
+    {
+      "name": "finds an address",
+      "input": "mail a@b.com please",
+      "expect": "a@b.com"
+    },
+    {
+      "name": "finds several",
+      "input": "a@b.com and c@d.org",
+      "expect": "a@b.com\nc@d.org"
+    },
+    {
+      "name": "says so when there are none",
+      "input": "nothing",
+      "contains": "no addresses"
+    }
+  ],
+  "extract-numbers": [
+    {
+      "name": "finds integers and decimals",
+      "input": "cost 42 and -3.5 units",
+      "expect": "42\n-3.5"
+    },
+    {
+      "name": "says so when there are none",
+      "input": "no digits",
+      "contains": "no numbers"
+    }
+  ],
+  "sort-json-keys": [
+    {
+      "name": "sorts top level",
+      "input": "{\"b\":1,\"a\":2}",
+      "expect": "{\n  \"a\": 2,\n  \"b\": 1\n}"
+    },
+    {
+      "name": "sorts nested objects too",
+      "input": "{\"a\":{\"d\":1,\"c\":2}}",
+      "contains": "\"c\": 2"
+    },
+    {
+      "name": "leaves array order alone",
+      "input": "{\"a\":[3,1,2]}",
+      "contains": "3,"
+    },
+    {
+      "name": "refuses invalid JSON",
+      "input": "{bad}",
+      "throws": "JSON"
+    }
+  ],
+  "query-to-json": [
+    {
+      "name": "parses pairs",
+      "input": "a=1&b=two",
+      "contains": "\"a\": \"1\""
+    },
+    {
+      "name": "strips a leading question mark",
+      "input": "?a=1",
+      "contains": "\"a\": \"1\""
+    },
+    {
+      "name": "decodes percent escapes",
+      "input": "q=red%20bison",
+      "contains": "red bison"
+    },
+    {
+      "name": "collects a repeated key into an array",
+      "input": "x=1&x=2",
+      "contains": "["
+    },
+    {
+      "name": "refuses input with no parameters",
+      "input": "nothing",
+      "throws": "No query"
+    }
+  ],
+  "json-to-query": [
+    {
+      "name": "builds a query string",
+      "input": "{\"a\":\"1\",\"b\":\"two\"}",
+      "expect": "a=1&b=two"
+    },
+    {
+      "name": "encodes values",
+      "input": "{\"q\":\"red bison\"}",
+      "expect": "q=red+bison"
+    },
+    {
+      "name": "repeats an array key",
+      "input": "{\"x\":[\"1\",\"2\"]}",
+      "expect": "x=1&x=2"
+    },
+    {
+      "name": "refuses an array at the top level",
+      "input": "[1,2]",
+      "throws": "object"
+    }
+  ],
+  "url-parse": [
+    {
+      "name": "names the scheme",
+      "input": "https://redbison.dev/a?b=1#c",
+      "contains": "Scheme:    https"
+    },
+    {
+      "name": "shows the port when there is one",
+      "input": "https://x.dev:8443/",
+      "contains": "Port:      8443"
+    },
+    {
+      "name": "lists query parameters",
+      "input": "https://x.dev/?a=1",
+      "contains": "a = 1"
+    },
+    {
+      "name": "shows the fragment",
+      "input": "https://x.dev/#frag",
+      "contains": "Fragment:  frag"
+    },
+    {
+      "name": "refuses a string with no scheme",
+      "input": "not a url",
+      "throws": "scheme"
+    }
+  ],
+  "unique-words": [
+    {
+      "name": "counts repeats",
+      "input": "a b a",
+      "contains": "2  a"
+    },
+    {
+      "name": "is case insensitive",
+      "input": "The the THE",
+      "contains": "3  the"
+    },
+    {
+      "name": "refuses input with no words",
+      "input": "   ",
+      "throws": "No words"
+    }
+  ],
+  "char-frequency": [
+    {
+      "name": "counts characters",
+      "input": "aab",
+      "contains": "2  a"
+    },
+    {
+      "name": "names whitespace rather than printing it",
+      "input": "a b",
+      "contains": "(space)"
+    }
+  ],
+  "number-base": [
+    {
+      "name": "reads decimal",
+      "input": "255",
+      "contains": "Hex:      0xFF"
+    },
+    {
+      "name": "reads a hex prefix",
+      "input": "0xFF",
+      "contains": "Decimal:  255"
+    },
+    {
+      "name": "reads a binary prefix",
+      "input": "0b1010",
+      "contains": "Decimal:  10"
+    },
+    {
+      "name": "reads an octal prefix",
+      "input": "0o17",
+      "contains": "Decimal:  15"
+    },
+    {
+      "name": "handles a very large value",
+      "input": "123456789012345678901234567890",
+      "contains": "Decimal:  123456789012345678901234567890"
+    },
+    {
+      "name": "refuses a non-number",
+      "input": "zz",
+      "throws": "not a base"
+    }
+  ],
+  "epoch": [
+    {
+      "name": "reads seconds",
+      "input": "1700000000",
+      "contains": "2023-11-14"
+    },
+    {
+      "name": "reads milliseconds",
+      "input": "1700000000000",
+      "contains": "2023-11-14"
+    },
+    {
+      "name": "reads an ISO date",
+      "input": "2023-11-14T22:13:20Z",
+      "contains": "1700000000"
+    },
+    {
+      "name": "refuses rubbish",
+      "input": "not a date",
+      "throws": "not a timestamp"
+    }
+  ],
+  "ieee754": [
+    {
+      "name": "shows both precisions",
+      "input": "0.1",
+      "contains": "Single (32-bit)"
+    },
+    {
+      "name": "shows what is actually stored",
+      "input": "0.1",
+      "contains": "Double (64-bit)"
+    },
+    {
+      "name": "handles zero",
+      "input": "0",
+      "contains": "Sign      0"
+    },
+    {
+      "name": "refuses a non-number",
+      "input": "abc",
+      "contains": "NaN"
+    }
+  ],
+  "chmod": [
+    {
+      "name": "octal to symbolic",
+      "input": "755",
+      "contains": "rwxr-xr-x"
+    },
+    {
+      "name": "symbolic to octal",
+      "input": "rwxr-xr-x",
+      "contains": "755"
+    },
+    {
+      "name": "handles 644",
+      "input": "644",
+      "contains": "rw-r--r--"
+    },
+    {
+      "name": "names each class",
+      "input": "755",
+      "contains": "owner"
+    },
+    {
+      "name": "refuses rubbish",
+      "input": "xyz",
+      "throws": "Expected"
+    }
+  ],
+  "subnet": [
+    {
+      "name": "gives the network address",
+      "input": "10.0.0.0/24",
+      "contains": "Network:    10.0.0.0/24"
+    },
+    {
+      "name": "gives the netmask",
+      "input": "10.0.0.0/24",
+      "contains": "255.255.255.0"
+    },
+    {
+      "name": "gives the broadcast address",
+      "input": "10.0.0.0/24",
+      "contains": "10.0.0.255"
+    },
+    {
+      "name": "counts usable hosts",
+      "input": "10.0.0.0/24",
+      "contains": "254 usable"
+    },
+    {
+      "name": "handles a /32",
+      "input": "10.0.0.1/32",
+      "contains": "1 addresses"
+    },
+    {
+      "name": "refuses an octet over 255",
+      "input": "999.0.0.0/24",
+      "throws": "valid"
+    },
+    {
+      "name": "refuses something that is not CIDR",
+      "input": "10.0.0.0",
+      "throws": "CIDR"
+    }
+  ],
+  "ip-convert": [
+    {
+      "name": "dotted to integer",
+      "input": "192.168.1.1",
+      "contains": "Integer:  3232235777"
+    },
+    {
+      "name": "integer to dotted",
+      "input": "3232235777",
+      "contains": "Dotted:   192.168.1.1"
+    },
+    {
+      "name": "shows the IPv6 mapped form",
+      "input": "192.168.1.1",
+      "contains": "::ffff:192.168.1.1"
+    },
+    {
+      "name": "refuses an octet over 255",
+      "input": "256.1.1.1",
+      "throws": "255"
+    }
+  ],
+  "military-time": [
+    {
+      "name": "24 to 12 hour",
+      "input": "14:30",
+      "expect": "2:30 PM"
+    },
+    {
+      "name": "12 to 24 hour",
+      "input": "2:30 PM",
+      "expect": "14:30"
+    },
+    {
+      "name": "midnight",
+      "input": "00:30",
+      "expect": "12:30 AM"
+    },
+    {
+      "name": "noon",
+      "input": "12:30",
+      "expect": "12:30 PM"
+    },
+    {
+      "name": "refuses an impossible time",
+      "input": "25:00",
+      "throws": "valid"
+    }
+  ],
+  "binary-text": [
+    {
+      "name": "text to binary",
+      "input": "Hi",
+      "expect": "01001000 01101001"
+    },
+    {
+      "name": "binary to text",
+      "input": "01001000 01101001",
+      "expect": "Hi"
+    },
+    {
+      "name": "refuses a partial byte",
+      "input": "0100100",
+      "throws": "eight"
+    }
+  ],
+  "date-diff": [
+    {
+      "name": "counts days",
+      "input": "2026-01-01",
+      "options": {
+        "to": "2026-01-31"
+      },
+      "contains": "Total days:   30"
+    },
+    {
+      "name": "is order independent",
+      "input": "2026-01-31",
+      "options": {
+        "to": "2026-01-01"
+      },
+      "contains": "Total days:   30"
+    },
+    {
+      "name": "refuses a missing second date",
+      "input": "2026-01-01",
+      "options": {},
+      "throws": "second date"
+    },
+    {
+      "name": "refuses a bad date",
+      "input": "nonsense",
+      "options": {
+        "to": "2026-01-01"
+      },
+      "throws": "not a date"
+    }
+  ],
+  "hash-compare": [
+    {
+      "name": "matching hashes",
+      "input": "abc123",
+      "options": {
+        "b": "abc123"
+      },
+      "contains": "MATCH"
+    },
+    {
+      "name": "ignores case and spacing",
+      "input": "ABC123",
+      "options": {
+        "b": "  abc123 "
+      },
+      "contains": "MATCH"
+    },
+    {
+      "name": "different hashes",
+      "input": "abc",
+      "options": {
+        "b": "def"
+      },
+      "contains": "NO MATCH"
+    },
+    {
+      "name": "refuses a missing comparison",
+      "input": "abc",
+      "options": {},
+      "throws": "compare against"
+    }
+  ],
+  "list-compare": [
+    {
+      "name": "reports what is only in the first",
+      "input": "a\nb",
+      "options": {
+        "b": "b\nc"
+      },
+      "contains": "Only in the first (1)"
+    },
+    {
+      "name": "reports what is only in the second",
+      "input": "a\nb",
+      "options": {
+        "b": "b\nc"
+      },
+      "contains": "Only in the second (1)"
+    },
+    {
+      "name": "reports what is in both",
+      "input": "a\nb",
+      "options": {
+        "b": "b\nc"
+      },
+      "contains": "In both (1)"
+    },
+    {
+      "name": "refuses a missing second list",
+      "input": "a",
+      "options": {},
+      "throws": "second list"
+    }
+  ],
+  "utm-build": [
+    {
+      "name": "adds the parameters",
+      "input": "https://redbison.dev/",
+      "options": {
+        "source": "blog",
+        "medium": "post"
+      },
+      "contains": "utm_source=blog"
+    },
+    {
+      "name": "keeps an existing query",
+      "input": "https://x.dev/?a=1",
+      "options": {
+        "source": "s"
+      },
+      "contains": "a=1"
+    },
+    {
+      "name": "refuses a non-URL",
+      "input": "not a url",
+      "options": {
+        "source": "s"
+      },
+      "throws": "scheme"
+    }
+  ],
+  "comma-to-lines": [
+    {
+      "name": "splits and trims",
+      "input": "alpha, beta, gamma",
+      "expect": "alpha\nbeta\ngamma"
+    },
+    {
+      "name": "drops empty items",
+      "input": "a,,b",
+      "expect": "a\nb"
+    }
+  ],
+  "lines-to-comma": [
+    {
+      "name": "joins with a comma and space",
+      "input": "a\nb",
+      "options": {
+        "quote": "none"
+      },
+      "expect": "a, b"
+    },
+    {
+      "name": "double quotes each item",
+      "input": "a\nb",
+      "options": {
+        "quote": "double"
+      },
+      "expect": "\"a\", \"b\""
+    },
+    {
+      "name": "single quotes each item",
+      "input": "a\nb",
+      "options": {
+        "quote": "single"
+      },
+      "expect": "'a', 'b'"
+    },
+    {
+      "name": "drops blank lines",
+      "input": "a\n\nb",
+      "options": {
+        "quote": "none"
+      },
+      "expect": "a, b"
+    }
+  ],
+  "dedupe-lines": [
+    {
+      "name": "keeps the first occurrence",
+      "input": "a\nb\na",
+      "options": {
+        "compare": "exact"
+      },
+      "expect": "a\nb"
+    },
+    {
+      "name": "is case sensitive by default",
+      "input": "a\nA",
+      "options": {
+        "compare": "exact"
+      },
+      "expect": "a\nA"
+    },
+    {
+      "name": "can ignore case",
+      "input": "a\nA",
+      "options": {
+        "compare": "ignore-case"
+      },
+      "expect": "a"
+    }
+  ],
+  "remove-extra-spaces": [
+    {
+      "name": "collapses runs",
+      "input": "too   many    spaces",
+      "expect": "too many spaces"
+    },
+    {
+      "name": "trims the ends",
+      "input": "  padded  ",
+      "expect": "padded"
+    },
+    {
+      "name": "collapses tabs too",
+      "input": "a\t\tb",
+      "expect": "a b"
+    }
+  ],
+  "remove-empty-lines": [
+    {
+      "name": "drops blank lines",
+      "input": "a\n\n\nb",
+      "expect": "a\nb"
+    },
+    {
+      "name": "drops whitespace-only lines",
+      "input": "a\n   \nb",
+      "expect": "a\nb"
+    }
+  ],
+  "find-duplicates": [
+    {
+      "name": "reports the repeat and its count",
+      "input": "a\nb\na",
+      "contains": "2x  a"
+    },
+    {
+      "name": "says so when there are none",
+      "input": "a\nb",
+      "contains": "No duplicate"
+    }
+  ],
+  "tsv-parse": [
+    {
+      "name": "uses the header row as keys",
+      "input": "name\trole\nJane\tdev",
+      "contains": "\"name\": \"Jane\""
+    },
+    {
+      "name": "refuses a single row",
+      "input": "only",
+      "throws": "header row"
+    }
+  ],
+  "csv-to-json": [
+    {
+      "name": "uses the header row as keys",
+      "input": "a,b\n1,2",
+      "contains": "\"a\": \"1\""
+    },
+    {
+      "name": "handles a quoted comma",
+      "input": "a,b\n\"x,y\",2",
+      "contains": "x,y"
+    },
+    {
+      "name": "a doubled quote becomes one quote, escaped in the JSON output",
+      "input": "a\n\"he said \"\"hi\"\"\"",
+      "contains": "he said \\\"hi\\\""
+    },
+    {
+      "name": "refuses empty input",
+      "input": "",
+      "throws": "no rows"
+    }
+  ],
+  "json-to-csv": [
+    {
+      "name": "writes a header from the keys",
+      "input": "[{\"a\":1,\"b\":2}]",
+      "expect": "a,b\n1,2"
+    },
+    {
+      "name": "quotes a value containing a comma",
+      "input": "[{\"a\":\"x,y\"}]",
+      "expect": "a\n\"x,y\""
+    },
+    {
+      "name": "takes the union of keys",
+      "input": "[{\"a\":1},{\"b\":2}]",
+      "contains": "a,b"
+    },
+    {
+      "name": "refuses an object at the top level",
+      "input": "{\"a\":1}",
+      "throws": "array"
+    }
+  ],
+  "markdown-table": [
+    {
+      "name": "aligns the columns",
+      "input": "a,b\n1,2",
+      "contains": "| a "
+    },
+    {
+      "name": "adds the separator row",
+      "input": "a,b\n1,2",
+      "contains": "| --"
+    },
+    {
+      "name": "refuses a single row",
+      "input": "only",
+      "throws": "header row"
+    }
+  ],
+  "escape-characters": [
+    {
+      "name": "escapes for a JSON string",
+      "input": "he said \"hi\"",
+      "options": {
+        "format": "json"
+      },
+      "expect": "he said \\\"hi\\\""
+    },
+    {
+      "name": "escapes a newline",
+      "input": "a\nb",
+      "options": {
+        "format": "json"
+      },
+      "expect": "a\\nb"
+    },
+    {
+      "name": "escapes for XML",
+      "input": "<a> & 'b'",
+      "options": {
+        "format": "xml"
+      },
+      "contains": "&lt;a&gt;"
+    }
+  ],
+  "http-status": [
+    {
+      "name": "looks up a code",
+      "input": "429",
+      "contains": "429"
+    },
+    {
+      "name": "names it",
+      "input": "404",
+      "contains": "Not Found"
+    },
+    {
+      "name": "searches by name",
+      "input": "teapot",
+      "contains": "418"
+    },
+    {
+      "name": "refuses an unknown code",
+      "input": "999",
+      "throws": "No HTTP status"
+    }
+  ],
+  "mime-lookup": [
+    {
+      "name": "extension to type",
+      "input": ".webp",
+      "contains": "image/webp"
+    },
+    {
+      "name": "works without the dot",
+      "input": "png",
+      "contains": "image/png"
+    },
+    {
+      "name": "type to extensions",
+      "input": "application/json",
+      "contains": "json"
+    },
+    {
+      "name": "refuses an unknown extension",
+      "input": ".zzzz",
+      "throws": "Nothing registered"
+    }
+  ],
+  "uuid": [
+    {
+      "name": "v4 shape",
+      "input": "",
+      "options": {
+        "variant": "v4"
+      },
+      "matches": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    {
+      "name": "v7 carries the version nibble",
+      "input": "",
+      "options": {
+        "variant": "v7"
+      },
+      "matches": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    {
+      "name": "uppercase",
+      "input": "",
+      "options": {
+        "variant": "v4-upper"
+      },
+      "matches": "^[0-9A-F-]{36}$"
+    },
+    {
+      "name": "compact has no hyphens",
+      "input": "",
+      "options": {
+        "variant": "v4-compact"
+      },
+      "matches": "^[0-9a-f]{32}$"
+    },
+    {
+      "name": "nil is all zeroes",
+      "input": "",
+      "options": {
+        "variant": "nil"
+      },
+      "expect": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "name": "two calls differ",
+      "input": "",
+      "options": {
+        "variant": "v4"
+      },
+      "differsFrom": {
+        "input": "",
+        "options": {
+          "variant": "v4"
+        }
+      }
+    }
+  ],
+  "password": [
+    {
+      "name": "honours the length",
+      "input": "",
+      "options": {
+        "length": 24,
+        "charset": "full"
+      },
+      "matches": "^.{24}$"
+    },
+    {
+      "name": "alphanumeric excludes symbols",
+      "input": "",
+      "options": {
+        "length": 32,
+        "charset": "alphanumeric"
+      },
+      "matches": "^[A-Za-z0-9]{32}$"
+    },
+    {
+      "name": "letters only",
+      "input": "",
+      "options": {
+        "length": 16,
+        "charset": "letters"
+      },
+      "matches": "^[A-Za-z]{16}$"
+    },
+    {
+      "name": "no lookalike characters",
+      "input": "",
+      "options": {
+        "length": 60,
+        "charset": "full"
+      },
+      "matchesNot": "[0O1lI]"
+    },
+    {
+      "name": "clamps a tiny length",
+      "input": "",
+      "options": {
+        "length": 2
+      },
+      "matches": "^.{8}$"
+    },
+    {
+      "name": "two calls differ",
+      "input": "",
+      "options": {
+        "length": 20
+      },
+      "differsFrom": {
+        "input": "",
+        "options": {
+          "length": 20
+        }
+      }
+    }
+  ],
+  "shuffle-lines": [
+    {
+      "name": "keeps every line",
+      "input": "a\nb\nc\nd\ne\nf\ng\nh",
+      "sameMultisetAs": "a\nb\nc\nd\ne\nf\ng\nh"
+    },
+    {
+      "name": "a single line is unchanged",
+      "input": "only",
+      "expect": "only"
+    },
+    {
+      "name": "does not alter line contents",
+      "input": "alpha\nbeta",
+      "sameMultisetAs": "alpha\nbeta"
+    },
+    {
+      "name": "keeps the count with duplicates present",
+      "input": "a\na\nb",
+      "sameMultisetAs": "a\na\nb"
+    },
+    {
+      "name": "two runs do not produce the same order",
+      "input": "line01\nline02\nline03\nline04\nline05\nline06\nline07\nline08\nline09\nline10\nline11\nline12",
+      "differsFrom": {
+        "input": "line01\nline02\nline03\nline04\nline05\nline06\nline07\nline08\nline09\nline10\nline11\nline12"
+      }
+    }
+  ],
+  "lorem": [
+    {
+      "name": "produces sentences",
+      "input": "",
+      "options": {
+        "count": 2,
+        "unit": "sentences"
+      },
+      "contains": "."
+    },
+    {
+      "name": "produces paragraphs",
+      "input": "",
+      "options": {
+        "count": 1,
+        "unit": "paragraphs"
+      },
+      "matches": "[A-Za-z]"
+    }
+  ],
+  "regex-test": [
+    {
+      "name": "reports a match count",
+      "input": "order-1 order-2",
+      "options": {
+        "pattern": "order-(\\d+)",
+        "flags": "g"
+      },
+      "contains": "2 matches"
+    },
+    {
+      "name": "shows capture groups",
+      "input": "order-7",
+      "options": {
+        "pattern": "order-(\\d+)",
+        "flags": "g"
+      },
+      "contains": "1: 7"
+    },
+    {
+      "name": "says when there are none",
+      "input": "nothing",
+      "options": {
+        "pattern": "zzz",
+        "flags": "g"
+      },
+      "contains": "No matches"
+    },
+    {
+      "name": "refuses a missing pattern",
+      "input": "abc",
+      "options": {},
+      "throws": "regular expression"
+    },
+    {
+      "name": "refuses an invalid pattern",
+      "input": "abc",
+      "options": {
+        "pattern": "([",
+        "flags": "g"
+      },
+      "throws": ""
+    }
+  ],
+  "word-count": [
+    {
+      "name": "counts words",
+      "input": "one two three",
+      "contains": "Words:                3"
+    },
+    {
+      "name": "counts characters without spaces",
+      "input": "a b",
+      "contains": "Characters (no space): 2"
+    },
+    {
+      "name": "empty input counts zero words",
+      "input": "",
+      "contains": "Words:                0"
+    }
+  ]
+}

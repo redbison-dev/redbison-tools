@@ -67,6 +67,29 @@ img {
     --sidebar-border: 0 0% 85%;
     --sidebar-ring: 0 0% 0%;
 
+    /*
+     * Brand palette (DESIGN.md). Red is the identity and is rationed: it
+     * marks the one primary action on a surface, never every icon on it.
+     * Gold is the home page's field colour and carries featured emphasis,
+     * cyan carries interactive and technical accents, platinum is the
+     * knife-body neutral that most chrome should actually use.
+     */
+    --brand-red: 0 72% 51%;
+    --brand-red-strong: 0 74% 42%;
+    --brand-red-soft: 0 93% 94%;
+
+    --brand-gold: 41 67% 55%;
+    --brand-gold-strong: 38 72% 38%;
+    --brand-gold-soft: 41 89% 93%;
+
+    --brand-cyan: 192 91% 36%;
+    --brand-cyan-strong: 193 82% 31%;
+    --brand-cyan-soft: 192 72% 93%;
+
+    --brand-platinum: 208 12% 75%;
+    --brand-platinum-strong: 220 9% 46%;
+    --brand-platinum-soft: 210 21% 95%;
+
     /* Minesweeper classic palette */
     --ms-classic-bg: 120 6% 78%;
     --ms-classic-cell: 120 6% 82%;
@@ -86,6 +109,22 @@ img {
    }
 
   .dark {
+    /* Brand palette, lifted for dark surfaces; soft tints become low-chroma backgrounds. */
+    --brand-red: 0 84% 65%;
+    --brand-red-strong: 0 91% 76%;
+    --brand-red-soft: 0 40% 18%;
+
+    --brand-gold: 41 80% 66%;
+    --brand-gold-strong: 43 92% 76%;
+    --brand-gold-soft: 38 32% 17%;
+
+    --brand-cyan: 190 85% 60%;
+    --brand-cyan-strong: 187 92% 72%;
+    --brand-cyan-soft: 196 42% 16%;
+
+    --brand-platinum: 214 16% 68%;
+    --brand-platinum-strong: 212 18% 82%;
+    --brand-platinum-soft: 215 20% 18%;
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
@@ -475,4 +514,128 @@ html[data-embed] footer {
 }
 html[data-embed] body {
   background: transparent;
+}
+
+/* The language switcher renders inside the breadcrumb row where a tool has
+   one, and on a line of its own where it does not. Hiding the standalone copy
+   when an inline one exists keeps every tool covered without either component
+   needing to know about the other. */
+body:has([data-lang-inline]) [data-lang-standalone] {
+  display: none;
+}
+
+/* Embeds choose what to show (src/lib/embed.ts). The pieces live inside each
+   tool rather than in one shared wrapper, so they are switched off by the
+   shared class names the tools already use. */
+/* Two idioms carry a tool's tagline: the shared .tool-description class, and a
+   plain paragraph right after the <h1>. Both are switched off, so the option
+   works on every tool rather than only the ones using the class. */
+html[data-embed-no-description] .tool-description,
+html[data-embed-no-description] [data-rb-tool-area] h1 + p {
+  display: none !important;
+}
+html[data-embed-no-working] [data-report-steps] {
+  display: none !important;
+}
+html[data-embed-no-controls] [data-tool-controls] {
+  display: none !important;
+}
+
+/* Control rows inside an embed sat flush against the frame edge and wrapped
+   unevenly in a narrow column. Centre them and let them wrap as a unit. */
+html[data-embed] [data-tool-controls] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+/* Phone gutters.
+   Page wrappers are written as `max-w-… mx-auto px-4 sm:px-8`, so a phone gave
+   up 32px of a 390px screen to margin before any content. There are 448 of
+   those wrappers, so this narrows the idiom in one place instead of rewriting
+   each one: it matches only the centred max-width container, never the padding
+   on a button, card or input, and only below the sm breakpoint. */
+@media (max-width: 639px) {
+  [class*="max-w-"].mx-auto.px-4,
+  .container.mx-auto.px-4 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+/* Phone: one vertical rhythm for every tool page.
+   Tools render their own heading, so the spacing between header, breadcrumb,
+   title and description was whatever each component happened to use: measured
+   at 390px it ran 24-66px below the header, 20-40px above the title, and the
+   description came out anywhere from 14px to 18px. Only 180 of the 309 tool
+   components carry .tool-title, so that class cannot reach all of them;
+   [data-rb-tool-area] wraps every tool whatever renders it, and gives enough
+   specificity (0,1,1) to beat the inline text-4xl/text-lg utilities without
+   !important. Alignment is set on the elements themselves so a centred
+   wrapper, which some tools use, no longer carries the title with it. */
+@media (max-width: 639px) {
+  [data-rb-tool-area][data-rb-tool-cat] .tool-header {
+    margin-top: 0.5rem;
+  }
+
+  [data-rb-tool-area][data-rb-tool-cat] div:has(> nav[aria-label='breadcrumb']) {
+    margin-bottom: 0.5rem;
+  }
+
+  [data-rb-tool-area][data-rb-tool-cat] h1 {
+    font-size: 1.75rem;
+    line-height: 1.2;
+    margin-bottom: 0.375rem;
+    text-align: left;
+  }
+
+  [data-rb-tool-area][data-rb-tool-cat] .tool-description,
+  [data-rb-tool-area][data-rb-tool-cat] h1 + p {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-top: 0;
+    text-align: left;
+  }
+}
+
+/* One shape for every tool page title.
+   Audited across the catalogue, 14% of titles were centred, some were
+   gray-900 rather than black and a few clipped a gradient to the text so
+   their computed colour was transparent, and they came in two sizes. Fun
+   tools are left alone: their headings sit around a game board or a
+   full-screen view, which is why LazyToolRenderer publishes the category.
+   Centring usually comes from the parent being a centred flex row, so the
+   row is straightened too; on anything that is not a row it does nothing.
+   The [data-rb-tool-cat] requirement is load-bearing: LazyToolRenderer wraps
+   the home section in a tool area too, but sets no category for it, and
+   without that requirement this rule left-aligned the home page's centred
+   headline. */
+[data-rb-tool-area][data-rb-tool-cat]:not([data-rb-tool-cat='fun-tools']) h1 {
+  text-align: left;
+  color: #000;
+  /* Titles that clip a gradient set this, and it wins over `color`. */
+  -webkit-text-fill-color: #000;
+  background-image: none;
+}
+
+:is(.dark, [data-theme='dark']) [data-rb-tool-area][data-rb-tool-cat]:not([data-rb-tool-cat='fun-tools']) h1 {
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+}
+
+[data-rb-tool-area][data-rb-tool-cat]:not([data-rb-tool-cat='fun-tools']) :where(div, header, section):has(> h1) {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+/* One title size too. Phones are handled by the rhythm rule above; from the
+   small breakpoint up the audit found titles at both 36px and 30px. */
+@media (min-width: 640px) {
+  [data-rb-tool-area][data-rb-tool-cat]:not([data-rb-tool-cat='fun-tools']) h1 {
+    font-size: 2.25rem;
+    line-height: 1.15;
+  }
 }

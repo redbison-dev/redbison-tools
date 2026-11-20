@@ -94,6 +94,32 @@ Cloudflare Pages, an S3 bucket or any web server. One note: routes are client-si
 configure your host to serve `index.html` for unknown paths (Netlify: a `/* /index.html 200`
 redirect; GitHub Pages: a `404.html` copy of `index.html`).
 
+## Command line
+
+The same tools as a terminal program, in [`cli/`](cli). 100 commands, 65 of which run
+entirely on your machine and never open a socket; the rest call the hosted MCP endpoint
+and say so in their `--help`.
+
+```sh
+cd cli && bun install && bun run build
+./dist/index.js --list              # every tool, and whether it is local
+echo '{"b":1,"a":2}' | ./dist/index.js json-format
+./dist/index.js hash --algorithm sha256 hello
+./dist/index.js --offline cron '0 9 * * 1-5'   # refuse rather than send anything
+```
+
+Published as [`@redbison/cli`](https://www.npmjs.com/package/@redbison/cli), which
+installs it as both `redbison` and `rb`:
+
+```sh
+npm install -g @redbison/cli
+rb uuid
+```
+
+Reads standard input and writes standard output, so it composes with everything else in
+a pipeline. `--offline` makes the network tools refuse rather than send — useful when
+the input is a secret. Tests: `cd cli && bunx vitest run`.
+
 ## AI assistants (MCP)
 
 The repo ships a local [MCP](https://modelcontextprotocol.io) server (`src/mcp/server.ts`,

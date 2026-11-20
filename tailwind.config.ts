@@ -19,6 +19,29 @@ export default {
 		},
 		extend: {
 			colors: {
+				/* Brand palette; see DESIGN.md for when each one is allowed. */
+				brand: {
+					red: {
+						DEFAULT: 'hsl(var(--brand-red))',
+						strong: 'hsl(var(--brand-red-strong))',
+						soft: 'hsl(var(--brand-red-soft))'
+					},
+					gold: {
+						DEFAULT: 'hsl(var(--brand-gold))',
+						strong: 'hsl(var(--brand-gold-strong))',
+						soft: 'hsl(var(--brand-gold-soft))'
+					},
+					cyan: {
+						DEFAULT: 'hsl(var(--brand-cyan))',
+						strong: 'hsl(var(--brand-cyan-strong))',
+						soft: 'hsl(var(--brand-cyan-soft))'
+					},
+					platinum: {
+						DEFAULT: 'hsl(var(--brand-platinum))',
+						strong: 'hsl(var(--brand-platinum-strong))',
+						soft: 'hsl(var(--brand-platinum-soft))'
+					}
+				},
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',

@@ -485,14 +485,14 @@ const EpochConverter = () => {
     <>
 
       <div className="tool-page bg-white min-h-screen">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 -mt-8 pb-1 sm:pb-2">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 -mt-5 pb-1 sm:pb-2">
           <ToolBreadcrumb 
             category={{ label: t('Development & Tech'), href: "/category/development-tech" }}
             subcategory={{ label: t('Time Tools'), href: "/category/development-tech/time-tools" }}
             toolName="Unix Epoch Converter"
           />
           
-          <div className="tool-header -mt-1">
+          <div className="tool-header mt-3">
             <h1 className="tool-title text-black text-2xl sm:text-3xl lg:text-4xl font-bold flex items-center">
               <Clock className="h-8 w-8 sm:h-10 sm:w-10 mr-3 text-blue-600" />
               {t('Unix Epoch Converter')}

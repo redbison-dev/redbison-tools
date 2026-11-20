@@ -1,0 +1,47 @@
+{
+  "name": "@redbison/cli",
+  "version": "0.1.1",
+  "description": "The redbison.dev tools in your terminal: 100 developer utilities, 65 of which never touch the network.",
+  "keywords": [
+    "cli",
+    "json",
+    "base64",
+    "uuid",
+    "hash",
+    "jwt",
+    "developer-tools",
+    "offline"
+  ],
+  "homepage": "https://redbison.dev/cli",
+  "bugs": {
+    "url": "https://redbison.dev/contact"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/redbison-dev/redbison-tools.git"
+  },
+  "license": "MIT",
+  "type": "commonjs",
+  "bin": {
+    "redbison": "dist/index.js",
+    "rb": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --outfile=dist/index.js --platform=node --target=node18 --format=cjs --minify && chmod +x dist/index.js",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "esbuild": "^0.24.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

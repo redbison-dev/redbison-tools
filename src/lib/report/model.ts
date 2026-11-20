@@ -159,3 +159,49 @@ export function reportFileName(r: Pick<ToolReport, 'toolId' | 'generatedAt'>, ex
 export function hasReportContent(r: Pick<ToolReport, 'results' | 'steps' | 'tables'>): boolean {
   return r.results.length + r.steps.length + r.tables.length > 0;
 }
+
+/**
+ * The parts of a PDF report a reader can leave out.
+ *
+ * Inputs and results are not here on purpose: a report without what went in
+ * and what came out is not a report, so they are always written. Everything
+ * else is optional, and each entry knows whether this report has any of it,
+ * so the chooser only ever offers sections that would actually appear.
+ *
+ * Nothing new is needed in pdf.ts to honour a choice: it already skips a
+ * section whose array is empty, so emptying the array is the whole mechanism.
+ * Dropping charts here also means their PNGs are never rendered, which is the
+ * slowest part of building a report.
+ */
+export type ReportSectionKey = 'steps' | 'formulas' | 'tables' | 'charts' | 'sources';
+
+export const REPORT_SECTIONS: {
+  key: ReportSectionKey;
+  /** The heading this section carries in the report, so the two read alike. */
+  label: string;
+  has: (r: ToolReport) => boolean;
+}[] = [
+  { key: 'steps', label: msg('Working'), has: (r) => r.steps.length > 0 },
+  { key: 'formulas', label: msg('Formulas and method'), has: (r) => r.formulas.length > 0 },
+  { key: 'tables', label: msg('Tables'), has: (r) => r.tables.length > 0 },
+  { key: 'charts', label: msg('Charts'), has: (r) => r.charts.length > 0 },
+  { key: 'sources', label: msg('Standards and references'), has: (r) => r.sources.length > 0 },
+];
+
+/** The optional sections this particular report could show. */
+export function availableReportSections(r: ToolReport): ReportSectionKey[] {
+  return REPORT_SECTIONS.filter((s) => s.has(r)).map((s) => s.key);
+}
+
+/** A copy of the report carrying only the optional sections asked for. */
+export function applyReportSections(r: ToolReport, include: ReadonlySet<ReportSectionKey>): ToolReport {
+  return {
+    ...r,
+    steps: include.has('steps') ? r.steps : [],
+    formulas: include.has('formulas') ? r.formulas : [],
+    tables: include.has('tables') ? r.tables : [],
+    // Chart data tables hang off the charts, so they go with them.
+    charts: include.has('charts') ? r.charts : [],
+    sources: include.has('sources') ? r.sources : [],
+  };
+}

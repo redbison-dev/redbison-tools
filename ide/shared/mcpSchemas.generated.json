@@ -1,0 +1,1920 @@
+{
+  "json_format": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string"
+      },
+      "indent": {
+        "description": "Indent spaces (default 2).",
+        "type": "number"
+      }
+    },
+    "required": [
+      "text"
+    ]
+  },
+  "json_validate": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "text"
+    ]
+  },
+  "base64_encode": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "text"
+    ]
+  },
+  "base64_decode": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "text"
+    ]
+  },
+  "url_encode": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "text"
+    ]
+  },
+  "url_decode": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "text"
+    ]
+  },
+  "uuid_generate": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "count": {
+        "description": "How many to generate (default 1, max 100).",
+        "type": "number"
+      }
+    }
+  },
+  "jwt_decode": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "token": {
+        "type": "string",
+        "description": "The JWT string."
+      }
+    },
+    "required": [
+      "token"
+    ]
+  },
+  "hash": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string"
+      },
+      "algorithm": {
+        "type": "string",
+        "enum": [
+          "md5",
+          "sha1",
+          "sha256",
+          "sha384",
+          "sha512"
+        ],
+        "description": "md5, sha1, sha256, sha384, or sha512"
+      }
+    },
+    "required": [
+      "text",
+      "algorithm"
+    ]
+  },
+  "hmac": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "message": {
+        "type": "string",
+        "description": "The message or raw request body to sign."
+      },
+      "key": {
+        "type": "string",
+        "description": "The secret key."
+      },
+      "algorithm": {
+        "description": "Hash function (default SHA-256). Webhook presets always use SHA-256.",
+        "type": "string",
+        "enum": [
+          "SHA-256",
+          "SHA-1",
+          "SHA-384",
+          "SHA-512"
+        ]
+      },
+      "key_encoding": {
+        "description": "How the key is written (default utf8).",
+        "type": "string",
+        "enum": [
+          "utf8",
+          "hex",
+          "base64"
+        ]
+      },
+      "message_encoding": {
+        "description": "How the message is written (default utf8). Ignored for webhook presets.",
+        "type": "string",
+        "enum": [
+          "utf8",
+          "hex",
+          "base64"
+        ]
+      },
+      "preset": {
+        "description": "plain (default), github (X-Hub-Signature-256), stripe (t.payload) or slack (v0:ts:body).",
+        "type": "string",
+        "enum": [
+          "plain",
+          "github",
+          "stripe",
+          "slack"
+        ]
+      },
+      "timestamp": {
+        "description": "Unix timestamp used by the stripe and slack presets.",
+        "type": "string"
+      },
+      "expected": {
+        "description": "Optional signature to verify, in hex or Base64, with or without a sha256= / v0= / v1= prefix.",
+        "type": "string"
+      }
+    },
+    "required": [
+      "message",
+      "key"
+    ]
+  },
+  "case_convert": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string"
+      },
+      "style": {
+        "type": "string",
+        "enum": [
+          "upper",
+          "lower",
+          "title",
+          "camel",
+          "pascal",
+          "snake",
+          "kebab"
+        ]
+      }
+    },
+    "required": [
+      "text",
+      "style"
+    ]
+  },
+  "slugify": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "text"
+    ]
+  },
+  "json_to_yaml": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "json": {
+        "type": "string",
+        "description": "JSON input as a string."
+      }
+    },
+    "required": [
+      "json"
+    ]
+  },
+  "yaml_to_json": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "yaml": {
+        "type": "string",
+        "description": "YAML input."
+      }
+    },
+    "required": [
+      "yaml"
+    ]
+  },
+  "csv_to_json": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string",
+        "description": "CSV input."
+      },
+      "delimiter": {
+        "description": "Field delimiter (default \",\").",
+        "type": "string"
+      },
+      "header": {
+        "description": "First row is header (default true). If false, returns array of arrays.",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "text"
+    ]
+  },
+  "json_to_csv": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "json": {
+        "type": "string",
+        "description": "JSON array of objects, as a string."
+      },
+      "delimiter": {
+        "description": "Field delimiter (default \",\").",
+        "type": "string"
+      }
+    },
+    "required": [
+      "json"
+    ]
+  },
+  "sql_beautify": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "sql": {
+        "type": "string",
+        "description": "SQL query."
+      }
+    },
+    "required": [
+      "sql"
+    ]
+  },
+  "html_beautify": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "html": {
+        "type": "string",
+        "description": "HTML input."
+      },
+      "indent": {
+        "description": "Indent size (default 2).",
+        "type": "number"
+      }
+    },
+    "required": [
+      "html"
+    ]
+  },
+  "xml_beautify": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "xml": {
+        "type": "string",
+        "description": "XML input."
+      },
+      "indent": {
+        "description": "Indent size (default 2).",
+        "type": "number"
+      }
+    },
+    "required": [
+      "xml"
+    ]
+  },
+  "js_beautify": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "code": {
+        "type": "string",
+        "maxLength": 2000000,
+        "description": "Source code to format or minify."
+      },
+      "mode": {
+        "default": "beautify",
+        "description": "beautify = pretty-print, minify = strip comments and whitespace.",
+        "type": "string",
+        "enum": [
+          "beautify",
+          "minify"
+        ]
+      },
+      "language": {
+        "default": "javascript",
+        "description": "Language of the code. TypeScript gets generic and optional-marker fix-ups; JSX cannot be minified.",
+        "type": "string",
+        "enum": [
+          "javascript",
+          "typescript",
+          "jsx"
+        ]
+      },
+      "indent": {
+        "default": 2,
+        "description": "Spaces per indent level when beautifying (0 = tabs).",
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 8
+      },
+      "brace_style": {
+        "default": "collapse",
+        "description": "Brace placement when beautifying: collapse = K&R (same line), expand = Allman (own line).",
+        "type": "string",
+        "enum": [
+          "collapse",
+          "expand",
+          "end-expand",
+          "collapse,preserve-inline"
+        ]
+      },
+      "keep_license": {
+        "default": true,
+        "description": "When minifying, keep /*! ... */ and @license comments.",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "code"
+    ]
+  },
+  "css_beautify": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "css": {
+        "type": "string",
+        "maxLength": 2000000,
+        "description": "Stylesheet source."
+      },
+      "mode": {
+        "default": "beautify",
+        "description": "beautify = one declaration per line, minify = smallest output.",
+        "type": "string",
+        "enum": [
+          "beautify",
+          "minify"
+        ]
+      },
+      "syntax": {
+        "default": "css",
+        "description": "Input syntax; scss and less also accept // line comments.",
+        "type": "string",
+        "enum": [
+          "css",
+          "scss",
+          "less"
+        ]
+      },
+      "sort": {
+        "default": false,
+        "description": "Sort declarations inside each rule alphabetically (vendor-prefixed copies first, override pairs kept in order).",
+        "type": "boolean"
+      },
+      "indent": {
+        "default": 2,
+        "description": "Spaces per indent level when beautifying (0 = tabs).",
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 8
+      }
+    },
+    "required": [
+      "css"
+    ]
+  },
+  "remove_duplicate_lines": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string",
+        "description": "Multi-line text to deduplicate."
+      },
+      "trim": {
+        "description": "Trim each line before comparing (default true).",
+        "type": "boolean"
+      },
+      "caseInsensitive": {
+        "description": "Compare case-insensitively (default false).",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "text"
+    ]
+  },
+  "lines_to_comma": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string",
+        "description": "Multi-line input."
+      },
+      "separator": {
+        "description": "Separator between items (default \", \").",
+        "type": "string"
+      },
+      "quote": {
+        "description": "Wrap each item in double quotes (default false).",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "text"
+    ]
+  },
+  "epoch_convert": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "value": {
+        "type": "string",
+        "description": "A number (as string) or an ISO 8601 date string."
+      }
+    },
+    "required": [
+      "value"
+    ]
+  },
+  "cron_validate": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "expression": {
+        "type": "string",
+        "description": "Cron expression, e.g. '*/15 * * * *'."
+      }
+    },
+    "required": [
+      "expression"
+    ]
+  },
+  "regex_test": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "pattern": {
+        "type": "string"
+      },
+      "flags": {
+        "description": "e.g. \"gi\"",
+        "type": "string"
+      },
+      "text": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "pattern",
+      "text"
+    ]
+  },
+  "number_base_convert": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "value": {
+        "type": "string",
+        "description": "The number. Accepts a sign, 0x/0o/0b prefixes, '_' separators and a fractional part, e.g. '255', '-42', '0xFF', '10.625'."
+      },
+      "from": {
+        "description": "Base of the input, 2 to 36. Omit to read it from a 0x/0o/0b prefix, otherwise decimal.",
+        "type": "integer",
+        "minimum": 2,
+        "maximum": 36
+      },
+      "to": {
+        "description": "An extra target base besides 2, 8, 10 and 16.",
+        "type": "integer",
+        "minimum": 2,
+        "maximum": 36
+      },
+      "width": {
+        "description": "Bit width for the two's complement view (8, 16, 32, 64 or any 1-1024).",
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 1024
+      },
+      "inputIsPattern": {
+        "description": "Read the input as a two's complement bit pattern of `width` bits, so FF at 8 bits is -1. Default false.",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "value"
+    ]
+  },
+  "http_status": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "A status code such as 429, a class such as 3xx, or search words such as 'redirect keep method'."
+      },
+      "includeUnofficial": {
+        "description": "Include vendor codes such as nginx 499 and Cloudflare 522. Default true.",
+        "type": "boolean"
+      },
+      "limit": {
+        "description": "Maximum results to return. Default 20.",
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100
+      }
+    },
+    "required": [
+      "query"
+    ]
+  },
+  "mime_lookup": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "An extension (webp or .webp), a file name (report.docx, archive.tar.gz) or a MIME type (application/json, image/*)."
+      }
+    },
+    "required": [
+      "query"
+    ]
+  },
+  "gitignore_generate": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "templates": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Template ids or names, e.g. ['node', 'python', 'macos', 'vscode']."
+      },
+      "extra": {
+        "description": "Extra lines to append, one pattern per line.",
+        "type": "string"
+      },
+      "testPaths": {
+        "description": "Repository-relative paths to check, e.g. ['.env', 'dist/']. End with / for a directory.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "templates"
+    ]
+  },
+  "lorem_ipsum": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "count": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 50,
+        "description": "How many units to generate."
+      },
+      "unit": {
+        "type": "string",
+        "enum": [
+          "words",
+          "sentences",
+          "paragraphs"
+        ],
+        "description": "Unit type."
+      }
+    },
+    "required": [
+      "count",
+      "unit"
+    ]
+  },
+  "password_generate": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "length": {
+        "description": "Password length (default 16).",
+        "type": "number",
+        "minimum": 4,
+        "maximum": 256
+      },
+      "lowercase": {
+        "description": "Include lowercase letters (default true).",
+        "type": "boolean"
+      },
+      "uppercase": {
+        "description": "Include uppercase letters (default true).",
+        "type": "boolean"
+      },
+      "digits": {
+        "description": "Include digits (default true).",
+        "type": "boolean"
+      },
+      "symbols": {
+        "description": "Include symbols !@#$%^&*()-_=+ (default false).",
+        "type": "boolean"
+      },
+      "count": {
+        "description": "How many passwords to generate (default 1).",
+        "type": "number",
+        "minimum": 1,
+        "maximum": 50
+      }
+    }
+  },
+  "markdown_table": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string",
+        "maxLength": 1000000,
+        "description": "CSV, TSV or Markdown table text. The delimiter is detected automatically."
+      },
+      "align": {
+        "default": "none",
+        "description": "Alignment for every column (none keeps alignment from a Markdown input).",
+        "type": "string",
+        "enum": [
+          "none",
+          "left",
+          "center",
+          "right"
+        ]
+      },
+      "pretty": {
+        "default": true,
+        "description": "Pad cells so the columns line up in plain text.",
+        "type": "boolean"
+      },
+      "outer_pipes": {
+        "default": true,
+        "description": "Start and end each row with |.",
+        "type": "boolean"
+      },
+      "bold_header": {
+        "default": false,
+        "description": "Wrap header cells in **bold**.",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "text"
+    ]
+  },
+  "word_count": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string",
+        "description": "The text to count."
+      },
+      "readingWpm": {
+        "default": 238,
+        "description": "Silent reading speed in words per minute (238 is the adult non-fiction average).",
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 2000
+      },
+      "speakingWpm": {
+        "default": 150,
+        "description": "Speaking speed in words per minute for the speech-time estimate.",
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 1000
+      },
+      "topWords": {
+        "default": 10,
+        "description": "How many frequent words to return, stop words excluded. 0 to skip.",
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 50
+      }
+    },
+    "required": [
+      "text"
+    ]
+  },
+  "tsv_parse": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string",
+        "description": "TSV input."
+      },
+      "header": {
+        "description": "First row is header (default true).",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "text"
+    ]
+  },
+  "yaml_beautify": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "yaml": {
+        "type": "string",
+        "description": "YAML input."
+      }
+    },
+    "required": [
+      "yaml"
+    ]
+  },
+  "escape_characters": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string",
+        "description": "Input text."
+      },
+      "mode": {
+        "type": "string",
+        "enum": [
+          "escape",
+          "unescape"
+        ],
+        "description": "Direction."
+      },
+      "format": {
+        "type": "string",
+        "enum": [
+          "json",
+          "html",
+          "xml",
+          "js",
+          "sql"
+        ],
+        "description": "Target format."
+      }
+    },
+    "required": [
+      "text",
+      "mode",
+      "format"
+    ]
+  },
+  "find_duplicate_entries": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string",
+        "description": "Multi-line text to scan."
+      },
+      "trim": {
+        "description": "Trim each line before comparing (default true).",
+        "type": "boolean"
+      },
+      "caseInsensitive": {
+        "description": "Compare case-insensitively (default false).",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "text"
+    ]
+  },
+  "remove_extra_spaces": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string",
+        "description": "Text to normalize."
+      }
+    },
+    "required": [
+      "text"
+    ]
+  },
+  "remove_empty_lines": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string",
+        "description": "Multi-line text."
+      }
+    },
+    "required": [
+      "text"
+    ]
+  },
+  "comma_to_lines": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string",
+        "description": "Delimited input."
+      },
+      "separator": {
+        "description": "Delimiter to split on (default \",\").",
+        "type": "string"
+      },
+      "trim": {
+        "description": "Trim each item (default true).",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "text"
+    ]
+  },
+  "hash_compare": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "a": {
+        "type": "string",
+        "description": "First input."
+      },
+      "b": {
+        "type": "string",
+        "description": "Second input."
+      },
+      "algorithm": {
+        "description": "Hash algorithm (default sha256).",
+        "type": "string",
+        "enum": [
+          "md5",
+          "sha1",
+          "sha256",
+          "sha384",
+          "sha512"
+        ]
+      }
+    },
+    "required": [
+      "a",
+      "b"
+    ]
+  },
+  "bcrypt_hash": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "password": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Password to hash."
+      },
+      "cost": {
+        "description": "Bcrypt cost factor (4-12, default 10).",
+        "type": "number",
+        "minimum": 4,
+        "maximum": 12
+      }
+    },
+    "required": [
+      "password"
+    ]
+  },
+  "bcrypt_verify": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "password": {
+        "type": "string",
+        "description": "Plaintext password."
+      },
+      "hash": {
+        "type": "string",
+        "description": "Bcrypt hash to verify against."
+      }
+    },
+    "required": [
+      "password",
+      "hash"
+    ]
+  },
+  "subnet_calculator": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "cidr": {
+        "type": "string",
+        "description": "IPv4 CIDR, e.g. 192.168.1.0/24."
+      }
+    },
+    "required": [
+      "cidr"
+    ]
+  },
+  "ip_convert": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "value": {
+        "type": "string",
+        "description": "IPv4 in dotted (192.168.0.1), integer (3232235521), binary (32 bits), or hex (0xC0A80001) form."
+      }
+    },
+    "required": [
+      "value"
+    ]
+  },
+  "timezone_convert": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "timestamp": {
+        "type": "string",
+        "description": "ISO 8601 timestamp (e.g. 2025-01-15T14:30:00Z or 2025-01-15T09:30:00-05:00)."
+      },
+      "to": {
+        "type": "string",
+        "description": "Target IANA timezone (e.g. America/New_York, Asia/Tokyo)."
+      }
+    },
+    "required": [
+      "timestamp",
+      "to"
+    ]
+  },
+  "date_diff": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "from": {
+        "type": "string",
+        "description": "Start ISO timestamp."
+      },
+      "to": {
+        "type": "string",
+        "description": "End ISO timestamp."
+      }
+    },
+    "required": [
+      "from",
+      "to"
+    ]
+  },
+  "text_diff": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "a": {
+        "type": "string",
+        "description": "Original text."
+      },
+      "b": {
+        "type": "string",
+        "description": "Modified text."
+      }
+    },
+    "required": [
+      "a",
+      "b"
+    ]
+  },
+  "list_compare": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "a": {
+        "type": "string",
+        "description": "First list, one item per line."
+      },
+      "b": {
+        "type": "string",
+        "description": "Second list, one item per line."
+      },
+      "caseInsensitive": {
+        "description": "Compare case-insensitively (default false).",
+        "type": "boolean"
+      },
+      "trim": {
+        "description": "Trim each line before comparing (default true).",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "a",
+      "b"
+    ]
+  },
+  "color_convert": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "color": {
+        "type": "string",
+        "description": "Color in hex, rgb(), or hsl() form."
+      }
+    },
+    "required": [
+      "color"
+    ]
+  },
+  "contrast_check": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "foreground": {
+        "type": "string",
+        "description": "Foreground color, hex."
+      },
+      "background": {
+        "type": "string",
+        "description": "Background color, hex."
+      }
+    },
+    "required": [
+      "foreground",
+      "background"
+    ]
+  },
+  "css_gradient": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "type": {
+        "type": "string",
+        "enum": [
+          "linear",
+          "radial"
+        ],
+        "description": "Gradient type."
+      },
+      "angle": {
+        "description": "Angle in degrees for linear gradients (default 90). Ignored for radial.",
+        "type": "number"
+      },
+      "stops": {
+        "minItems": 2,
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Color stops, e.g. ['#3B82F6', '#8B5CF6 50%', '#EC4899'] — hex, rgb(), hsl(), or named colors, with optional percentage."
+      }
+    },
+    "required": [
+      "type",
+      "stops"
+    ]
+  },
+  "random_name": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "count": {
+        "description": "Number of names to generate (default 5).",
+        "type": "number",
+        "minimum": 1,
+        "maximum": 100
+      }
+    }
+  },
+  "random_email": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "count": {
+        "description": "Number of emails (default 5).",
+        "type": "number",
+        "minimum": 1,
+        "maximum": 100
+      },
+      "domain": {
+        "description": "Fixed domain for all emails (e.g. 'example.com').",
+        "type": "string"
+      }
+    }
+  },
+  "random_number": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "min": {
+        "type": "number",
+        "description": "Minimum value (inclusive)."
+      },
+      "max": {
+        "type": "number",
+        "description": "Maximum value (inclusive for integers, exclusive upper bound for floats)."
+      },
+      "count": {
+        "description": "Number of values (default 1).",
+        "type": "number",
+        "minimum": 1,
+        "maximum": 1000
+      },
+      "mode": {
+        "description": "Result type (default 'integer').",
+        "type": "string",
+        "enum": [
+          "integer",
+          "float"
+        ]
+      }
+    },
+    "required": [
+      "min",
+      "max"
+    ]
+  },
+  "ascii_art_text": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string",
+        "maxLength": 200,
+        "description": "Text to render. Line breaks start a new banner row."
+      },
+      "font": {
+        "default": "Standard",
+        "description": "FIGlet font name.",
+        "type": "string",
+        "enum": [
+          "Standard",
+          "Slant",
+          "Small",
+          "Big",
+          "Doom",
+          "ANSI Shadow",
+          "Mini"
+        ]
+      },
+      "layout": {
+        "default": "default",
+        "description": "Horizontal letter spacing: the font default, full width, fitted (touching) or smushed.",
+        "type": "string",
+        "enum": [
+          "default",
+          "full",
+          "fitted",
+          "controlled smushing",
+          "universal smushing"
+        ]
+      },
+      "width": {
+        "default": 80,
+        "description": "Wrap at this many columns (0 for no wrapping).",
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 400
+      },
+      "comment": {
+        "default": "none",
+        "description": "Wrap the banner in // , # , /* */ , <!-- --> or -- comment markers.",
+        "type": "string",
+        "enum": [
+          "none",
+          "slash",
+          "hash",
+          "block",
+          "html",
+          "dash"
+        ]
+      }
+    },
+    "required": [
+      "text"
+    ]
+  },
+  "barcode_check_digit": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "code": {
+        "type": "string",
+        "description": "Digits of the barcode number. Spaces and dashes are ignored."
+      },
+      "mode": {
+        "description": "auto (default): full GTIN lengths 8, 12, 13 and 14 are validated, 7 and 11 digits get a check digit computed. compute or validate forces one reading.",
+        "type": "string",
+        "enum": [
+          "auto",
+          "compute",
+          "validate"
+        ]
+      }
+    },
+    "required": [
+      "code"
+    ]
+  },
+  "chmod_convert": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "mode": {
+        "type": "string",
+        "description": "Octal (644), symbolic or ls -l (-rwsr-xr-x), or a chmod expression (u+x, a=rX) applied to start."
+      },
+      "start": {
+        "description": "Starting octal mode for expressions. Default 644 for files, 755 for directories.",
+        "type": "string"
+      },
+      "isDirectory": {
+        "description": "Treat the target as a directory (affects X and the ls -l type). Default false.",
+        "type": "boolean"
+      },
+      "umask": {
+        "description": "umask in octal, used for expressions without u/g/o/a and for new-file defaults. Default 022.",
+        "type": "string"
+      }
+    },
+    "required": [
+      "mode"
+    ]
+  },
+  "color_palette": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "base": {
+        "type": "string",
+        "description": "Base color as hex (#3b82f6), rgb(59 130 246), hsl(217 91% 60%), oklch(62% 0.19 260) or a CSS color name."
+      },
+      "rule": {
+        "description": "Harmony rule. Default 'complementary'.",
+        "type": "string",
+        "enum": [
+          "complementary",
+          "analogous",
+          "triadic",
+          "split-complementary",
+          "tetradic",
+          "square",
+          "monochromatic",
+          "shades"
+        ]
+      },
+      "wheel": {
+        "description": "Color wheel for hue rotation: 'rgb' (screen/HSL wheel, default), 'ryb' (approximate painter's wheel, red opposite green) or 'oklch' (perceptual, keeps lightness).",
+        "type": "string",
+        "enum": [
+          "rgb",
+          "ryb",
+          "oklch"
+        ]
+      },
+      "name": {
+        "description": "Name used in the CSS and Tailwind exports, e.g. 'brand'. Default 'brand'.",
+        "type": "string"
+      }
+    },
+    "required": [
+      "base"
+    ]
+  },
+  "cron_build": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "frequency": {
+        "description": "How often to run. Ignored when expression is given. Default daily.",
+        "type": "string",
+        "enum": [
+          "minutes",
+          "hourly",
+          "daily",
+          "weekly",
+          "monthly",
+          "yearly"
+        ]
+      },
+      "interval": {
+        "description": "For minutes: every N minutes (default 5). For hourly: every N hours (default 1).",
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 59
+      },
+      "minute": {
+        "description": "Minute past the hour, 0-59. Default 0.",
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 59
+      },
+      "hours": {
+        "description": "Hours of the day in 24-hour time, e.g. [9] or [9, 17]. Default [0].",
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 23
+        }
+      },
+      "daysOfWeek": {
+        "description": "For weekly: days as names (mon, fri) or numbers 0-6 with 0 = Sunday.",
+        "type": "array",
+        "items": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 7
+            }
+          ]
+        }
+      },
+      "daysOfMonth": {
+        "description": "For monthly or yearly: days of the month, e.g. [1, 15].",
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 31
+        }
+      },
+      "months": {
+        "description": "For yearly: months 1-12.",
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        }
+      },
+      "expression": {
+        "description": "An existing five-field cron expression to explain and translate instead of building one.",
+        "type": "string"
+      },
+      "timezone": {
+        "description": "IANA time zone for the next run times, e.g. Europe/London. Default UTC.",
+        "type": "string"
+      },
+      "count": {
+        "description": "How many upcoming runs to list. Default 5.",
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 20
+      }
+    }
+  },
+  "curl_to_code": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "command": {
+        "type": "string",
+        "maxLength": 200000,
+        "description": "The full curl command line."
+      },
+      "target": {
+        "default": "python",
+        "description": "Language/library to generate.",
+        "type": "string",
+        "enum": [
+          "fetch",
+          "axios",
+          "python",
+          "go",
+          "php"
+        ]
+      }
+    },
+    "required": [
+      "command"
+    ]
+  },
+  "docker_run_to_compose": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "input": {
+        "type": "string",
+        "description": "docker run command(s), or compose YAML when direction is compose_to_run."
+      },
+      "direction": {
+        "description": "Default run_to_compose.",
+        "type": "string",
+        "enum": [
+          "run_to_compose",
+          "compose_to_run"
+        ]
+      },
+      "project": {
+        "description": "Compose project name used to prefix volume and network names in compose_to_run. Default myproject.",
+        "type": "string"
+      }
+    },
+    "required": [
+      "input"
+    ]
+  },
+  "json_schema_validate": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "data": {
+        "type": "string",
+        "maxLength": 2000000,
+        "description": "The JSON document (as text) to validate, or the sample to infer a schema from."
+      },
+      "schema": {
+        "default": "",
+        "description": "The JSON Schema as text. Empty = infer a schema from `data` instead of validating.",
+        "type": "string",
+        "maxLength": 2000000
+      },
+      "draft": {
+        "default": "auto",
+        "description": "Draft for validation; auto reads $schema and defaults to 2020-12.",
+        "type": "string",
+        "enum": [
+          "auto",
+          "draft-06",
+          "draft-07",
+          "2019-09",
+          "2020-12"
+        ]
+      },
+      "infer_draft": {
+        "default": "2020-12",
+        "description": "Draft of the generated schema when inferring.",
+        "type": "string",
+        "enum": [
+          "2020-12",
+          "draft-07"
+        ]
+      },
+      "infer_required": {
+        "default": "all",
+        "description": "When inferring: all = keys present in every sampled object are required.",
+        "type": "string",
+        "enum": [
+          "all",
+          "none"
+        ]
+      }
+    },
+    "required": [
+      "data"
+    ]
+  },
+  "morse_code": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "input": {
+        "type": "string",
+        "description": "Text to encode, or Morse to decode (dots and dashes; '/' or two spaces between words)."
+      },
+      "direction": {
+        "default": "auto",
+        "description": "auto decodes when the input contains only dots, dashes, slashes and spaces.",
+        "type": "string",
+        "enum": [
+          "auto",
+          "encode",
+          "decode"
+        ]
+      },
+      "wpm": {
+        "default": 20,
+        "description": "Character speed in words per minute (PARIS standard) for the timing figures.",
+        "type": "number",
+        "minimum": 1,
+        "maximum": 60
+      },
+      "effectiveWpm": {
+        "description": "Farnsworth overall speed in wpm, lower than wpm. Omit for standard spacing.",
+        "type": "number",
+        "minimum": 1,
+        "maximum": 60
+      }
+    },
+    "required": [
+      "input"
+    ]
+  },
+  "nato_phonetic": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string",
+        "description": "Text to spell, or code words to decode (e.g. 'Alfa Bravo / Charlie')."
+      },
+      "direction": {
+        "default": "spell",
+        "description": "spell turns text into code words; decode turns code words back into text.",
+        "type": "string",
+        "enum": [
+          "spell",
+          "decode"
+        ]
+      },
+      "spelling": {
+        "default": "icao",
+        "description": "icao prints Alfa and Juliett as published; common prints Alpha and Juliet.",
+        "type": "string",
+        "enum": [
+          "icao",
+          "common"
+        ]
+      },
+      "digits": {
+        "default": "icao",
+        "description": "icao says Tree, Fower, Fife, Niner; plain says Three, Four, Five, Nine.",
+        "type": "string",
+        "enum": [
+          "icao",
+          "plain"
+        ]
+      },
+      "markCase": {
+        "default": false,
+        "description": "Prefix each letter with Capital or Lowercase.",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "text"
+    ]
+  },
+  "password_strength": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "password": {
+        "type": "string",
+        "maxLength": 256,
+        "description": "The password to analyse (up to 256 characters)."
+      },
+      "user_inputs": {
+        "description": "Optional personal words (name, username, site name) that make the password easier to guess if it contains them.",
+        "maxItems": 20,
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "password"
+    ]
+  },
+  "readability": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string",
+        "description": "English text to score. 100+ words gives stable results; SMOG expects 30 sentences."
+      },
+      "lineBreaksEndSentences": {
+        "default": true,
+        "description": "Treat each line break as a sentence end (true for headings and lists; false for hard-wrapped plain text).",
+        "type": "boolean"
+      },
+      "maxSentences": {
+        "default": 20,
+        "description": "How many hard sentences to list, hardest first.",
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 200
+      }
+    },
+    "required": [
+      "text"
+    ]
+  },
+  "redirect_rules": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "rules": {
+        "type": "string",
+        "description": "One redirect per line: '/old /new', '/old /new 302' or '/blog/* /news/:splat'. Destinations may be absolute URLs."
+      },
+      "platform": {
+        "type": "string",
+        "enum": [
+          "apache",
+          "nginx",
+          "netlify",
+          "vercel"
+        ],
+        "description": "Target server or host."
+      },
+      "defaultCode": {
+        "description": "Status code for lines without one. Default 301.",
+        "anyOf": [
+          {
+            "type": "number",
+            "const": 301
+          },
+          {
+            "type": "number",
+            "const": 302
+          },
+          {
+            "type": "number",
+            "const": 307
+          },
+          {
+            "type": "number",
+            "const": 308
+          }
+        ]
+      },
+      "keepQuery": {
+        "description": "Keep the incoming query string. Default true.",
+        "type": "boolean"
+      },
+      "forceHttps": {
+        "description": "Add an HTTP to HTTPS redirect (Apache, nginx).",
+        "type": "boolean"
+      },
+      "canonicalHost": {
+        "description": "Redirect the other host variant to www or to the bare domain.",
+        "type": "string",
+        "enum": [
+          "none",
+          "www",
+          "apex"
+        ]
+      },
+      "domain": {
+        "description": "Apex domain for host rules, e.g. example.com.",
+        "type": "string"
+      }
+    },
+    "required": [
+      "rules",
+      "platform"
+    ]
+  },
+  "toml_convert": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string",
+        "maxLength": 2000000,
+        "description": "The document to convert."
+      },
+      "from": {
+        "default": "toml",
+        "description": "Input format.",
+        "type": "string",
+        "enum": [
+          "toml",
+          "json",
+          "yaml"
+        ]
+      },
+      "to": {
+        "default": "json",
+        "description": "Output format.",
+        "type": "string",
+        "enum": [
+          "toml",
+          "json",
+          "yaml"
+        ]
+      },
+      "indent": {
+        "default": 2,
+        "description": "Indent for JSON and YAML output.",
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 8
+      },
+      "detect_dates": {
+        "default": false,
+        "description": "When writing TOML, turn RFC 3339 date/date-time strings into native TOML dates.",
+        "type": "boolean"
+      },
+      "sort_keys": {
+        "default": false,
+        "description": "Sort keys alphabetically.",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "text"
+    ]
+  },
+  "user_agent_parse": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "userAgent": {
+        "type": "string",
+        "description": "The full User-Agent header value."
+      }
+    },
+    "required": [
+      "userAgent"
+    ]
+  },
+  "utm_build": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "url": {
+        "type": "string",
+        "description": "Landing page URL. https:// is added if the scheme is missing."
+      },
+      "source": {
+        "type": "string",
+        "description": "utm_source: who sends the traffic, e.g. newsletter, linkedin, google."
+      },
+      "medium": {
+        "description": "utm_medium: marketing medium, e.g. email, social, cpc, referral, affiliate.",
+        "type": "string"
+      },
+      "campaign": {
+        "description": "utm_campaign: campaign, product or promotion name.",
+        "type": "string"
+      },
+      "id": {
+        "description": "utm_id: campaign ID used for GA4 data import.",
+        "type": "string"
+      },
+      "term": {
+        "description": "utm_term: paid search keyword.",
+        "type": "string"
+      },
+      "content": {
+        "description": "utm_content: which link or creative, e.g. header_button.",
+        "type": "string"
+      },
+      "lowercase": {
+        "description": "Lowercase every value (default true; GA4 values are case sensitive).",
+        "type": "boolean"
+      },
+      "spaces": {
+        "description": "How to write spaces inside values: dash (default), underscore, plus (+) or keep (%20).",
+        "type": "string",
+        "enum": [
+          "dash",
+          "underscore",
+          "plus",
+          "keep"
+        ]
+      }
+    },
+    "required": [
+      "url",
+      "source"
+    ]
+  },
+  "ieee754_float": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "value": {
+        "type": "string",
+        "description": "A number to encode, or a bit pattern to decode (hex such as 3DCCCCCD or 0x3FB999999999999A, or binary)."
+      },
+      "format": {
+        "description": "binary16 (half), binary32 (float, single) or binary64 (double). Default binary32.",
+        "type": "string",
+        "enum": [
+          "binary16",
+          "binary32",
+          "binary64"
+        ]
+      },
+      "mode": {
+        "description": "encode a number (default) or decode a bit pattern.",
+        "type": "string",
+        "enum": [
+          "encode",
+          "decode"
+        ]
+      }
+    },
+    "required": [
+      "value"
+    ]
+  },
+  "military_time_convert": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "time": {
+        "type": "string",
+        "maxLength": 12,
+        "description": "The time to convert, e.g. '1430', '09:30' or '2:30 PM'."
+      },
+      "direction": {
+        "default": "toCivilian",
+        "description": "toCivilian: 24-hour in, AM/PM out; toMilitary: AM/PM in, 24-hour out.",
+        "type": "string",
+        "enum": [
+          "toCivilian",
+          "toMilitary"
+        ]
+      }
+    },
+    "required": [
+      "time"
+    ]
+  },
+  "number_to_words": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "value": {
+        "type": "string",
+        "maxLength": 40,
+        "description": "The number, e.g. '1234.56' or '-17'. Commas are allowed."
+      }
+    },
+    "required": [
+      "value"
+    ]
+  },
+  "binary_text_convert": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "input": {
+        "type": "string",
+        "maxLength": 4000,
+        "description": "Text to encode, or bits/bytes to decode."
+      },
+      "mode": {
+        "default": "textToBinary",
+        "description": "Direction and base.",
+        "type": "string",
+        "enum": [
+          "textToBinary",
+          "textToHex",
+          "binaryToText",
+          "hexToText"
+        ]
+      }
+    },
+    "required": [
+      "input"
+    ]
+  }
+}

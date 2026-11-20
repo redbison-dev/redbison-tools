@@ -32,3 +32,29 @@ jobs:
         with:
           files: coverage/lcov.info
           fail_ci_if_error: false
+
+  # The CLI is its own package with its own dependencies, so it needs its own
+  # job: the root install does not reach cli/, and a suite nothing runs is a
+  # suite that rots.
+  cli:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cli
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install dependencies
+        run: bun install
+      - name: Typecheck
+        run: bun run typecheck
+      - name: Tests
+        run: bunx vitest run
+      - name: Build
+        run: bun run build
+      - name: It actually runs
+        run: |
+          test "$(echo hello | ./dist/index.js base64-encode)" = "aGVsbG8="
+          ./dist/index.js --version

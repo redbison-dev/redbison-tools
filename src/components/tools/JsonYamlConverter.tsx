@@ -176,7 +176,7 @@ const JsonYamlConverter = () => {
               />
             </div>
             
-      <div className="w-full px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8 mt-3">
+      <div className="max-w-7xl mx-auto w-full px-4 sm:px-8 pt-3 pb-6 sm:pb-8 space-y-3">
         <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-2">
             <h1 className="tool-title text-black text-2xl sm:text-3xl lg:text-4xl font-bold">{t('JSON to YAML Converter')}</h1>
