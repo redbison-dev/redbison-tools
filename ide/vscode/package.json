@@ -1,0 +1,962 @@
+{
+  "name": "redbison-tools",
+  "displayName": "RedBison Tools",
+  "description": "Format JSON, decode a JWT, hash a string, convert a timestamp and 96 more developer tools, on the selection, without leaving the editor. 65 run offline.",
+  "version": "0.1.0",
+  "publisher": "redbison",
+  "license": "MIT",
+  "icon": "media/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/redbison-dev/redbison-tools.git",
+    "directory": "ide/vscode"
+  },
+  "homepage": "https://redbison.dev",
+  "bugs": {
+    "url": "https://github.com/redbison-dev/redbison-tools/issues"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Formatters",
+    "Other"
+  ],
+  "keywords": [
+    "json",
+    "base64",
+    "jwt",
+    "hash",
+    "yaml",
+    "csv",
+    "sql",
+    "uuid",
+    "regex",
+    "developer tools",
+    "formatter",
+    "offline"
+  ],
+  "main": "./dist/extension.js",
+  "scripts": {
+    "build": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --target=node18 --minify",
+    "watch": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --target=node18 --sourcemap --watch",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "package": "bunx @vscode/vsce package --no-dependencies",
+    "publish": "bunx @vscode/vsce publish --no-dependencies",
+    "compile-tests": "tsc -p tsconfig.test.json",
+    "test": "bun run compile-tests && node out/ide/vscode/src/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/test-electron": "^3.1.0",
+    "esbuild": "^0.21.5",
+    "glob": "^14.0.6",
+    "mocha": "^12.0.3",
+    "typescript": "^5.4.0"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "redbison.json-format",
+        "title": "Format JSON",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.json-minify",
+        "title": "Minify JSON",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.json-validate",
+        "title": "Validate JSON",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.base64-encode",
+        "title": "Base64 encode",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.base64-decode",
+        "title": "Base64 decode",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.url-encode",
+        "title": "URL encode",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.url-decode",
+        "title": "URL decode",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.uuid",
+        "title": "Insert UUID",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.jwt-decode",
+        "title": "Decode JWT",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.hash",
+        "title": "Hash the selection",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.hmac",
+        "title": "HMAC signature",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.case-convert",
+        "title": "Convert case",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.slugify",
+        "title": "Slugify",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.json-to-yaml",
+        "title": "JSON to YAML",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.yaml-to-json",
+        "title": "YAML to JSON",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.csv-to-json",
+        "title": "CSV to JSON",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.json-to-csv",
+        "title": "JSON to CSV",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.sql-beautify",
+        "title": "Format SQL",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.html-beautify",
+        "title": "Format HTML",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.xml-beautify",
+        "title": "Format XML",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.js-beautify",
+        "title": "Format JavaScript",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.css-beautify",
+        "title": "Format CSS",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.dedupe-lines",
+        "title": "Remove duplicate lines",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.lines-to-comma",
+        "title": "Lines to comma-separated",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.epoch",
+        "title": "Convert timestamp",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.cron",
+        "title": "Explain cron expression",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.regex-test",
+        "title": "Test regular expression",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.number-base",
+        "title": "Convert number base",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.http-status",
+        "title": "Look up HTTP status",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.mime-lookup",
+        "title": "Look up MIME type",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.gitignore",
+        "title": "Insert .gitignore",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.lorem",
+        "title": "Insert placeholder text",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.password",
+        "title": "Insert password",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.markdown-table",
+        "title": "Format Markdown table",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.word-count",
+        "title": "Count words",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.tsv-parse",
+        "title": "Parse TSV",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.yaml-beautify",
+        "title": "Format YAML",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.escape-characters",
+        "title": "Escape characters",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.find-duplicates",
+        "title": "Find duplicate lines",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.remove-extra-spaces",
+        "title": "Collapse extra spaces",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.remove-empty-lines",
+        "title": "Remove empty lines",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.comma-to-lines",
+        "title": "Comma-separated to lines",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.hash-compare",
+        "title": "Compare two hashes",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.bcrypt-hash",
+        "title": "bcrypt hash",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.bcrypt-verify",
+        "title": "Verify a bcrypt hash",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.subnet",
+        "title": "Subnet calculator",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.ip-convert",
+        "title": "Convert an IP address",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.timezone-convert",
+        "title": "Convert a timezone",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.date-diff",
+        "title": "Difference between dates",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.text-diff",
+        "title": "Diff against the clipboard",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.list-compare",
+        "title": "Compare two lists",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.color-convert",
+        "title": "Convert a colour",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.contrast-check",
+        "title": "Check colour contrast",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.css-gradient",
+        "title": "Build a CSS gradient",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.random-name",
+        "title": "Insert random names",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.random-email",
+        "title": "Insert random emails",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.random-number",
+        "title": "Insert random numbers",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.ascii-art",
+        "title": "ASCII art banner",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.barcode-check",
+        "title": "Barcode check digit",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.chmod",
+        "title": "Convert a chmod mode",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.color-palette",
+        "title": "Build a colour palette",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.cron-build",
+        "title": "Build a cron expression",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.curl-to-code",
+        "title": "Convert curl to code",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.docker-to-compose",
+        "title": "docker run to Compose",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.json-schema-validate",
+        "title": "Validate against JSON Schema",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.morse",
+        "title": "Morse code",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.nato",
+        "title": "NATO phonetic",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.password-strength",
+        "title": "Check password strength",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.readability",
+        "title": "Check readability",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.redirect-rules",
+        "title": "Generate redirect rules",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.toml-convert",
+        "title": "Convert TOML",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.user-agent",
+        "title": "Parse a user agent",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.utm-build",
+        "title": "Build a UTM link",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.ieee754",
+        "title": "IEEE 754 float",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.military-time",
+        "title": "Convert 24-hour time",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.number-to-words",
+        "title": "Number to words",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.binary-text",
+        "title": "Binary and text",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.sort-lines",
+        "title": "Sort lines",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.reverse-lines",
+        "title": "Reverse line order",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.shuffle-lines",
+        "title": "Shuffle lines",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.number-lines",
+        "title": "Number the lines",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.trim-lines",
+        "title": "Trim each line",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.reverse-text",
+        "title": "Reverse the text",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.strip-html",
+        "title": "Strip HTML tags",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.html-escape",
+        "title": "Escape for HTML",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.html-unescape",
+        "title": "Unescape HTML entities",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.to-hex",
+        "title": "Text to hex",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.from-hex",
+        "title": "Hex to text",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.rot13",
+        "title": "ROT13",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.extract-urls",
+        "title": "Extract URLs",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.extract-emails",
+        "title": "Extract email addresses",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.extract-numbers",
+        "title": "Extract numbers",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.sort-json-keys",
+        "title": "Sort JSON keys",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.query-to-json",
+        "title": "Query string to JSON",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.json-to-query",
+        "title": "JSON to query string",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.url-parse",
+        "title": "Parse a URL",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.unique-words",
+        "title": "List unique words",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.wrap-lines",
+        "title": "Wrap lines",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.remove-accents",
+        "title": "Remove accents",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.char-frequency",
+        "title": "Character frequency",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.run",
+        "title": "Run a tool…",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.options",
+        "title": "Run a tool with options…",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.docs",
+        "title": "Browse the tools",
+        "category": "RedBison"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "submenu": "redbison.submenu",
+          "group": "1_modification",
+          "when": "editorHasSelection"
+        }
+      ],
+      "redbison.submenu": [
+        {
+          "command": "redbison.json-format",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.json-minify",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.json-validate",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.base64-encode",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.base64-decode",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.url-encode",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.url-decode",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.jwt-decode",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.hash",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.hmac",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.case-convert",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.slugify",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.json-to-yaml",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.yaml-to-json",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.csv-to-json",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.json-to-csv",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.sql-beautify",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.html-beautify",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.xml-beautify",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.js-beautify",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.css-beautify",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.dedupe-lines",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.lines-to-comma",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.epoch",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.cron",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.regex-test",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.number-base",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.http-status",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.mime-lookup",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.markdown-table",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.word-count",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.tsv-parse",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.yaml-beautify",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.escape-characters",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.find-duplicates",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.remove-extra-spaces",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.remove-empty-lines",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.comma-to-lines",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.hash-compare",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.bcrypt-hash",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.bcrypt-verify",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.subnet",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.ip-convert",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.timezone-convert",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.date-diff",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.text-diff",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.list-compare",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.color-convert",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.contrast-check",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.ascii-art",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.barcode-check",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.chmod",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.color-palette",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.curl-to-code",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.docker-to-compose",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.json-schema-validate",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.morse",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.nato",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.password-strength",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.readability",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.redirect-rules",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.toml-convert",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.user-agent",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.utm-build",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.ieee754",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.military-time",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.number-to-words",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.binary-text",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.sort-lines",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.reverse-lines",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.shuffle-lines",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.number-lines",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.trim-lines",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.reverse-text",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.strip-html",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.html-escape",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.html-unescape",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.to-hex",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.from-hex",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.rot13",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.extract-urls",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.extract-emails",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.extract-numbers",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.sort-json-keys",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.query-to-json",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.json-to-query",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.url-parse",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.unique-words",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.wrap-lines",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.remove-accents",
+          "group": "1_transform"
+        },
+        {
+          "command": "redbison.char-frequency",
+          "group": "2_inspect"
+        }
+      ]
+    },
+    "submenus": [
+      {
+        "id": "redbison.submenu",
+        "label": "RedBison"
+      }
+    ]
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ]
+}

@@ -1,0 +1,32 @@
+Copyright (c) 2026 RedBison (redbison.dev). All rights reserved.
+
+This repository is proprietary. No permission is granted to copy, modify,
+distribute, republish, sublicense or create derivative works from any part of
+it, except as stated below.
+
+WHAT IS OPEN SOURCE
+
+The 100 developer tools listed in `opensource/manifest.json`, as published at
+https://github.com/redbison-dev/redbison-tools, are MIT licensed. Their terms
+are in `opensource/site/LICENSE` and they may be used, modified and self-hosted
+freely under those terms. Nothing here narrows that grant.
+
+WHAT IS NOT
+
+Everything else, including:
+
+  - the written guides, tool write-ups, worked examples and FAQ answers, and
+    the research behind them;
+  - the remaining tools, calculators and converters, and their logic;
+  - the site's code, build pipeline and generated artefacts;
+  - the RedBison name, logo and visual design.
+
+That the site shows its formulas and cites its sources does not place them in
+the public domain. Those are published so readers can check the answers, not
+so the work can be reproduced elsewhere.
+
+Reading the site, linking to it, quoting a short passage with attribution and
+using the tools for your own work are all fine, and are covered by the terms at
+https://redbison.dev/tos.
+
+Enquiries, licensing requests and copyright reports: team@redbison.dev
