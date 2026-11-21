@@ -49,7 +49,7 @@ describe('wearing the terminal\'s own scheme', () => {
     const t = makeTheme('terminal');
     // No 38;2 and no 38;5: those pick a colour the user's scheme cannot
     // touch, which is the whole thing this level exists to avoid.
-    for (const paint of [t.row, t.logo, t.border, t.body, t.local, t.server, t.cursor, t.crumb]) {
+    for (const paint of [t.row, t.logo, t.border, t.body, t.local, t.cursor, t.crumb]) {
       expect(paint('x')).not.toMatch(/38;[25]/);
       expect(paint('x')).toMatch(/\x1b\[(?:1m\x1b\[)?(?:3|4|9|10)\d/);
     }

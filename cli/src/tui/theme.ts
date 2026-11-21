@@ -123,9 +123,8 @@ export type Theme = {
   header: Paint;
   row: Paint;
   cursor: Paint;
-  /** Where a tool runs. */
+  /** The category list's count of tools that run locally. */
   local: Paint;
-  server: Paint;
   /** Footer breadcrumbs: black on aqua, the active one orange. */
   crumb: Paint;
   crumbActive: Paint;
@@ -161,7 +160,6 @@ export function makeTheme(level: Level): Theme {
     row: p('aqua'),
     cursor: p('black', 'aqua', true),
     local: p('palegreen'),
-    server: p('darkorange'),
     crumb: p('black', 'aqua'),
     crumbActive: p('black', 'orange'),
     ok: p('greenyellow'),

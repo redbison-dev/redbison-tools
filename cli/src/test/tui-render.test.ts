@@ -76,9 +76,12 @@ describe('the frame fits the terminal', () => {
 });
 
 describe('what the header says', () => {
-  it('reports the catalogue, the version and where the tools run', () => {
+  it('reports the catalogue, the tool count and the version', () => {
     const out = plain(text(initialState()));
-    expect(out).toContain(`${TOOLS.length} (${TOOLS.filter((t) => t.offline).length} local)`);
+    expect(out).toMatch(new RegExp(`Tools:\\s+${TOOLS.length}\\b`));
+    // The local count came out of the header when 89 of 100 went local:
+    // a near-constant is noise, and the docs pane says where each tool runs.
+    expect(out).not.toContain('local)');
     expect(out).toContain(VERSION);
     expect(out).toContain('redbison.dev');
   });
@@ -166,11 +169,11 @@ describe('what the header says', () => {
 });
 
 describe('the list', () => {
-  it('shows a row per tool with where it runs', () => {
+  it('shows a row per tool, without a where column', () => {
     const out = plain(text(initialState()));
     expect(out).toContain('json-format');
-    expect(out).toMatch(/local/);
-    expect(out).toMatch(/server/);
+    expect(out).not.toContain('WHERE');
+    expect(out).not.toMatch(/\bserver\b/);
   });
 
   it('paints the cursor row and only the cursor row', () => {

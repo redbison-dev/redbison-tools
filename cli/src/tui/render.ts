@@ -28,8 +28,6 @@ import { plain, type Paint, type Theme } from './theme';
 
 export type Size = { width: number; height: number };
 
-const LOCAL_COUNT = TOOLS.filter((t) => t.offline).length;
-
 /* The logo, 6 rows of 4-wide glyphs. Block letters rather than a bison,
  * because every terminal can draw a filled rectangle and half of them cannot
  * draw a curve the same way twice. */
@@ -154,7 +152,7 @@ function infoBlock(state: State, theme: Theme, version: string): { text: string;
   const where = state.group ?? (state.localOnly ? 'local only' : 'all tools');
   const rows: [string, string, Paint][] = [
     ['Catalogue', 'redbison.dev', theme.infoVal],
-    ['Tools', `${TOOLS.length} (${LOCAL_COUNT} local)`, theme.infoVal],
+    ['Tools', String(TOOLS.length), theme.infoVal],
     ['Showing', `${where} [${shown}]`, theme.infoVal],
     ['Filter', state.filter ? `/${state.filter}` : '—', state.filter ? theme.filter : theme.dim],
     ['Offline', state.offline ? 'on, nothing is sent' : 'off', state.offline ? theme.ok : theme.dim],
@@ -352,22 +350,20 @@ function framed(content: { text: string; paint?: Paint }[], theme: Theme, width:
 
 /* -------------------------------------------------------------------- list */
 
-type Columns = { name: number; group: number; where: number };
+type Columns = { name: number; group: number };
 
 function columnsFor(width: number): Columns {
   const inner = width - 4;
   const name = Math.min(22, Math.max(12, Math.floor(inner * 0.2)));
   const group = inner >= 78 ? 21 : 0;
-  return { name, group, where: 7 };
+  return { name, group };
 }
 
 function toolRow(tool: CliTool, cols: Columns, theme: Theme, cursor: boolean): { text: string; paint?: Paint }[] {
-  const where = tool.offline ? 'local' : 'server';
   const cells: { text: string; paint?: Paint }[] = [
     { text: ` ${pad(trunc(tool.id, cols.name), cols.name)} `, paint: cursor ? undefined : theme.row },
   ];
   if (cols.group) cells.push({ text: `${pad(trunc(tool.group, cols.group - 1), cols.group)} `, paint: cursor ? undefined : theme.dim });
-  cells.push({ text: pad(where, cols.where), paint: cursor ? undefined : tool.offline ? theme.local : theme.server });
   cells.push({ text: tool.summary, paint: cursor ? undefined : theme.body });
   return cells;
 }
@@ -380,7 +376,6 @@ function listBody(state: State, theme: Theme, width: number, rows: number): stri
     { text: ` ${pad('NAME', cols.name)} `, paint: theme.header },
   ];
   if (cols.group) headerCells.push({ text: `${pad('CATEGORY', cols.group)} `, paint: theme.header });
-  headerCells.push({ text: pad('WHERE', cols.where), paint: theme.header });
   headerCells.push({ text: 'WHAT IT DOES', paint: theme.header });
   out.push(framed(headerCells, theme, width));
 

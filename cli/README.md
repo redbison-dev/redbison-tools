@@ -55,16 +55,16 @@ Run `redbison` with nothing after it and you get a full-screen picker:
 
 ```
  Catalogue: redbison.dev           <0> all tools                   ███  ████ ███  ███  ███   ███ ███  █  █
- Tools:     100 (89 local)         <1> Data and JSON               █  █ █    █  █ █  █  █   █    █  █ ██ █
+ Tools:     100                    <1> Data and JSON               █  █ █    █  █ █  █  █   █    █  █ ██ █
  Showing:   all tools [2]          <2> Text                        ███  ███  █  █ ███   █   ███  █  █ █ ██
  Filter:    /b64                   <3> Encoding and hashing        █ █  █    █  █ █  █  █      █ █  █ █  █     █
  Offline:   off                    <4> Formatters                  █  █ █    █  █ █  █  █      █ █  █ █  █   █▀█ █▀█ █ █
  Version:   0.2.0                  <f> all categories              █  █ ████ ███  ███  ███  ███  ███  █  █ ▄ █▄█ ▀█▄ ▀▄▀
 
 ┌─ Tools(all)[2] /b64 ─────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ NAME                   CATEGORY              WHERE  WHAT IT DOES                                                     │
-│ base64-decode          Encoding and hashing  local  Decode the selected Base64.                                      │
-│ base64-encode          Encoding and hashing  local  Encode the selection as Base64.                                  │
+│ NAME                   CATEGORY              WHAT IT DOES                                                            │
+│ base64-decode          Encoding and hashing  Decode the selected Base64.                                             │
+│ base64-encode          Encoding and hashing  Encode the selection as Base64.                                         │
 └──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 <tools>
 ```
