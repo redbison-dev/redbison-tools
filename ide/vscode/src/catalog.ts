@@ -19,7 +19,9 @@ export const LINKS = {
   "site": "https://redbison.dev",
   "repo": "https://github.com/redbison-dev/redbison-tools",
   "vscodeMarketplace": "https://marketplace.visualstudio.com/items?itemName=redbison.redbison-tools",
-  "jetbrainsMarketplace": "https://plugins.jetbrains.com/plugin/redbison-tools"
+  "jetbrainsMarketplace": "https://plugins.jetbrains.com/plugin/redbison-tools",
+  "npmPackage": "@redbison/cli",
+  "npmUrl": "https://www.npmjs.com/package/@redbison/cli"
 } as const;
 export const TOOLS: CatalogTool[] = [
   {
@@ -256,7 +258,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "json-yaml",
     "url": "https://redbison.dev/json-yaml",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "Converts the selection, keeping key order and quoting only where YAML needs it."
   },
@@ -272,7 +274,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "json-yaml",
     "url": "https://redbison.dev/json-yaml",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "Parses YAML 1.2 and prints indented JSON."
   },
@@ -320,7 +322,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "sql-beautify",
     "url": "https://redbison.dev/sql-beautify",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "Reformats the statement with keywords on their own lines."
   },
@@ -336,7 +338,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "html-beautify",
     "url": "https://redbison.dev/html-beautify",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "Re-indents the markup, leaving the content of pre and textarea alone."
   },
@@ -352,7 +354,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "xml-beautify",
     "url": "https://redbison.dev/xml-beautify",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "Re-indents the document and reports a parse error rather than guessing."
   },
@@ -448,7 +450,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "cron-expression-generator",
     "url": "https://redbison.dev/cron-expression-generator",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "Validates the expression and says in plain words when it fires, with the next few run times."
   },
@@ -532,7 +534,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "gitignore-generator",
     "url": "https://redbison.dev/gitignore-generator",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "Builds a .gitignore from the official templates for the stacks you name."
   },
@@ -633,7 +635,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "yaml-beautify",
     "url": "https://redbison.dev/yaml-beautify",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "Reprints the document with consistent indentation and quoting only where YAML needs it."
   },
@@ -813,7 +815,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "timezone-converter",
     "url": "https://redbison.dev/timezone-converter",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "Converts a timestamp to the zone you pick, with the offset and whether daylight saving applies on that date."
   },
@@ -845,7 +847,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "online-diff-tool",
     "url": "https://redbison.dev/online-diff-tool",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "Shows the lines that differ between the selection and whatever you last copied, which is the usual way you want to diff in an editor."
   },
@@ -877,7 +879,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "hex-to-rgb-converter",
     "url": "https://redbison.dev/hex-to-rgb-converter",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "Hex, RGB, HSL and HSV for the selected colour, whichever notation you started from."
   },
@@ -893,7 +895,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "contrast-checker",
     "url": "https://redbison.dev/contrast-checker",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "The contrast ratio for two colours and whether it passes WCAG AA and AAA for normal and large text."
   },
@@ -908,7 +910,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "css-gradient-generator",
     "url": "https://redbison.dev/css-gradient-generator",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "Writes the linear or radial gradient CSS for the stops you give, ready to paste into a stylesheet."
   },
@@ -923,7 +925,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "random-name-generator",
     "url": "https://redbison.dev/random-name-generator",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "Names for fixtures and seed data, which read better in a test than foo and bar."
   },
@@ -938,7 +940,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "random-email-generator",
     "url": "https://redbison.dev/random-email-generator",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "Addresses on a domain you choose, for fixtures. Use example.com in anything you might send."
   },
@@ -953,7 +955,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "random-number-generator",
     "url": "https://redbison.dev/random-number-generator",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "Numbers between the bounds you set, unique or repeating, for test data and sampling."
   },
@@ -991,7 +993,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "barcode-generator",
     "url": "https://redbison.dev/barcode-generator",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "Calculates the check digit for EAN, UPC and ISBN codes, or tells you whether the one you have is right."
   },
@@ -1028,7 +1030,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "color-palette-generator",
     "url": "https://redbison.dev/color-palette-generator",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "Complementary, triadic, analogous and other harmonies from a base colour, with hex values."
   },
@@ -1062,7 +1064,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "curl-converter",
     "url": "https://redbison.dev/curl-converter",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "Converts a curl command into fetch, Python requests, Go, PHP or another target, keeping headers and the body."
   },
@@ -1110,7 +1112,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "morse-code-translator",
     "url": "https://redbison.dev/morse-code-translator",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "Translates in both directions, with the standard spacing between letters and words."
   },
@@ -1126,7 +1128,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "nato-phonetic-alphabet",
     "url": "https://redbison.dev/nato-phonetic-alphabet",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "Alfa, Bravo, Charlie, for reading a key or a reference over the phone without ambiguity."
   },
@@ -1158,7 +1160,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "readability-checker",
     "url": "https://redbison.dev/readability-checker",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "Flesch reading ease, grade level and the sentences that are doing the most damage."
   },
@@ -1174,7 +1176,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "redirect-generator",
     "url": "https://redbison.dev/redirect-generator",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "Turns a list of from and to paths into nginx, Apache, Netlify or Vercel syntax."
   },
@@ -1270,7 +1272,7 @@ export const TOOLS: CatalogTool[] = [
     "native": false,
     "slug": "number-to-words-converter",
     "url": "https://redbison.dev/number-to-words-converter",
-    "offline": false,
+    "offline": true,
     "localOnly": false,
     "docs": "Writes the number in words for cheques, contracts and tests, in short scale."
   },

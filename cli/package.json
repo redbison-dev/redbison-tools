@@ -1,7 +1,7 @@
 {
   "name": "@redbison/cli",
-  "version": "0.1.1",
-  "description": "The redbison.dev tools in your terminal: 100 developer utilities, 65 of which never touch the network.",
+  "version": "0.2.0",
+  "description": "The redbison.dev tools in your terminal: 100 developer utilities with a full-screen picker, 89 of which never touch the network.",
   "keywords": [
     "cli",
     "json",
@@ -42,6 +42,6 @@
     "@types/node": "^22.10.2",
     "esbuild": "^0.24.2",
     "typescript": "^5.7.2",
-    "vitest": "^2.1.8"
+    "vitest": "^4.1.10"
   }
 }

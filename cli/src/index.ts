@@ -12,7 +12,8 @@ import { readFileSync } from 'node:fs';
 import { version as VERSION } from '../package.json';
 import { parseArgs, ArgError } from './args';
 import { byId, TOOLS } from './catalog';
-import { overviewHelp, toolHelp, listPlain } from './help';
+import { overviewHelp, toolHelp, listPlain, searchHelp } from './help';
+import { formatHits, searchTools } from './search';
 import { runTool, RunError } from './run';
 
 /*
@@ -45,7 +46,53 @@ async function readStdin(): Promise<string> {
   return Buffer.concat(chunks).toString('utf8');
 }
 
-export async function main(argv: string[]): Promise<number> {
+/** The words that mean "search" when they appear where a tool name goes. */
+const SEARCH_WORDS = new Set(['search', 'find']);
+
+/** How many matches `redbison search` prints before it asks you to narrow. */
+const SEARCH_LIMIT = 20;
+
+/**
+ * Whether a full-screen interface would work here at all.
+ *
+ * Both ends have to be a terminal: a picker on a pipe would paint escape
+ * codes into somebody's file, and one reading a pipe could never see a
+ * keystroke. CI is excluded because a build that waits for a key waits
+ * forever, and that failure looks like a hang rather than an error.
+ */
+export function uiPossible(
+  env: NodeJS.ProcessEnv,
+  tty: { stdin?: boolean; stdout?: boolean },
+  platform: string = process.platform,
+): boolean {
+  if (!tty.stdin || !tty.stdout) return false;
+  if (env.REDBISON_NO_UI) return false;
+  if (env.CI) return false;
+  if (env.TERM === 'dumb') return false;
+  // cmd.exe and PowerShell set no TERM at all, so requiring one refused the
+  // picker on every Windows machine — the exact wall of help it exists to
+  // replace. Windows Terminal and the modern console host both handle the
+  // escape sequences used here.
+  if (!env.TERM && platform !== 'win32') return false;
+  return true;
+}
+
+/** `redbison ui`, `redbison --ui`, or `redbison` with nothing after it. */
+export function wantsUi(parsed: {
+  ui: boolean;
+  noUi: boolean;
+  tool?: string;
+  help: boolean;
+  list: boolean;
+  version: boolean;
+}): boolean {
+  if (parsed.noUi || parsed.help || parsed.list || parsed.version) return false;
+  if (parsed.ui) return true;
+  if (parsed.tool === 'ui' || parsed.tool === 'tui') return true;
+  return !parsed.tool && !parsed.help;
+}
+
+export async function main(argv: string[], opts: { tty?: boolean } = {}): Promise<number> {
   let parsed;
   try {
     parsed = parseArgs(argv);
@@ -64,7 +111,81 @@ export async function main(argv: string[]): Promise<number> {
     return 0;
   }
 
-  if (!parsed.tool) {
+  /*
+   * `redbison search <words>`, and `--search <words>` for the same thing.
+   *
+   * The names are no use to someone who does not know them, and `--list |
+   * grep` only finds the word they happened to guess. This matches the
+   * keywords the website's own search box matches on, so the terminal stops
+   * being the one place where finding a tool requires knowing it already.
+   */
+  const query = parsed.search ?? (SEARCH_WORDS.has(parsed.tool ?? '') ? parsed.input ?? '' : undefined);
+  if (query !== undefined) {
+    if (parsed.help) {
+      process.stdout.write(`${searchHelp()}\n`);
+      return 0;
+    }
+    if (!query.trim()) {
+      process.stderr.write('What would you like to search for?\n  redbison search unix timestamp\n');
+      return 2;
+    }
+    const hits = searchTools(query);
+    if (!hits.length) {
+      process.stderr.write(
+        `Nothing in the ${TOOLS.length} command line tools matches "${query}".\n` +
+          `redbison.dev carries many more: https://redbison.dev/all-tools\n`,
+      );
+      return 1;
+    }
+    if (parsed.json) {
+      process.stdout.write(
+        `${JSON.stringify(
+          hits.map((h) => ({
+            id: h.tool.id,
+            title: h.tool.title,
+            summary: h.tool.summary,
+            group: h.tool.group,
+            offline: h.tool.offline,
+            url: h.tool.url,
+            matched: h.why,
+          })),
+        )}\n`,
+      );
+      return 0;
+    }
+    process.stdout.write(`${formatHits(hits)}\n`);
+    // The count and the hint are not the answer, so they go to standard
+    // error and a pipe never sees them.
+    if (hits.length > SEARCH_LIMIT) {
+      process.stderr.write(`\n${hits.length} matches, showing ${SEARCH_LIMIT}. Narrow it with another word.\n`);
+    }
+    process.stderr.write(`\nredbison <tool> --help explains any of them.\n`);
+    return 0;
+  }
+
+  if (wantsUi(parsed)) {
+    if (opts.tty) {
+      // Loaded only when it is going to be used: the picker pulls in the
+      // renderer and the theme, and `redbison json-format` should not pay for
+      // either.
+      const { startTui } = await import('./tui/app');
+      // Whatever was asked for on the command line is how the picker starts.
+      // Dropping --offline meant someone who explicitly refused the network
+      // got a picker reporting "Offline: off" that would send on the first
+      // server-backed tool.
+      return startTui(VERSION, { theme: parsed.theme, offline: parsed.offline });
+    }
+    if (parsed.ui || parsed.tool === 'ui' || parsed.tool === 'tui') {
+      process.stderr.write(
+        'The picker needs an interactive terminal, and this is not one.\n' +
+          'Run it from a shell, or use the commands directly:\n' +
+          '  redbison --list\n  redbison <tool> --help\n',
+      );
+      return 2;
+    }
+  }
+
+  if (!parsed.tool || parsed.tool === 'ui' || parsed.tool === 'tui') {
     process.stdout.write(`${overviewHelp()}\n`);
     return parsed.help ? 0 : 1;
   }
@@ -164,7 +285,9 @@ const ranAsBin =
   BIN_NAMES.some((n) => new RegExp(`(?:^|[/\\\\])${n}(\\.(js|cmd|exe))?$`).test(invokedAs)) ||
   /cli[/\\](dist|src)[/\\]index/.test(invokedAs);
 if (ranAsBin) {
-  main(process.argv.slice(2))
+  main(process.argv.slice(2), {
+    tty: uiPossible(process.env, { stdin: Boolean(process.stdin.isTTY), stdout: Boolean(process.stdout.isTTY) }),
+  })
     .then((code) => process.exit(code))
     .catch((e) => {
       process.stderr.write(`${e?.message ?? e}\n`);

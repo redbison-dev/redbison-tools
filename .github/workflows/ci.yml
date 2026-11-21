@@ -56,5 +56,9 @@ jobs:
         run: bun run build
       - name: It actually runs
         run: |
-          test "$(echo hello | ./dist/index.js base64-encode)" = "aGVsbG8="
+          # printf, not echo: the CLI encodes stdin verbatim, so echo's
+          # trailing newline becomes part of the answer (aGVsbG8K), exactly
+          # as it does with coreutils base64.
+          test "$(printf hello | ./dist/index.js base64-encode)" = "aGVsbG8="
+          test "$(printf 'a\nb' | ./dist/index.js sort-lines)" = "$(printf 'a\nb')"
           ./dist/index.js --version

@@ -11,6 +11,7 @@
 import { runLocal, LocalToolError } from '../../ide/vscode/src/local';
 import { byId, type CliTool } from './catalog';
 import { missingRequired } from './args';
+import { optionsFor } from './options';
 
 export class RunError extends Error {}
 
@@ -41,6 +42,18 @@ export async function runTool(
 
   if (tool.offline) {
     try {
+      /*
+       * Deliberately not merged with `tool.mcp.args`.
+       *
+       * Those pins are what the editor command sends the server, and for a
+       * local tool that path is dead: several of them now contradict the
+       * option's documented default (case-convert pins snake while --help
+       * says camel). The contract a caller can see is --help, so the option
+       * spec's default wins and src/test/options.test.ts holds every local
+       * tool to it. What the two paths must agree on is the answer to the
+       * same explicit arguments, which cli/scripts/compare-local.ts checks
+       * against the live endpoint.
+       */
       const out = runLocal(toolId, input, options);
       if (out === undefined) {
         // The catalog says local but no implementation answered. A bug on our
@@ -92,7 +105,7 @@ async function callServer(
     );
   }
 
-  const args: Record<string, unknown> = { ...(tool.mcp.args ?? {}), ...options };
+  const args: Record<string, unknown> = { ...(tool.mcp.args ?? {}), ...toWire(tool.id, options) };
   if (tool.mcp.input) args[tool.mcp.input] = input;
 
   const controller = new AbortController();
@@ -130,6 +143,32 @@ async function callServer(
   return unwrap(text, tool.id);
 }
 
+/**
+ * The options as the tool wants them, which is not always as they were typed.
+ *
+ * Five options take a list, and a command line has no lists: `--templates
+ * node,macos` is one string. Sent as one, the server answers "expected array,
+ * received string" — and before `isError` was read below, the CLI printed that
+ * validation error as if it were the .gitignore the user asked for. Splitting
+ * here keeps the comma convention the help page has always advertised.
+ */
+function toWire(
+  toolId: string,
+  options: Record<string, string | number | boolean>,
+): Record<string, unknown> {
+  const lists = new Set(optionsFor(toolId).filter((o) => o.list).map((o) => o.key));
+  const out: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(options)) {
+    if (lists.has(key) && typeof value === 'string') {
+      // An empty item is a stray comma, not a request for an empty string.
+      out[key] = value.split(',').map((v) => v.trim()).filter((v) => v !== '');
+    } else {
+      out[key] = value;
+    }
+  }
+  return out;
+}
+
 /** Pull the answer out of an SSE-framed JSON-RPC reply. */
 function unwrap(body: string, toolId: string): string {
   const line = body.split('\n').find((l) => l.startsWith('data: '));
@@ -142,11 +181,24 @@ function unwrap(body: string, toolId: string): string {
     throw new RunError(`Could not read the reply for ${toolId}.`);
   }
 
-  const result = (parsed as { result?: { content?: { type: string; text?: string }[] }; error?: { message?: string } });
+  const result = (parsed as {
+    result?: { content?: { type: string; text?: string }[]; isError?: boolean };
+    error?: { message?: string };
+  });
   if (result.error) throw new RunError(result.error.message ?? `${toolId} failed.`);
 
   const first = result.result?.content?.find((c) => c.type === 'text');
   if (!first?.text) throw new RunError(`${toolId} returned nothing.`);
+
+  /*
+   * A tool failure comes back as a successful JSON-RPC reply carrying
+   * `isError: true` and the message in a text block — that is what the
+   * protocol says, and ignoring it meant every server-side failure was
+   * reported as the answer: printed to stdout, exit code 0, and shown in the
+   * picker in the colour that means it worked. A caller piping `redbison
+   * gitignore` into a file got the validation error written into .gitignore.
+   */
+  if (result.result?.isError) throw new RunError(`${toolId}: ${first.text}`);
 
   // Tools report their own failures inside a text block rather than as a
   // JSON-RPC error, so an error shape here is still an error.

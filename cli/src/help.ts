@@ -101,10 +101,16 @@ export function overviewHelp(): string {
     `${BIN}: ${TOOLS.length} developer tools in your terminal`,
     '',
     'Usage:',
+    `  ${BIN}                    the picker: browse, search and run them`,
     `  ${BIN} <tool> [options] [text]`,
     `  cat file | ${BIN} <tool> [options]`,
     `  ${BIN} <tool> --help      what one tool does, and every option it takes`,
+    `  ${BIN} search <words>      find a tool by what it does, not its name`,
     `  ${BIN} --list             every tool, one per line, for grep`,
+    '',
+    'The picker needs a terminal, so this page is what you get on a pipe or in',
+    `CI. ${BIN} --no-ui prints it in a terminal too, and --theme terminal makes`,
+    "the picker wear your shell's own colours.",
     '',
     `${local} of the ${TOOLS.length} run entirely on your machine. The rest send the`,
     'input to redbison.dev; --offline refuses rather than sending anything.',
@@ -129,6 +135,31 @@ export function overviewHelp(): string {
     'Docs: https://redbison.dev/cli',
   );
   return lines.join('\n');
+}
+
+/** `redbison search --help`. */
+export function searchHelp(): string {
+  return [
+    `${BIN} search: find a tool by what it does`,
+    '',
+    'Usage:',
+    `  ${BIN} search <words>`,
+    `  ${BIN} --search "<words>"`,
+    '',
+    'It matches the same keywords the search box on redbison.dev matches, so',
+    'you can describe the job rather than name the tool:',
+    '',
+    `  ${BIN} search unix timestamp      epoch`,
+    `  ${BIN} search pretty print json   json-format`,
+    `  ${BIN} search uuid v7             uuid`,
+    `  ${BIN} search b64                 base64-encode, base64-decode`,
+    '',
+    'The matches go to standard output in the same shape as --list, so they',
+    'pipe; everything else goes to standard error. --json gives the full',
+    'record of each match for a script.',
+    '',
+    'Exit codes: 0 found something, 1 nothing matched, 2 no query given.',
+  ].join('\n');
 }
 
 /** `redbison --list`, one tool per line, made for grep and completion. */

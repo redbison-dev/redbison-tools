@@ -96,16 +96,21 @@ redirect; GitHub Pages: a `404.html` copy of `index.html`).
 
 ## Command line
 
-The same tools as a terminal program, in [`cli/`](cli). 100 commands, 65 of which run
-entirely on your machine and never open a socket; the rest call the hosted MCP endpoint
-and say so in their `--help`.
+The same tools as a terminal program, in [`cli/`](cli). 100 commands, 89 of which run
+entirely on your machine and never open a socket; the other 11 each need a library too
+large to bundle or a data set that changes without us, so they call the hosted MCP
+endpoint and say so in their `--help`.
+
+Run it with no arguments and you get a full-screen picker: type to search, `↵` to run,
+`d` for the docs, `y` to copy the answer (or the command when there is no answer yet).
 
 ```sh
 cd cli && bun install && bun run build
+./dist/index.js                     # the picker
 ./dist/index.js --list              # every tool, and whether it is local
 echo '{"b":1,"a":2}' | ./dist/index.js json-format
 ./dist/index.js hash --algorithm sha256 hello
-./dist/index.js --offline cron '0 9 * * 1-5'   # refuse rather than send anything
+./dist/index.js --offline js-beautify 'var a=1'  # refuse rather than send anything
 ```
 
 Published as [`@redbison/cli`](https://www.npmjs.com/package/@redbison/cli), which

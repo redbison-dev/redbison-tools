@@ -51,7 +51,7 @@ the site reaches you without an update.
 
 A command sends only the text you selected, and only when you run it. Nothing
 is sent in the background, nothing is stored, there is no telemetry and no
-account. The sixty-five offline commands send nothing at all.
+account. The eighty-nine offline commands send nothing at all.
 
 ## Also available
 

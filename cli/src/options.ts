@@ -203,15 +203,17 @@ export const TOOL_OPTIONS: Record<string, ToolOption[]> = {
   "html-beautify": [
     {
       "key": "indent",
-      "describe": "indent size",
-      "type": "number"
+      "describe": "spaces per level",
+      "type": "number",
+      "defaultValue": 2
     }
   ],
   "xml-beautify": [
     {
       "key": "indent",
-      "describe": "indent size",
-      "type": "number"
+      "describe": "spaces per level",
+      "type": "number",
+      "defaultValue": 2
     }
   ],
   "js-beautify": [
@@ -380,7 +382,8 @@ export const TOOL_OPTIONS: Record<string, ToolOption[]> = {
     {
       "key": "templates",
       "describe": "comma-separated templates, such as node,macos",
-      "required": true
+      "required": true,
+      "list": true
     },
     {
       "key": "extra",
@@ -388,7 +391,8 @@ export const TOOL_OPTIONS: Record<string, ToolOption[]> = {
     },
     {
       "key": "testPaths",
-      "describe": "repository-relative paths to check (comma separated)"
+      "describe": "paths to check against the result (comma separated)",
+      "list": true
     }
   ],
   "lorem": [
@@ -491,7 +495,7 @@ export const TOOL_OPTIONS: Record<string, ToolOption[]> = {
   "timezone-convert": [
     {
       "key": "to",
-      "describe": "target IANA timezone",
+      "describe": "target IANA zone, such as America/New_York",
       "required": true
     }
   ],
@@ -505,8 +509,9 @@ export const TOOL_OPTIONS: Record<string, ToolOption[]> = {
   "text-diff": [
     {
       "key": "b",
-      "describe": "modified text",
-      "required": true
+      "describe": "the text to compare against",
+      "required": true,
+      "isText": true
     }
   ],
   "list-compare": [
@@ -520,7 +525,7 @@ export const TOOL_OPTIONS: Record<string, ToolOption[]> = {
   "contrast-check": [
     {
       "key": "background",
-      "describe": "background color, hex",
+      "describe": "the background colour, hex",
       "required": true
     }
   ],
@@ -528,6 +533,7 @@ export const TOOL_OPTIONS: Record<string, ToolOption[]> = {
     {
       "key": "type",
       "describe": "gradient type",
+      "required": true,
       "values": [
         {
           "value": "linear"
@@ -535,59 +541,64 @@ export const TOOL_OPTIONS: Record<string, ToolOption[]> = {
         {
           "value": "radial"
         }
-      ],
-      "required": true
+      ]
     },
     {
       "key": "angle",
-      "describe": "angle in degrees for linear gradients",
-      "type": "number"
+      "describe": "angle in degrees, for a linear gradient",
+      "type": "number",
+      "defaultValue": 90
     },
     {
       "key": "stops",
-      "describe": "color stops (comma separated)",
-      "required": true
+      "describe": "the colour stops (comma separated)",
+      "required": true,
+      "list": true
     }
   ],
   "random-name": [
     {
       "key": "count",
-      "describe": "number of names to generate",
-      "type": "number"
+      "describe": "how many names",
+      "type": "number",
+      "defaultValue": 5
     }
   ],
   "random-email": [
     {
       "key": "count",
-      "describe": "number of emails",
-      "type": "number"
+      "describe": "how many addresses",
+      "type": "number",
+      "defaultValue": 5
     },
     {
       "key": "domain",
-      "describe": "fixed domain for all emails"
+      "describe": "use this domain for all of them"
     }
   ],
   "random-number": [
     {
       "key": "min",
-      "describe": "minimum value",
+      "describe": "lowest value",
       "type": "number",
       "required": true
     },
     {
       "key": "max",
-      "describe": "maximum value",
+      "describe": "highest value",
       "type": "number",
       "required": true
     },
     {
       "key": "count",
-      "describe": "number of values",
-      "type": "number"
+      "describe": "how many numbers",
+      "type": "number",
+      "defaultValue": 1
     },
     {
       "key": "mode",
-      "describe": "result type",
+      "describe": "whole numbers or decimals",
+      "defaultValue": "integer",
       "values": [
         {
           "value": "integer"
@@ -661,17 +672,18 @@ export const TOOL_OPTIONS: Record<string, ToolOption[]> = {
   "barcode-check": [
     {
       "key": "mode",
-      "describe": "which barcode",
-      "defaultValue": "ean13",
+      "describe": "compute the check digit or validate the one that is there",
+      "defaultValue": "auto",
       "values": [
         {
-          "value": "ean13"
+          "value": "auto",
+          "describe": "validate a full code, compute for a short one"
         },
         {
-          "value": "ean8"
+          "value": "compute"
         },
         {
-          "value": "upca"
+          "value": "validate"
         }
       ]
     }
@@ -680,26 +692,56 @@ export const TOOL_OPTIONS: Record<string, ToolOption[]> = {
     {
       "key": "rule",
       "describe": "harmony rule",
-      "defaultValue": "analogous"
+      "defaultValue": "analogous",
+      "values": [
+        {
+          "value": "complementary"
+        },
+        {
+          "value": "analogous"
+        },
+        {
+          "value": "triadic"
+        },
+        {
+          "value": "split-complementary"
+        },
+        {
+          "value": "tetradic"
+        },
+        {
+          "value": "square"
+        },
+        {
+          "value": "monochromatic"
+        },
+        {
+          "value": "shades"
+        }
+      ]
+    },
+    {
+      "key": "wheel",
+      "describe": "which colour wheel to rotate the hue on",
+      "defaultValue": "rgb",
+      "values": [
+        {
+          "value": "rgb",
+          "describe": "the screen/HSL wheel"
+        },
+        {
+          "value": "ryb",
+          "describe": "the painter's wheel"
+        },
+        {
+          "value": "oklch",
+          "describe": "perceptual, keeps lightness"
+        }
+      ]
     },
     {
       "key": "name",
       "describe": "a name for the palette"
-    },
-    {
-      "key": "wheel",
-      "describe": "color wheel for hue rotation",
-      "values": [
-        {
-          "value": "rgb"
-        },
-        {
-          "value": "ryb"
-        },
-        {
-          "value": "oklch"
-        }
-      ]
     }
   ],
   "cron-build": [
@@ -739,7 +781,8 @@ export const TOOL_OPTIONS: Record<string, ToolOption[]> = {
     },
     {
       "key": "daysOfWeek",
-      "describe": "for weekly: days as names (comma separated)"
+      "describe": "for weekly: days as names (comma separated)",
+      "list": true
     },
     {
       "key": "expression",
@@ -764,6 +807,10 @@ export const TOOL_OPTIONS: Record<string, ToolOption[]> = {
         {
           "value": "fetch",
           "describe": "JavaScript fetch"
+        },
+        {
+          "value": "axios",
+          "describe": "JavaScript axios"
         },
         {
           "value": "python"
@@ -853,10 +900,12 @@ export const TOOL_OPTIONS: Record<string, ToolOption[]> = {
   "morse": [
     {
       "key": "direction",
-      "describe": "auto decodes when the input contains only dots, dashes, slashes",
+      "describe": "encode to morse or decode from it",
+      "defaultValue": "auto",
       "values": [
         {
-          "value": "auto"
+          "value": "auto",
+          "describe": "work it out from the input"
         },
         {
           "value": "encode"
@@ -864,25 +913,14 @@ export const TOOL_OPTIONS: Record<string, ToolOption[]> = {
         {
           "value": "decode"
         }
-      ],
-      "defaultValue": "auto"
-    },
-    {
-      "key": "wpm",
-      "describe": "character speed in words per minute",
-      "type": "number",
-      "defaultValue": 20
-    },
-    {
-      "key": "effectiveWpm",
-      "describe": "farnsworth overall speed in wpm, lower than wpm",
-      "type": "number"
+      ]
     }
   ],
   "nato": [
     {
       "key": "direction",
-      "describe": "spell turns text into code words; decode turns code words back",
+      "describe": "spell it out or read it back",
+      "defaultValue": "spell",
       "values": [
         {
           "value": "spell"
@@ -890,38 +928,39 @@ export const TOOL_OPTIONS: Record<string, ToolOption[]> = {
         {
           "value": "decode"
         }
-      ],
-      "defaultValue": "spell"
+      ]
     },
     {
       "key": "spelling",
-      "describe": "icao prints Alfa and Juliett as published; common prints Alpha",
+      "describe": "which alphabet",
+      "defaultValue": "icao",
       "values": [
         {
-          "value": "icao"
+          "value": "icao",
+          "describe": "the aviation standard"
         },
         {
           "value": "common"
         }
-      ],
-      "defaultValue": "icao"
+      ]
     },
     {
       "key": "digits",
-      "describe": "icao says Tree, Fower, Fife, Niner; plain says Three, Four",
+      "describe": "how to say numbers",
+      "defaultValue": "icao",
       "values": [
         {
-          "value": "icao"
+          "value": "icao",
+          "describe": "Fower, Niner"
         },
         {
           "value": "plain"
         }
-      ],
-      "defaultValue": "icao"
+      ]
     },
     {
       "key": "markCase",
-      "describe": "prefix each letter with Capital or Lowercase",
+      "describe": "say which letters are capitals",
       "type": "boolean",
       "defaultValue": false
     }
@@ -929,19 +968,20 @@ export const TOOL_OPTIONS: Record<string, ToolOption[]> = {
   "password-strength": [
     {
       "key": "user_inputs",
-      "describe": "optional personal words (comma separated)"
+      "describe": "optional personal words (comma separated)",
+      "list": true
     }
   ],
   "readability": [
     {
       "key": "lineBreaksEndSentences",
-      "describe": "treat each line break as a sentence end",
+      "describe": "treat a line break as the end of a sentence",
       "type": "boolean",
       "defaultValue": true
     },
     {
       "key": "maxSentences",
-      "describe": "how many hard sentences to list, hardest first",
+      "describe": "how many hard sentences to list",
       "type": "number",
       "defaultValue": 20
     }
@@ -949,7 +989,8 @@ export const TOOL_OPTIONS: Record<string, ToolOption[]> = {
   "redirect-rules": [
     {
       "key": "platform",
-      "describe": "target server or host",
+      "describe": "which server the rules are for",
+      "required": true,
       "values": [
         {
           "value": "apache"
@@ -963,26 +1004,30 @@ export const TOOL_OPTIONS: Record<string, ToolOption[]> = {
         {
           "value": "vercel"
         }
-      ],
-      "required": true
+      ]
     },
     {
       "key": "defaultCode",
-      "describe": "status code for lines without one"
+      "describe": "status code for a line that does not name one",
+      "type": "number",
+      "defaultValue": 301
     },
     {
       "key": "keepQuery",
-      "describe": "keep the incoming query string",
-      "type": "boolean"
+      "describe": "carry the query string across",
+      "type": "boolean",
+      "defaultValue": true
     },
     {
       "key": "forceHttps",
-      "describe": "add an HTTP to HTTPS redirect",
-      "type": "boolean"
+      "describe": "add a rule redirecting http to https",
+      "type": "boolean",
+      "defaultValue": false
     },
     {
       "key": "canonicalHost",
-      "describe": "redirect the other host variant to www or to the bare domain",
+      "describe": "send one host to the other",
+      "defaultValue": "none",
       "values": [
         {
           "value": "none"
@@ -997,7 +1042,7 @@ export const TOOL_OPTIONS: Record<string, ToolOption[]> = {
     },
     {
       "key": "domain",
-      "describe": "apex domain for host rules"
+      "describe": "the domain, needed for a canonical host rule"
     }
   ],
   "toml-convert": [
@@ -1127,4 +1172,4 @@ export function optionsFor(toolId: string): ToolOption[] {
   return TOOL_OPTIONS[toolId] ?? [];
 }
 
-export const ALL_OPTION_KEYS: string[] = ["algorithm","angle","b","background","brace_style","campaign","canonicalHost","charset","comment","compare","content","cost","count","daysOfWeek","defaultCode","detect_dates","digits","direction","domain","draft","effectiveWpm","encoding","expression","extra","flags","font","forceHttps","format","frequency","from","hash","indent","infer_draft","infer_required","interval","keepQuery","keep_license","key","language","layout","length","lineBreaksEndSentences","markCase","max","maxSentences","medium","min","minute","mode","name","order","pattern","platform","project","quote","rule","schema","separator","sort","sort_keys","source","spelling","stops","style","syntax","target","templates","term","testPaths","timezone","to","type","unit","user_inputs","variant","wheel","width","wpm"];
+export const ALL_OPTION_KEYS: string[] = ["algorithm","angle","b","background","brace_style","campaign","canonicalHost","charset","comment","compare","content","cost","count","daysOfWeek","defaultCode","detect_dates","digits","direction","domain","draft","encoding","expression","extra","flags","font","forceHttps","format","frequency","from","hash","indent","infer_draft","infer_required","interval","keepQuery","keep_license","key","language","layout","length","lineBreaksEndSentences","markCase","max","maxSentences","medium","min","minute","mode","name","order","pattern","platform","project","quote","rule","schema","separator","sort","sort_keys","source","spelling","stops","style","syntax","target","templates","term","testPaths","timezone","to","type","unit","user_inputs","variant","wheel","width"];

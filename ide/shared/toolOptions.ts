@@ -25,6 +25,17 @@ export type ToolOption = {
   /** The option must be given; the tool cannot guess it. */
   required?: boolean;
   /**
+   * The tool wants a list here, so the comma-separated value typed on the
+   * command line is split before it is sent.
+   *
+   * The describe line said "(comma separated)" long before anything split it,
+   * and the server answered an input-validation error that the CLI then
+   * printed as though it were the answer. Five options are like this
+   * (templates, testPaths, stops, user_inputs, daysOfWeek) and none of them
+   * worked.
+   */
+  list?: boolean;
+  /**
    * The option carries a second body of text rather than a setting, so the
    * CLI also accepts it as a file with @path and reads stdin for the first.
    */
@@ -215,14 +226,46 @@ export const TOOL_OPTIONS: Record<string, ToolOption[]> = {
   'ascii-art': [{ key: 'font', describe: 'figlet font', defaultValue: 'Standard' }],
   'barcode-check': [
     {
+      /*
+       * These were ean13/ean8/upca, which the tool has never accepted: it
+       * takes a reading, not a symbology, and works the symbology out from
+       * the digit count. `--mode ean13` was the documented default, so the
+       * command in the help page was a command the server refused — and
+       * until the reply's isError flag was read, it printed that refusal as
+       * though it were the answer. Nothing caught it because the option test
+       * skips tools that are not local, and this one was not.
+       */
       key: 'mode',
-      describe: 'which barcode',
-      defaultValue: 'ean13',
-      values: [{ value: 'ean13' }, { value: 'ean8' }, { value: 'upca' }],
+      describe: 'compute the check digit or validate the one that is there',
+      defaultValue: 'auto',
+      values: [
+        { value: 'auto', describe: 'validate a full code, compute for a short one' },
+        { value: 'compute' },
+        { value: 'validate' },
+      ],
     },
   ],
   'color-palette': [
-    { key: 'rule', describe: 'harmony rule', defaultValue: 'analogous' },
+    {
+      key: 'rule',
+      describe: 'harmony rule',
+      defaultValue: 'analogous',
+      values: [
+        { value: 'complementary' }, { value: 'analogous' }, { value: 'triadic' },
+        { value: 'split-complementary' }, { value: 'tetradic' }, { value: 'square' },
+        { value: 'monochromatic' }, { value: 'shades' },
+      ],
+    },
+    {
+      key: 'wheel',
+      describe: 'which colour wheel to rotate the hue on',
+      defaultValue: 'rgb',
+      values: [
+        { value: 'rgb', describe: 'the screen/HSL wheel' },
+        { value: 'ryb', describe: "the painter's wheel" },
+        { value: 'oklch', describe: 'perceptual, keeps lightness' },
+      ],
+    },
     { key: 'name', describe: 'a name for the palette' },
   ],
   'curl-to-code': [
@@ -232,14 +275,132 @@ export const TOOL_OPTIONS: Record<string, ToolOption[]> = {
       defaultValue: 'fetch',
       values: [
         { value: 'fetch', describe: 'JavaScript fetch' },
+        // axios is a target the generator has always had and this list left
+        // out, so the CLI refused a value the tool supports.
+        { value: 'axios', describe: 'JavaScript axios' },
         { value: 'python' },
         { value: 'go' },
         { value: 'php' },
       ],
     },
   ],
+  /*
+   * Hand-written because these tools now run locally, and the generator only
+   * derives options for the ones that call the server: a derived option can
+   * advertise something the schema accepts and the local implementation
+   * ignores, which is the failure this CLI is built to avoid. Written out
+   * from the MCP schema, minus anything the local code does not honour, and
+   * src/test/local-options.test.ts holds the two together.
+   */
+  'html-beautify': [
+    { key: 'indent', describe: 'spaces per level', type: 'number', defaultValue: 2 },
+  ],
+  'xml-beautify': [
+    { key: 'indent', describe: 'spaces per level', type: 'number', defaultValue: 2 },
+  ],
+  'timezone-convert': [
+    { key: 'to', describe: 'target IANA zone, such as America/New_York', required: true },
+  ],
+  'text-diff': [
+    // The second text, so it reads from a file with @path or from stdin the
+    // way the other two-body tools do.
+    { key: 'b', describe: 'the text to compare against', required: true, isText: true },
+  ],
+  morse: [
+    {
+      key: 'direction',
+      describe: 'encode to morse or decode from it',
+      defaultValue: 'auto',
+      values: [
+        { value: 'auto', describe: 'work it out from the input' },
+        { value: 'encode' },
+        { value: 'decode' },
+      ],
+    },
+  ],
+  nato: [
+    {
+      key: 'direction',
+      describe: 'spell it out or read it back',
+      defaultValue: 'spell',
+      values: [{ value: 'spell' }, { value: 'decode' }],
+    },
+    {
+      key: 'spelling',
+      describe: 'which alphabet',
+      defaultValue: 'icao',
+      values: [{ value: 'icao', describe: 'the aviation standard' }, { value: 'common' }],
+    },
+    {
+      key: 'digits',
+      describe: 'how to say numbers',
+      defaultValue: 'icao',
+      values: [{ value: 'icao', describe: 'Fower, Niner' }, { value: 'plain' }],
+    },
+    { key: 'markCase', describe: 'say which letters are capitals', type: 'boolean', defaultValue: false },
+  ],
+  readability: [
+    { key: 'lineBreaksEndSentences', describe: 'treat a line break as the end of a sentence', type: 'boolean', defaultValue: true },
+    { key: 'maxSentences', describe: 'how many hard sentences to list', type: 'number', defaultValue: 20 },
+  ],
+  'redirect-rules': [
+    {
+      key: 'platform',
+      describe: 'which server the rules are for',
+      required: true,
+      values: [{ value: 'apache' }, { value: 'nginx' }, { value: 'netlify' }, { value: 'vercel' }],
+    },
+    { key: 'defaultCode', describe: 'status code for a line that does not name one', type: 'number', defaultValue: 301 },
+    { key: 'keepQuery', describe: 'carry the query string across', type: 'boolean', defaultValue: true },
+    { key: 'forceHttps', describe: 'add a rule redirecting http to https', type: 'boolean', defaultValue: false },
+    {
+      key: 'canonicalHost',
+      describe: 'send one host to the other',
+      defaultValue: 'none',
+      values: [{ value: 'none' }, { value: 'www' }, { value: 'apex' }],
+    },
+    { key: 'domain', describe: 'the domain, needed for a canonical host rule' },
+  ],
+  'contrast-check': [
+    { key: 'background', describe: 'the background colour, hex', required: true },
+  ],
+  'css-gradient': [
+    {
+      key: 'type',
+      describe: 'gradient type',
+      // Required, so no default: the two contradict, and the server
+      // requires it too.
+      required: true,
+      values: [{ value: 'linear' }, { value: 'radial' }],
+    },
+    { key: 'angle', describe: 'angle in degrees, for a linear gradient', type: 'number', defaultValue: 90 },
+    { key: 'stops', describe: 'the colour stops (comma separated)', required: true, list: true },
+  ],
+  'random-name': [
+    { key: 'count', describe: 'how many names', type: 'number', defaultValue: 5 },
+  ],
+  'random-email': [
+    { key: 'count', describe: 'how many addresses', type: 'number', defaultValue: 5 },
+    { key: 'domain', describe: 'use this domain for all of them' },
+  ],
+  'random-number': [
+    { key: 'min', describe: 'lowest value', type: 'number', required: true },
+    { key: 'max', describe: 'highest value', type: 'number', required: true },
+    { key: 'count', describe: 'how many numbers', type: 'number', defaultValue: 1 },
+    {
+      key: 'mode',
+      describe: 'whole numbers or decimals',
+      defaultValue: 'integer',
+      values: [{ value: 'integer' }, { value: 'float' }],
+    },
+  ],
   gitignore: [
-    { key: 'templates', describe: 'comma-separated templates, such as node,macos', required: true },
+    // `list` matters here as much as the wording: the hand-written entry wins
+    // over the derived one, so without it this is the one array option the
+    // generator cannot mark for itself.
+    { key: 'templates', describe: 'comma-separated templates, such as node,macos', required: true, list: true },
+    { key: 'extra', describe: 'extra lines to append, one pattern per line' },
+    { key: 'testPaths', describe: 'paths to check against the result (comma separated)', list: true },
   ],
 };
 

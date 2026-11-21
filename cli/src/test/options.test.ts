@@ -45,6 +45,33 @@ const INPUT: Record<string, string> = {
   uuid: '',
   password: '',
   lorem: '',
+  // Moved off the network, so this test now runs them for the first time.
+  // Each needs an input of its own kind: "sample text" is not a barcode, a
+  // colour or a curl command, and the tool is right to refuse it.
+  'barcode-check': '400638133393',
+  'color-palette': '#b32020',
+  'curl-to-code': "curl -X POST https://api.example.com/v1/items -H 'Authorization: Bearer t' -d '{\"a\":1}'",
+  'number-to-words': '1234.56',
+  'redirect-rules': '/old /new\n/a /b 302',
+  'contrast-check': '#b32020',
+  'color-convert': '#3B82F6',
+  'css-gradient': '',
+  'timezone-convert': '2026-01-15T14:30:00Z',
+  'text-diff': 'one\ntwo',
+  cron: '*/15 * * * *',
+  'json-to-yaml': '{"a":1}',
+  'yaml-to-json': 'a: 1',
+  'yaml-beautify': 'a:  1',
+  'html-beautify': '<div><p>x</p></div>',
+  'xml-beautify': '<r><a>1</a></r>',
+  'sql-beautify': 'select a from t',
+  morse: 'HELLO WORLD',
+  // Spells both ways and exercises every option: the words differ between
+  // the two alphabets, the 4 differs between the two digit styles, and the
+  // capital differs with markCase.
+  nato: 'Alfa Bravo 4',
+  readability: 'The quick brown fox jumps over the lazy dog. It was remarkably effective.',
+  gitignore: '',
 };
 
 /**
@@ -72,6 +99,29 @@ const SAMPLE: Record<string, string | number | boolean> = {
   rule: 'analogous',
   font: 'Standard',
   templates: 'node',
+  background: '#ffffff',
+  lineBreaksEndSentences: false,
+  maxSentences: 5,
+  angle: 45,
+  stops: '#000,#fff',
+  min: 1,
+  max: 10,
+  defaultCode: 302,
+  keepQuery: false,
+  forceHttps: true,
+  domain: 'example.com',
+  markCase: true,
+  extra: '*.bak',
+  testPaths: 'dist/app.js',
+};
+
+/**
+ * Where one option name means different things in different tools. `to` is a
+ * date for date-diff and an IANA zone for timezone-convert, and the shared
+ * table can only hold one of them.
+ */
+const SAMPLE_FOR: Record<string, Record<string, string | number | boolean>> = {
+  'timezone-convert': { to: 'Asia/Tokyo' },
 };
 
 /** Values the required options need so the tool can run at all. */
@@ -82,6 +132,13 @@ const REQUIRED: Record<string, Record<string, string>> = {
   'hash-compare': { b: 'abc' },
   'list-compare': { b: 'b\nc' },
   gitignore: { templates: 'node' },
+  'contrast-check': { background: '#ffffff' },
+  'css-gradient': { type: 'linear', stops: '#000,#fff' },
+  // canonicalHost does nothing without a domain to send people to.
+  'redirect-rules': { platform: 'nginx', domain: 'example.com' },
+  'random-number': { min: '1', max: '10' },
+  'timezone-convert': { to: 'UTC' },
+  'text-diff': { b: 'different' },
 };
 
 const local = (id: string) => byId(id)?.offline === true;
@@ -100,7 +157,7 @@ describe('every declared option runs', () => {
         if (!opt.values?.length) {
           // Free text: prove the flag reaches code and changes something,
           // which is all that can be asserted without a closed set.
-          const sample = SAMPLE[opt.key];
+          const sample = SAMPLE_FOR[toolId]?.[opt.key] ?? SAMPLE[opt.key];
           if (sample === undefined) continue;
           it(`--${opt.key} ${sample}`, async () => {
             const out = await runTool(toolId, input, { ...base, [opt.key]: sample }, { offline: true });
@@ -141,8 +198,13 @@ describe('declared defaults are the real ones', () => {
       it(`${toolId} --${opt.key} defaults to ${JSON.stringify(opt.defaultValue)}`, async () => {
         const base = { ...(REQUIRED[toolId] ?? {}) };
         const input = INPUT[toolId] ?? 'sample text';
-        // A tool whose answer differs every time cannot be compared this way.
-        if (['uuid', 'password', 'lorem'].includes(toolId)) return;
+        /*
+         * A tool whose answer differs every time cannot be compared this
+         * way. The generators are the obvious ones; what the list is really
+         * saying is "the default is checked by its shared cases instead",
+         * so a tool only belongs here if it has those.
+         */
+        if (['uuid', 'password', 'lorem', 'random-name', 'random-email', 'random-number'].includes(toolId)) return;
 
         const withDefault = await runTool(toolId, input, base, { offline: true });
         const explicit = await runTool(

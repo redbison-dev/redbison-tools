@@ -1,0 +1,91 @@
+{
+  "binary-text": [
+    "mode"
+  ],
+  "csv-to-json": [
+    "delimiter",
+    "header"
+  ],
+  "ieee754": [
+    "format",
+    "mode"
+  ],
+  "json-minify": [
+    "indent"
+  ],
+  "json-to-csv": [
+    "delimiter"
+  ],
+  "markdown-table": [
+    "bold_header",
+    "outer_pipes",
+    "pretty"
+  ],
+  "military-time": [
+    "direction"
+  ],
+  "number-base": [
+    "inputIsPattern",
+    "to",
+    "width"
+  ],
+  "tsv-parse": [
+    "header"
+  ],
+  "comma-to-lines": [
+    "trim"
+  ],
+  "dedupe-lines": [
+    "caseInsensitive",
+    "trim"
+  ],
+  "escape-characters": [
+    "mode"
+  ],
+  "find-duplicates": [
+    "caseInsensitive",
+    "trim"
+  ],
+  "word-count": [
+    "readingWpm",
+    "speakingWpm",
+    "topWords"
+  ],
+  "hash-compare": [
+    "algorithm"
+  ],
+  "hmac": [
+    "expected",
+    "message_encoding",
+    "preset",
+    "timestamp"
+  ],
+  "password": [
+    "count",
+    "digits",
+    "lowercase",
+    "symbols",
+    "uppercase"
+  ],
+  "chmod": [
+    "isDirectory",
+    "start",
+    "umask"
+  ],
+  "http-status": [
+    "includeUnofficial",
+    "limit"
+  ],
+  "utm-build": [
+    "id",
+    "lowercase",
+    "spaces"
+  ],
+  "uuid": [
+    "count"
+  ],
+  "list-compare": [
+    "caseInsensitive",
+    "trim"
+  ]
+}

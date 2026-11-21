@@ -1,6 +1,6 @@
 # redbison
 
-The [redbison.dev](https://redbison.dev) tools in your terminal. 100 developer utilities, 65 of
+The [redbison.dev](https://redbison.dev) tools in your terminal. 100 developer utilities, 89 of
 them never touching the network.
 
 ```console
@@ -48,6 +48,89 @@ yarn global add @redbison/cli
 Node 18 or newer is required. That is the only dependency.
 
 </details>
+
+## The picker
+
+Run `redbison` with nothing after it and you get a full-screen picker:
+
+```
+ Catalogue: redbison.dev           <0> all tools                   ███  ████ ███  ███  ███   ███ ███  █  █
+ Tools:     100 (89 local)         <1> Data and JSON               █  █ █    █  █ █  █  █   █    █  █ ██ █
+ Showing:   all tools [2]          <2> Text                        ███  ███  █  █ ███   █   ███  █  █ █ ██
+ Filter:    /b64                   <3> Encoding and hashing        █ █  █    █  █ █  █  █      █ █  █ █  █     █
+ Offline:   off                    <4> Formatters                  █  █ █    █  █ █  █  █      █ █  █ █  █   █▀█ █▀█ █ █
+ Version:   0.2.0                  <f> all categories              █  █ ████ ███  ███  ███  ███  ███  █  █ ▄ █▄█ ▀█▄ ▀▄▀
+
+┌─ Tools(all)[2] /b64 ─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ NAME                   CATEGORY              WHERE  WHAT IT DOES                                                     │
+│ base64-decode          Encoding and hashing  local  Decode the selected Base64.                                      │
+│ base64-encode          Encoding and hashing  local  Encode the selection as Base64.                                  │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+<tools>
+```
+
+- `/` searches as you type, by keyword as well as by name: `unix timestamp` finds epoch,
+  `pretty print` finds the formatters, `b64` finds base64-encode.
+- `0`–`9` jump between categories, `f` lists them all.
+- `d` is the documentation for the highlighted tool: what it does, where it runs, every
+  option, and a worked example taken from the tool itself.
+- `enter` runs it. The example input is already loaded, so `enter enter` is a complete run;
+  `e` edits the input first and `p` edits the options. An option the command line would
+  refuse is refused here too.
+- `y` copies whatever is on screen: the answer once a tool has run, including an error
+  message, and otherwise the command that would produce it — `redbison json-format --indent 6`,
+  ready to paste into a script. `o` opens the tool on redbison.dev, `x` turns on offline so a
+  server-backed tool refuses rather than sends.
+- `:` takes a tool id, a category, `offline`, `help` or `q`.
+- `?` lists every key. `q` or `ctrl-c` leaves.
+
+### Finding a tool by what it does
+
+The names are no help if you do not already know them, so `search` matches the same keywords
+the search box on [redbison.dev](https://redbison.dev) matches:
+
+```console
+$ redbison search unix timestamp
+epoch                   local   Convert timestamp
+
+$ redbison search pretty print json
+json-format             local   Format JSON
+
+$ redbison search uuid v7
+uuid                    local   Insert UUID
+```
+
+It reads initials too, so `redbison search b64` finds base64-encode and base64-decode. The
+matches go to standard output in the same shape as `--list`, so they pipe; the count and the
+hints go to standard error. `--json` gives the whole record of each match for a script, and the
+exit code is `0` found, `1` nothing matched, `2` no query. Inside the picker, `/` runs the same
+search.
+
+### Your terminal's colours
+
+The default palette is designed for a dark terminal. Set `REDBISON_THEME=terminal`, or pass
+`--theme terminal`, and it uses the sixteen ANSI colours instead — which your terminal already
+maps to the scheme you chose, so the picker comes out in Dracula, Gruvbox, Nord or Solarized
+without configuring anything.
+
+```sh
+REDBISON_THEME=terminal redbison     # wear the shell's own scheme
+REDBISON_THEME=default  redbison     # the designed palette, always
+REDBISON_THEME=none     redbison     # no colour
+```
+
+A light background gets the terminal palette automatically when `COLORFGBG` reports one, because
+a palette drawn against black is unreadable on cream. `NO_COLOR` is honoured whatever its value.
+
+It only starts when both ends are a terminal, so a pipe, a script and CI all get the plain
+behaviour they had before. `redbison --no-ui` or `REDBISON_NO_UI=1` turns it off for good.
+
+### Credit
+
+The picker's shape — the information block, the key hints, the counted title, the breadcrumbs,
+the filter and command bars — is inspired by [k9s](https://k9scli.io) and the other open-source
+terminal applications that showed what command line UX can be for developers. Its default
+palette follows k9s's own default skin. Thank you to everyone who built them.
 
 ## Use
 
@@ -132,25 +215,38 @@ redbison number-to-words -- -42
 
 ## What runs where
 
-65 of the 100 run entirely on your machine: JSON, base64, hashes, JWT decoding, case
-conversion, sorting, hex, URLs, UUIDs, subnets, chmod, IEEE 754 and the rest. They are
-arithmetic and string work, and your input never leaves the process.
+89 of the 100 run entirely on your machine: JSON, base64, hashes, JWT decoding, case
+conversion, sorting, hex, URLs, UUIDs, subnets, chmod, IEEE 754, YAML, SQL, HTML and XML
+formatting, colours, cron checking, diffs, timezones and the rest. They are arithmetic and
+string work, and your input never leaves the process.
 
-The other 35 need a real parser or a data set that changes without us — YAML, SQL, HTML, XML,
-JavaScript and CSS formatting, bcrypt, ASCII-art fonts, schema validation, user-agent tables —
-so they send the input to `mcp.redbison.dev` and send nothing else: no account, no identifier,
-nothing stored.
+The other 11 each need a library too large to bundle, or a data set that changes without us:
+
+| Tool | What it needs |
+| --- | --- |
+| `js-beautify`, `css-beautify` | a real JavaScript and CSS printer |
+| `json-schema-validate` | a JSON Schema engine |
+| `toml-convert` | a TOML parser |
+| `bcrypt-hash`, `bcrypt-verify` | bcrypt |
+| `password-strength` | a password dictionary |
+| `ascii-art` | the figlet font set |
+| `cron-build` | a cron expander with real calendars |
+| `docker-to-compose` | the Docker argument surface |
+| `user-agent` | a user-agent table that changes weekly |
+
+Those eleven send the input to `mcp.redbison.dev` and send nothing else: no account, no
+identifier, nothing stored.
 
 To be certain, pass `--offline`. It refuses rather than sending:
 
 ```console
-$ redbison yaml-to-json --offline "a: 1"
-yaml-to-json runs on the server, and --offline was given, so nothing was sent.
+$ redbison js-beautify --offline "var a=1"
+js-beautify runs on the server, and --offline was given, so nothing was sent.
 Tools that work without a network: redbison --list | grep local
 ```
 
 ```sh
-redbison --list | grep local | wc -l   # 65
+redbison --list | grep local | wc -l   # 89
 ```
 
 ## Exit codes

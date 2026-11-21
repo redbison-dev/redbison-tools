@@ -134,6 +134,18 @@ describe('parsing', () => {
     it('reads --list', () => expect(parse('--list').list).toBe(true));
     it('reads --offline', () => expect(parse('yaml-to-json --offline').offline).toBe(true));
     it('reads --json', () => expect(parse('hash --json abc').json).toBe(true));
+    it('reads --ui and --no-ui', () => {
+      expect(parse('--ui').ui).toBe(true);
+      expect(parse('--no-ui').noUi).toBe(true);
+      expect(parse('--no-tui').noUi).toBe(true);
+    });
+    it('reads --theme, before any tool is named', () => {
+      // The picker runs when no tool is named, so its flags cannot wait for
+      // one: --theme on its own used to be refused as "an option of a tool".
+      expect(parse('--theme terminal').theme).toBe('terminal');
+      expect(parse('--theme=none').theme).toBe('none');
+      expect(() => parse('--theme')).toThrow(/terminal, default or none/);
+    });
   });
 });
 

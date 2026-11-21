@@ -31,8 +31,70 @@ import { createHash, createHmac, randomUUID, randomBytes, randomInt } from 'node
 import { HTTP_STATUSES } from '../../../src/lib/tools/w500/webops-http';
 import { lookupExtension, lookupMime } from '../../../src/lib/tools/w500/webops-mime';
 import { clampLoremCount, loremSentence } from '../../../src/lib/tools/lorem-generator';
+/*
+ * The second wave, moved off the network for the same reason as the first:
+ * checking the dependency rather than believing the catalog. Twenty-four
+ * tools were marked remote while importing nothing but the MCP framework
+ * itself — a round trip to join two strings into a CSS gradient, or to pick a
+ * number in a range. Each is the site's own function, imported, so the
+ * offline answer is the online answer and not a second opinion.
+ */
+import { convertCurl } from '../../../src/lib/tools/w500/dev-format-curl';
+import { encodeMorse, decodeMorse, looksLikeMorse } from '../../../src/lib/tools/w500/writing-morse';
+import { spellNatoText, decodeNato } from '../../../src/lib/tools/w500/writing-nato';
+import { buildGitignore, checkIgnored } from '../../../src/lib/tools/w500/webops-gitignore';
+import {
+  generateRedirects,
+  type Platform,
+  type RedirectOptions,
+  type SiteRules,
+} from '../../../src/lib/tools/w500/webops-redirect';
+import { analyzeGtin } from '../../../src/lib/tools/w500/business2-barcode';
+import {
+  amountToCheckWords,
+  decimalToWords,
+  numberToWords,
+  ordinalToWords,
+} from '../../../src/lib/tools/specialty-converters';
+import { readability, analyzeSentences, fleschBand } from '../../../src/lib/tools/w500/writing';
+import { colorForms, contrastReport, gradientCss } from '../../../src/lib/tools/w500/color-basics';
+import { randomEmails, randomNames, randomNumbers } from '../../../src/lib/tools/random-testdata';
+import { tidyYaml, toYaml, yamlToValue } from '../../../src/lib/tools/w500/data-yaml-lite';
+import { beautifyHtml, beautifySql, beautifyXml } from '../../../src/lib/tools/w500/markup-beautify';
+import { validateCron } from '../../../src/lib/tools/w500/dev-cron-check';
+import { diffText } from '../../../src/lib/tools/w500/text-linediff';
+import { convertZone } from '../../../src/lib/tools/w500/time-zone-shift';
+import {
+  buildPalette,
+  exportCssVariables,
+  exportScaleCss,
+  exportTailwindConfig,
+  exportTailwindTheme,
+  formatRatio,
+  type ColorWheel,
+  type HarmonyRule,
+} from '../../../src/lib/tools/w500/image-edit-palette';
 
 export class LocalToolError extends Error {}
+
+/**
+ * Run an imported site function and report its refusal as one of ours.
+ *
+ * The site's functions raise their own error types — BarcodeInputError from
+ * the GTIN reader, a plain Error from the palette builder — and those are
+ * refusals of the input, not faults. Letting them escape meant the CLI
+ * printed them down the "something went wrong" path and VS Code showed them
+ * with an `Error:` prefix, while the same refusal from a hand-written case
+ * read cleanly. The caller cannot tell the difference and should not have to.
+ */
+function refuse<T>(fn: () => T): T {
+  try {
+    return fn();
+  } catch (e) {
+    if (e instanceof LocalToolError) throw e;
+    throw new LocalToolError(e instanceof Error ? e.message : String(e));
+  }
+}
 
 const parseJson = (text: string): unknown => {
   try {
@@ -70,6 +132,17 @@ export type LocalOptions = Record<string, unknown>;
 
 export function runLocal(id: string, input: string, options: LocalOptions = {}): string | undefined {
   const opt = (key: string, fallback: string) => String(options[key] ?? fallback);
+  /*
+   * A list option arrives as an array from the editor and the MCP schema, and
+   * as the comma-separated string a command line can type. Both mean the same
+   * list, and a tool that accepted only one of them would work in the editor
+   * and not in the terminal.
+   */
+  const list = (value: unknown): string[] => {
+    if (Array.isArray(value)) return value.map(String);
+    if (typeof value !== 'string' || !value.trim()) return [];
+    return value.split(',').map((v) => v.trim()).filter(Boolean);
+  };
 
   switch (id) {
     /* ---------------------------------------------------------- JSON */
@@ -760,6 +833,215 @@ export function runLocal(id: string, input: string, options: LocalOptions = {}):
       }
       return u.toString();
     }
+    /* ------------------------------------- moved off the network, wave two */
+    /*
+     * Each returns exactly the text the MCP handler returns, because the two
+     * answers have to be the same answer. Where the handler prints JSON, the
+     * shape is reproduced field for field and in order: a local answer that
+     * is nearly right is worse than none, since nothing on screen tells the
+     * reader which one they got. cli/scripts/compare-local.ts diffs these
+     * against the live endpoint.
+     */
+    case 'curl-to-code': {
+      // The documented default, which is what --help promises; the server's
+      // own fallback is python and the catalog pins fetch for the editor.
+      const r = refuse(() => convertCurl(input, opt('target', 'fetch') as 'fetch'));
+      if (!r.ok) throw new LocalToolError(`Could not parse the command: ${r.error}`);
+      return r.warnings.length
+        ? `${r.code}\nNotes:\n${r.warnings.map((w) => `- ${w}`).join('\n')}`
+        : r.code;
+    }
+    case 'morse': {
+      const direction = opt('direction', 'auto');
+      const mode = direction === 'auto' ? (looksLikeMorse(input) ? 'decode' : 'encode') : direction;
+      return refuse(() => (mode === 'decode' ? decodeMorse(input).text : encodeMorse(input).morse));
+    }
+    case 'nato': {
+      // The schema's default is "spell", which is the same branch as encode.
+      if (opt('direction', 'spell') === 'decode') return refuse(() => decodeNato(input).text);
+      return refuse(() => spellNatoText(input, {
+        spelling: opt('spelling', 'icao') === 'common' ? 'common' : 'icao',
+        digits: opt('digits', 'icao') === 'plain' ? 'plain' : 'icao',
+        markCase: Boolean(options.markCase),
+      }));
+    }
+    case 'readability': {
+      const opts = { lineBreaksEndSentences: options.lineBreaksEndSentences !== false };
+      const s = refuse(() => readability(input, opts));
+      if (!s) throw new LocalToolError('No words found. Pass some English text.');
+      const r1 = (x: number) => Math.round(x * 10) / 10;
+      const sentences = analyzeSentences(input, opts);
+      const max = options.maxSentences === undefined ? 20 : Number(options.maxSentences) || 0;
+      const band = fleschBand(s.fleschReadingEase);
+      return JSON.stringify(
+        {
+          counts: { sentences: s.sentences, words: s.words, syllables: s.syllables, polysyllables: s.polysyllables, complexWords: s.complexWords },
+          wordsPerSentence: r1(s.wordsPerSentence),
+          syllablesPerWord: Math.round(s.syllablesPerWord * 100) / 100,
+          fleschReadingEase: r1(s.fleschReadingEase),
+          fleschBand: `${band.label} (${band.school})`,
+          fleschKincaidGrade: r1(s.fleschKincaidGrade),
+          gunningFog: r1(s.gunningFog),
+          smog: r1(s.smog),
+          smogShortSample: s.smogShortSample,
+          colemanLiau: r1(s.colemanLiau),
+          automatedReadabilityIndex: r1(s.automatedReadabilityIndex),
+          averageGrade: r1(s.averageGrade),
+          hardSentences: sentences.filter((x) => x.level === 'hard').length,
+          veryHardSentences: sentences.filter((x) => x.level === 'very-hard').length,
+          passiveVoice: sentences.flatMap((x) => x.issues.filter((i) => i.kind === 'passive').map((i) => i.text)),
+          adverbs: sentences.flatMap((x) => x.issues.filter((i) => i.kind === 'adverb').map((i) => i.text)),
+          plainerWords: sentences.flatMap((x) => x.issues.filter((i) => i.kind === 'plain').map((i) => ({ found: i.text, try: i.suggestion }))),
+          hardest: sentences
+            .filter((x) => x.level !== 'ok')
+            .sort((a, b) => b.grade - a.grade)
+            .slice(0, max)
+            .map((x) => ({ sentence: x.text, words: x.words, grade: r1(x.grade), level: x.level })),
+        },
+        null,
+        2,
+      );
+    }
+    case 'gitignore': {
+      const templates = list(options.templates);
+      const r = refuse(() => buildGitignore(templates, String(options.extra ?? '')));
+      const tests = list(options.testPaths).slice(0, 100).map((p) => ({ path: p, ...checkIgnored(r.content, p) }));
+      return JSON.stringify(
+        { content: r.content, unknownTemplates: r.unknown, duplicatesRemoved: r.duplicatesRemoved, tests },
+        null,
+        2,
+      );
+    }
+    case 'redirect-rules': {
+      const r = refuse(() => generateRedirects(input, opt('platform', 'nginx') as Platform, {
+        defaultCode: Number(options.defaultCode ?? 301) as RedirectOptions['defaultCode'],
+        keepQuery: options.keepQuery === undefined ? true : Boolean(options.keepQuery),
+        site: {
+          forceHttps: Boolean(options.forceHttps),
+          host: opt('canonicalHost', 'none') as SiteRules['host'],
+          domain: String(options.domain ?? ''),
+        },
+      }));
+      return JSON.stringify(
+        { platform: opt('platform', 'nginx'), config: r.output, ruleCount: r.rules.length, issues: r.issues, notes: r.notes },
+        null,
+        2,
+      );
+    }
+    case 'barcode-check': {
+      const r = refuse(() => analyzeGtin(input, opt('mode', 'auto') as 'auto' | 'compute' | 'validate'));
+      return JSON.stringify(
+        { digits: r.digits, checkDigit: r.checkDigit, fullCode: r.fullCode, valid: r.valid, gtin14: r.fullCode.padStart(14, '0'), formats: r.formats },
+        null,
+        2,
+      );
+    }
+    case 'number-to-words': {
+      const clean = input.replace(/,/g, '');
+      const w = refuse(() => decimalToWords(clean));
+      if (!w) throw new LocalToolError('Enter a number up to 999 trillion, with an optional decimal part.');
+      return w;
+    }
+    case 'color-palette': {
+      const r = refuse(() => buildPalette(input, opt('rule', 'analogous') as HarmonyRule, opt('wheel', 'rgb') as ColorWheel));
+      const n = String(options.name ?? 'brand') || 'brand';
+      return JSON.stringify(
+        {
+          base: r.base,
+          rule: r.rule,
+          wheel: r.wheel,
+          colors: r.colors.map((c) => ({
+            role: c.role,
+            hex: c.hex,
+            rgb: c.rgbText,
+            hsl: c.hslText,
+            oklch: c.oklchText,
+            contrastOnWhite: formatRatio(c.contrast.onWhite),
+            contrastOnBlack: formatRatio(c.contrast.onBlack),
+            bestTextColor: c.contrast.bestText,
+            wcagNormalText: c.contrast.level,
+          })),
+          scale: Object.fromEntries(r.scale.map((s) => [String(s.step), s.hex])),
+          baseScaleStep: r.scale.find((s) => s.isBase)?.step ?? null,
+          css: `${exportCssVariables(r.colors, `${n}-palette`)}\n\n${exportScaleCss(r.scale, n)}`,
+          tailwindV3: exportTailwindConfig(r.colors, r.scale, n),
+          tailwindV4: exportTailwindTheme(r.colors, r.scale, n),
+        },
+        null,
+        2,
+      );
+    }
+
+    case 'contrast-check':
+      return JSON.stringify(
+        refuse(() => contrastReport(input, String(options.background ?? '#ffffff'))),
+        null,
+        2,
+      );
+    case 'color-convert':
+      return JSON.stringify(refuse(() => colorForms(input)), null, 2);
+    case 'css-gradient': {
+      const stops = list(options.stops);
+      if (stops.length < 2) throw new LocalToolError('A gradient needs at least two colour stops.');
+      return gradientCss(
+        opt('type', 'linear') === 'radial' ? 'radial' : 'linear',
+        stops,
+        Number(options.angle ?? 90),
+      );
+    }
+    case 'random-name':
+      return randomNames(Number(options.count ?? 5), (n) => randomInt(n)).join('\n');
+    case 'random-email':
+      return randomEmails(
+        Number(options.count ?? 5),
+        (n) => randomInt(n),
+        options.domain === undefined ? undefined : String(options.domain),
+      ).join('\n');
+    case 'random-number':
+      return refuse(() =>
+        randomNumbers(
+          Number(options.min ?? 1),
+          Number(options.max ?? 100),
+          Number(options.count ?? 1),
+          opt('mode', 'integer') === 'float' ? 'float' : 'integer',
+          (n) => randomInt(n),
+          // The same source and the same width the server reads from, so the
+          // spread of the floats is the spread the server would have given.
+          () => randomBytes(4).readUInt32BE(0) / 0xffffffff,
+        ),
+      ).join('\n');
+
+    case 'json-to-yaml':
+      return toYaml(parseJson(input));
+    case 'yaml-to-json':
+      return JSON.stringify(refuse(() => yamlToValue(input)), null, 2);
+    case 'yaml-beautify':
+      return tidyYaml(input);
+    case 'html-beautify':
+      return beautifyHtml(input, Number(options.indent ?? 2));
+    case 'xml-beautify':
+      return beautifyXml(input, Number(options.indent ?? 2));
+    case 'sql-beautify':
+      return beautifySql(input);
+    case 'cron': {
+      const r = validateCron(input);
+      if (r.valid) return JSON.stringify(r, null, 2);
+      // The same two shapes the server prints, so a caller parsing the
+      // output does not have to know which side answered.
+      throw new LocalToolError(
+        r.error
+          ? JSON.stringify({ valid: false, error: r.error })
+          : JSON.stringify({ valid: false, errors: r.errors }, null, 2),
+      );
+    }
+    case 'timezone-convert': {
+      const to = String(options.to ?? '');
+      if (!to) throw new LocalToolError('Name the zone to convert to, such as America/New_York.');
+      return JSON.stringify(refuse(() => convertZone(input, to)), null, 2);
+    }
+    case 'text-diff':
+      return diffText(input, String(options.b ?? '')).patch;
+
     default:
       return undefined;
   }

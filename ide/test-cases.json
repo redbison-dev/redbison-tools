@@ -1743,5 +1743,573 @@
       "input": "",
       "contains": "Words:                0"
     }
+  ],
+  "curl-to-code": [
+    {
+      "name": "fetch is the documented default",
+      "input": "curl https://example.com",
+      "contains": "fetch("
+    },
+    {
+      "name": "a POST with a header and a body, in python",
+      "input": "curl -X POST https://api.example.com/v1/items -H 'Authorization: Bearer t' -d '{\"a\":1}'",
+      "options": {
+        "target": "python"
+      },
+      "contains": "requests.post"
+    },
+    {
+      "name": "the method is carried across, not assumed",
+      "input": "curl -X PUT https://example.com/a",
+      "options": {
+        "target": "go"
+      },
+      "contains": "PUT"
+    },
+    {
+      "name": "something that is not curl is refused",
+      "input": "wget https://example.com",
+      "throws": "curl"
+    }
+  ],
+  "morse": [
+    {
+      "name": "text in, morse out",
+      "input": "HELLO",
+      "expect": ".... . .-.. .-.. ---"
+    },
+    {
+      "name": "morse in, text out, without being told which",
+      "input": ".... . .-.. .-.. ---",
+      "expect": "HELLO"
+    },
+    {
+      "name": "a word gap is a slash",
+      "input": "SOS SOS",
+      "contains": "/"
+    }
+  ],
+  "nato": [
+    {
+      "name": "spells a word",
+      "input": "Red",
+      "expect": "Romeo Echo Delta"
+    },
+    {
+      "name": "and reads one back",
+      "input": "Romeo Echo Delta",
+      "options": {
+        "direction": "decode"
+      },
+      "expect": "RED"
+    },
+    {
+      "name": "digits get their ICAO names",
+      "input": "42",
+      "contains": "Fower"
+    }
+  ],
+  "readability": [
+    {
+      "name": "counts and grades a passage",
+      "input": "The quick brown fox jumps over the lazy dog. It was remarkably effective.",
+      "contains": "fleschReadingEase"
+    },
+    {
+      "name": "refuses a passage with no words in it",
+      "input": "!!! ???",
+      "throws": "No words"
+    }
+  ],
+  "gitignore": [
+    {
+      "name": "builds from one template",
+      "input": "",
+      "options": {
+        "templates": "node"
+      },
+      "contains": "node_modules/"
+    },
+    {
+      "name": "two templates are both included",
+      "input": "",
+      "options": {
+        "templates": "node,macos"
+      },
+      "contains": ".DS_Store"
+    },
+    {
+      "name": "an unknown template is reported rather than ignored",
+      "input": "",
+      "options": {
+        "templates": "notathing"
+      },
+      "contains": "notathing"
+    }
+  ],
+  "redirect-rules": [
+    {
+      "name": "writes an nginx rule",
+      "input": "/old /new",
+      "options": {
+        "platform": "nginx"
+      },
+      "contains": "location = /old"
+    },
+    {
+      "name": "and a netlify one, from the same input",
+      "input": "/old /new",
+      "options": {
+        "platform": "netlify"
+      },
+      "contains": "/old"
+    },
+    {
+      "name": "the code on the line wins over the default",
+      "input": "/a /b 302",
+      "options": {
+        "platform": "nginx"
+      },
+      "contains": "302"
+    }
+  ],
+  "barcode-check": [
+    {
+      "name": "computes the check digit for twelve digits",
+      "input": "400638133393",
+      "options": {
+        "mode": "compute"
+      },
+      "contains": "\"checkDigit\": 1"
+    },
+    {
+      "name": "validates a full code",
+      "input": "4006381333931",
+      "options": {
+        "mode": "validate"
+      },
+      "contains": "\"valid\": true"
+    },
+    {
+      "name": "and says so when it is wrong",
+      "input": "4006381333932",
+      "options": {
+        "mode": "validate"
+      },
+      "contains": "\"valid\": false"
+    },
+    {
+      "name": "letters are not a barcode",
+      "input": "40063813339x",
+      "throws": "digits"
+    }
+  ],
+  "number-to-words": [
+    {
+      "name": "writes a number out",
+      "input": "1234",
+      "expect": "one thousand two hundred thirty-four"
+    },
+    {
+      "name": "reads the decimal part digit by digit",
+      "input": "1234.56",
+      "contains": "point"
+    },
+    {
+      "name": "negatives say so",
+      "input": "-17",
+      "contains": "negative"
+    },
+    {
+      "name": "commas in the input are ignored",
+      "input": "1,234",
+      "expect": "one thousand two hundred thirty-four"
+    }
+  ],
+  "color-palette": [
+    {
+      "name": "builds a palette from a hex colour",
+      "input": "#b32020",
+      "contains": "\"base\": \"#b32020\""
+    },
+    {
+      "name": "the rule changes the colours",
+      "input": "#b32020",
+      "options": {
+        "rule": "triadic"
+      },
+      "contains": "triadic"
+    },
+    {
+      "name": "something that is not a colour is refused",
+      "input": "sample text",
+      "throws": "colour"
+    }
+  ],
+  "contrast-check": [
+    {
+      "name": "black on white is the maximum",
+      "input": "#000000",
+      "options": {
+        "background": "#ffffff"
+      },
+      "contains": "\"ratio\": 21"
+    },
+    {
+      "name": "the AA threshold is not rounded into a pass",
+      "input": "#777777",
+      "options": {
+        "background": "#ffffff"
+      },
+      "contains": "\"AA\": false"
+    },
+    {
+      "name": "a grey that does pass AA",
+      "input": "#767676",
+      "options": {
+        "background": "#ffffff"
+      },
+      "contains": "\"AA\": true"
+    },
+    {
+      "name": "something that is not a colour is refused",
+      "input": "nonsense",
+      "options": {
+        "background": "#fff"
+      },
+      "throws": "Invalid hex"
+    }
+  ],
+  "color-convert": [
+    {
+      "name": "hex in, every form out",
+      "input": "#3B82F6",
+      "contains": "rgb(59, 130, 246)"
+    },
+    {
+      "name": "rgb in, hex out",
+      "input": "rgb(59,130,246)",
+      "contains": "#3b82f6"
+    },
+    {
+      "name": "hsl is read too",
+      "input": "hsl(217,91%,60%)",
+      "contains": "\"hex\""
+    },
+    {
+      "name": "the three-digit form expands",
+      "input": "#abc",
+      "contains": "#aabbcc"
+    },
+    {
+      "name": "nonsense is refused rather than guessed at",
+      "input": "not a colour",
+      "throws": "Unrecognized"
+    }
+  ],
+  "css-gradient": [
+    {
+      "name": "a linear gradient with an angle",
+      "input": "",
+      "options": {
+        "type": "linear",
+        "angle": 45,
+        "stops": "#b32020,#d4af37"
+      },
+      "expect": "linear-gradient(45deg, #b32020, #d4af37)"
+    },
+    {
+      "name": "90 degrees when none is given",
+      "input": "",
+      "options": {
+        "type": "linear",
+        "stops": "#000,#fff"
+      },
+      "expect": "linear-gradient(90deg, #000, #fff)"
+    },
+    {
+      "name": "radial ignores the angle",
+      "input": "",
+      "options": {
+        "type": "radial",
+        "angle": 45,
+        "stops": "#000,#fff"
+      },
+      "expect": "radial-gradient(circle, #000, #fff)"
+    },
+    {
+      "name": "one stop is not a gradient",
+      "input": "",
+      "options": {
+        "type": "linear",
+        "stops": "#000"
+      },
+      "throws": "two colour stops"
+    }
+  ],
+  "random-name": [
+    {
+      "name": "one name is two words",
+      "input": "",
+      "options": {
+        "count": 1
+      },
+      "matches": "^\\S+ \\S+$"
+    },
+    {
+      "name": "asks for five and gets five lines",
+      "input": "",
+      "options": {
+        "count": 5
+      },
+      "matches": "^(.+\\n){4}.+$"
+    }
+  ],
+  "random-email": [
+    {
+      "name": "looks like an address",
+      "input": "",
+      "options": {
+        "count": 1
+      },
+      "matches": "^[a-z0-9]+@[a-z.]+$"
+    },
+    {
+      "name": "a fixed domain is used for all of them",
+      "input": "",
+      "options": {
+        "count": 3,
+        "domain": "example.com"
+      },
+      "matches": "@example\\.com$"
+    }
+  ],
+  "random-number": [
+    {
+      "name": "one integer in the range",
+      "input": "",
+      "options": {
+        "min": 1,
+        "max": 1,
+        "count": 1
+      },
+      "expect": "1"
+    },
+    {
+      "name": "stays inside the range",
+      "input": "",
+      "options": {
+        "min": 5,
+        "max": 6,
+        "count": 20
+      },
+      "matchesNot": "[^56\\n]"
+    },
+    {
+      "name": "a backwards range is refused",
+      "input": "",
+      "options": {
+        "min": 10,
+        "max": 1
+      },
+      "throws": "max must be"
+    }
+  ],
+  "json-to-yaml": [
+    {
+      "name": "a flat object",
+      "input": "{\"a\":1,\"b\":true}",
+      "expect": "a: 1\nb: true"
+    },
+    {
+      "name": "a nested one indents",
+      "input": "{\"c\":{\"d\":1}}",
+      "contains": "  d: 1"
+    },
+    {
+      "name": "a value that would read back as something else is quoted",
+      "input": "{\"a\":\"1.2.3\",\"b\":\"yes: no\",\"c\":\"plain\"}",
+      "contains": "\"1.2.3\""
+    },
+    {
+      "name": "an empty list keeps its shape",
+      "input": "{\"a\":[]}",
+      "expect": "a: []"
+    },
+    {
+      "name": "invalid JSON is refused",
+      "input": "{not json",
+      "throws": "JSON"
+    }
+  ],
+  "yaml-to-json": [
+    {
+      "name": "maps and lists",
+      "input": "a: 1\nb:\n  - x\n  - y",
+      "contains": "\"x\""
+    },
+    {
+      "name": "reads booleans and numbers, not strings",
+      "input": "n: 2\nt: true",
+      "contains": "\"n\": 2"
+    },
+    {
+      "name": "a comment is ignored",
+      "input": "a: 1 # note",
+      "contains": "\"a\": 1"
+    }
+  ],
+  "yaml-beautify": [
+    {
+      "name": "tabs become spaces and trailing space goes",
+      "input": "a:\t1   ",
+      "expect": "a:  1"
+    },
+    {
+      "name": "runs of blank lines collapse to one",
+      "input": "a: 1\n\n\n\nb: 2",
+      "expect": "a: 1\n\nb: 2"
+    }
+  ],
+  "html-beautify": [
+    {
+      "name": "nests the elements",
+      "input": "<div><p>hi</p></div>",
+      "contains": "  <p>"
+    },
+    {
+      "name": "a void element does not open a level",
+      "input": "<div><br><p>x</p></div>",
+      "contains": "  <p>"
+    },
+    {
+      "name": "the indent can be changed",
+      "input": "<div><p>x</p></div>",
+      "options": {
+        "indent": 4
+      },
+      "contains": "    <p>"
+    }
+  ],
+  "xml-beautify": [
+    {
+      "name": "nests the elements",
+      "input": "<root><a>1</a></root>",
+      "contains": "  <a>"
+    },
+    {
+      "name": "the declaration stays at the top",
+      "input": "<?xml version=\"1.0\"?><r><a/></r>",
+      "contains": "<?xml"
+    },
+    {
+      "name": "a self-closing tag does not open a level",
+      "input": "<r><a/><b/></r>",
+      "matchesNot": "^\\s\\s\\s\\s<b"
+    }
+  ],
+  "sql-beautify": [
+    {
+      "name": "uppercases the keywords",
+      "input": "select a from t",
+      "contains": "SELECT"
+    },
+    {
+      "name": "puts each clause on its own line",
+      "input": "select a from t where x=1",
+      "contains": "\nFROM"
+    },
+    {
+      "name": "AND is indented under the clause it belongs to",
+      "input": "select a from t where x=1 and y=2",
+      "contains": "\n  AND"
+    }
+  ],
+  "cron": [
+    {
+      "name": "a valid expression",
+      "input": "*/15 * * * *",
+      "contains": "\"valid\": true"
+    },
+    {
+      "name": "names each field in the summary",
+      "input": "0 9 * * 1",
+      "contains": "day-of-week=1"
+    },
+    {
+      "name": "sunday as 7 is accepted, as Vixie cron does",
+      "input": "0 0 * * 7",
+      "contains": "\"valid\": true"
+    },
+    {
+      "name": "a minute out of range is refused",
+      "input": "99 * * * *",
+      "throws": "out of range"
+    },
+    {
+      "name": "four fields is not a cron expression",
+      "input": "* * * *",
+      "throws": "5 fields"
+    }
+  ],
+  "timezone-convert": [
+    {
+      "name": "moves the wall clock",
+      "input": "2026-01-15T14:30:00Z",
+      "options": {
+        "to": "America/New_York"
+      },
+      "contains": "2026-01-15T09:30:00"
+    },
+    {
+      "name": "daylight saving is taken from the zone database",
+      "input": "2026-07-15T14:30:00Z",
+      "options": {
+        "to": "America/New_York"
+      },
+      "contains": "2026-07-15T10:30:00"
+    },
+    {
+      "name": "a timestamp it cannot read is refused",
+      "input": "not a date",
+      "options": {
+        "to": "UTC"
+      },
+      "throws": "Invalid timestamp"
+    },
+    {
+      "name": "so is a zone that does not exist",
+      "input": "2026-01-15T14:30:00Z",
+      "options": {
+        "to": "Mars/Olympus"
+      },
+      "throws": "time zone"
+    }
+  ],
+  "text-diff": [
+    {
+      "name": "marks what changed",
+      "input": "one\ntwo\nthree",
+      "options": {
+        "b": "one\n2\nthree"
+      },
+      "contains": "- two"
+    },
+    {
+      "name": "and what was added",
+      "input": "a\nb",
+      "options": {
+        "b": "a\nb\nc"
+      },
+      "contains": "+ c"
+    },
+    {
+      "name": "an unchanged line keeps its two spaces",
+      "input": "a",
+      "options": {
+        "b": "a"
+      },
+      "expect": "  a"
+    }
   ]
 }

@@ -45,6 +45,56 @@ async function run(args: string[]) {
 
 afterEach(() => vi.restoreAllMocks());
 
+describe('searching for a tool', () => {
+  it('finds one by what it does and prints only the answer', async () => {
+    const r = await run(['search', 'unix', 'timestamp']);
+    expect(r.code).toBe(0);
+    expect(r.out.split('\n')[0]).toMatch(/^epoch\s+local/);
+    // The count and the hint are not the answer, so a pipe must not see them.
+    expect(r.out).not.toMatch(/--help explains/);
+    expect(r.err).toContain('--help explains');
+  });
+
+  it('takes the same query as a flag', async () => {
+    const r = await run(['--search', 'pretty print json']);
+    expect(r.code).toBe(0);
+    expect(r.out).toContain('json-format');
+  });
+
+  it('exits 1 and says where else to look when nothing matches', async () => {
+    const r = await run(['search', 'qr', 'code']);
+    expect(r.code).toBe(1);
+    expect(r.out).toBe('');
+    expect(r.err).toContain('redbison.dev');
+  });
+
+  it('asks for a query rather than listing everything', async () => {
+    const r = await run(['search']);
+    expect(r.code).toBe(2);
+    expect(r.out).toBe('');
+    expect(r.err).toContain('search for');
+  });
+
+  it('answers in JSON when asked, for a script', async () => {
+    const r = await run(['search', '--json', 'uuid']);
+    expect(r.code).toBe(0);
+    const parsed = JSON.parse(r.out) as { id: string; offline: boolean; matched: string }[];
+    expect(parsed[0].id).toBe('uuid');
+    expect(parsed[0].offline).toBe(true);
+    expect(parsed[0].matched).toBe('name');
+  });
+
+  it('explains itself, and does not shadow a tool called find', async () => {
+    const r = await run(['search', '--help']);
+    expect(r.code).toBe(0);
+    expect(r.out).toContain('find a tool by what it does');
+    expect(r.err).toBe('');
+    const hash = await run(['hash', 'find']);
+    expect(hash.code).toBe(0);
+    expect(hash.out.trim()).toMatch(/^[0-9a-f]{64}$/);
+  });
+});
+
 describe('running a tool', () => {
   it('writes the answer to stdout and nothing else', async () => {
     const r = await run(['json-format', '{"a":1}']);
@@ -164,7 +214,7 @@ describe('help', () => {
 
   it('a tool help page says whether it uses the network', async () => {
     expect((await run(['json-format', '--help'])).out).toMatch(/No network/);
-    expect((await run(['yaml-to-json', '--help'])).out).toMatch(/Sends the input/);
+    expect((await run(['js-beautify', '--help'])).out).toMatch(/Sends the input/);
   });
 
   it('a tool help page shows a worked example', async () => {
@@ -174,18 +224,19 @@ describe('help', () => {
 
 describe('what is sent is measured before it is sent', () => {
   it('counts option text, not only the input', async () => {
-    // text-diff takes its second body as an option, and --b reads a file, so
+    // json-schema-validate takes its schema as an option, and a text option
+    // reads a file, so
     // a guard that looked only at the input would have waved through
     // megabytes.
     const { runTool, RunError } = await import('../run');
     await expect(
-      runTool('text-diff', 'small', { b: 'x'.repeat(1_200_000) }),
+      runTool('json-schema-validate', '{}', { schema: 'x'.repeat(1_200_000) }),
     ).rejects.toBeInstanceOf(RunError);
   });
 
   it('says how big it was and what the limit is', async () => {
     const { runTool } = await import('../run');
-    await expect(runTool('text-diff', 'small', { b: 'x'.repeat(1_200_000) })).rejects.toThrow(
+    await expect(runTool('json-schema-validate', '{}', { schema: 'x'.repeat(1_200_000) })).rejects.toThrow(
       /1\.2MB.*limit is 1MB/s,
     );
   });
@@ -193,7 +244,7 @@ describe('what is sent is measured before it is sent', () => {
 
 describe('--offline', () => {
   it('refuses a server tool and says so', async () => {
-    const r = await run(['yaml-to-json', '--offline', 'a: 1']);
+    const r = await run(['js-beautify', '--offline', 'var a=1']);
     expect(r.code).toBe(1);
     expect(r.err).toMatch(/nothing was sent/);
   });

@@ -9,6 +9,8 @@ export type CliTool = {
   native: boolean;
   url: string;
   mcp: { name: string; input?: string; args?: Record<string, unknown> } | null;
+  /** What people search for: the site's own keywords for this tool. */
+  keywords: string;
 };
 
 export const GROUP_ORDER = ["Data and JSON","Text","Encoding and hashing","Formatters","Web and network","Generators","Time and numbers","Comparing","Colour and design","Other"] as const;
@@ -26,7 +28,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "binary_text_convert",
       "input": "input"
-    }
+    },
+    "keywords": "binary to text converter utf 8 bytes hex decode or and back with real handling"
   },
   {
     "id": "csv-to-json",
@@ -40,7 +43,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "csv_to_json",
       "input": "text"
-    }
+    },
+    "keywords": "csv json converter spreadsheet data transform convert to format"
   },
   {
     "id": "curl-to-code",
@@ -48,7 +52,7 @@ export const TOOLS: CliTool[] = [
     "summary": "Turn a curl command into code.",
     "kind": "transform",
     "group": "Data and JSON",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/curl-converter",
     "mcp": {
@@ -57,7 +61,8 @@ export const TOOLS: CliTool[] = [
       "args": {
         "target": "fetch"
       }
-    }
+    },
+    "keywords": "curl to python fetch converter requests turn a command into axios go or php"
   },
   {
     "id": "from-hex",
@@ -68,7 +73,8 @@ export const TOOLS: CliTool[] = [
     "offline": true,
     "native": true,
     "url": "https://redbison.dev/binary-text-converter",
-    "mcp": null
+    "mcp": null,
+    "keywords": "binary to text converter utf 8 bytes hex decode or and back with real handling"
   },
   {
     "id": "ieee754",
@@ -82,7 +88,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "ieee754_float",
       "input": "value"
-    }
+    },
+    "keywords": "ieee 754 converter float to hex binary32 binary64 binary16 half single double precision exponent mantissa subnormal nan see the sign and fraction bits of floats"
   },
   {
     "id": "json-format",
@@ -99,7 +106,8 @@ export const TOOLS: CliTool[] = [
       "args": {
         "indent": 2
       }
-    }
+    },
+    "keywords": "json formatter validator prettify minify parse stringify beautifier query jsonpath format validate and documents"
   },
   {
     "id": "json-minify",
@@ -116,7 +124,8 @@ export const TOOLS: CliTool[] = [
       "args": {
         "indent": 2
       }
-    }
+    },
+    "keywords": "json formatter validator prettify minify parse stringify beautifier query jsonpath format validate and documents"
   },
   {
     "id": "json-schema-validate",
@@ -130,7 +139,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "json_schema_validate",
       "input": "data"
-    }
+    },
+    "keywords": "json schema validator generate from ajv validate against a or infer sample"
   },
   {
     "id": "json-to-csv",
@@ -144,7 +154,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "json_to_csv",
       "input": "json"
-    }
+    },
+    "keywords": "csv json converter spreadsheet data transform convert to format"
   },
   {
     "id": "json-to-query",
@@ -155,7 +166,8 @@ export const TOOLS: CliTool[] = [
     "offline": true,
     "native": true,
     "url": "https://redbison.dev/json-beautify-validate-query",
-    "mcp": null
+    "mcp": null,
+    "keywords": "json formatter validator prettify minify parse stringify beautifier query jsonpath format validate and documents"
   },
   {
     "id": "json-to-yaml",
@@ -163,13 +175,14 @@ export const TOOLS: CliTool[] = [
     "summary": "Convert the selected JSON to YAML.",
     "kind": "transform",
     "group": "Data and JSON",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/json-yaml",
     "mcp": {
       "name": "json_to_yaml",
       "input": "json"
-    }
+    },
+    "keywords": "json yaml yml converter format transform convert between and formats"
   },
   {
     "id": "json-validate",
@@ -183,7 +196,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "json_validate",
       "input": "text"
-    }
+    },
+    "keywords": "json formatter validator prettify minify parse stringify beautifier query jsonpath format validate and documents"
   },
   {
     "id": "markdown-table",
@@ -197,7 +211,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "markdown_table",
       "input": "text"
-    }
+    },
+    "keywords": "markdown table generator csv to github build tables or convert and spreadsheets them"
   },
   {
     "id": "military-time",
@@ -211,7 +226,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "military_time_convert",
       "input": "time"
-    }
+    },
+    "keywords": "military time converter 24 hour clock to 12 am pm 1430 conversion and back with spoken readings"
   },
   {
     "id": "number-base",
@@ -225,7 +241,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "number_base_convert",
       "input": "value"
-    }
+    },
+    "keywords": "number base converter binary to hex decimal octal radix 36 twos complement signed unsigned bigint fraction convert and any 2 with two s"
   },
   {
     "id": "query-to-json",
@@ -236,7 +253,8 @@ export const TOOLS: CliTool[] = [
     "offline": true,
     "native": true,
     "url": "https://redbison.dev/json-beautify-validate-query",
-    "mcp": null
+    "mcp": null,
+    "keywords": "json formatter validator prettify minify parse stringify beautifier query jsonpath format validate and documents"
   },
   {
     "id": "sort-json-keys",
@@ -247,7 +265,8 @@ export const TOOLS: CliTool[] = [
     "offline": true,
     "native": true,
     "url": "https://redbison.dev/json-beautify-validate-query",
-    "mcp": null
+    "mcp": null,
+    "keywords": "json formatter validator prettify minify parse stringify beautifier query jsonpath format validate and documents"
   },
   {
     "id": "strip-html",
@@ -258,7 +277,8 @@ export const TOOLS: CliTool[] = [
     "offline": true,
     "native": true,
     "url": "https://redbison.dev/html-to-markdown-converter",
-    "mcp": null
+    "mcp": null,
+    "keywords": "html to markdown converter turn page into readme from pages or a cms turned tidy for docs and readmes"
   },
   {
     "id": "to-hex",
@@ -269,7 +289,8 @@ export const TOOLS: CliTool[] = [
     "offline": true,
     "native": true,
     "url": "https://redbison.dev/binary-text-converter",
-    "mcp": null
+    "mcp": null,
+    "keywords": "binary to text converter utf 8 bytes hex decode or and back with real handling"
   },
   {
     "id": "toml-convert",
@@ -283,7 +304,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "toml_convert",
       "input": "text"
-    }
+    },
+    "keywords": "toml to json yaml validator convert or and back with validation"
   },
   {
     "id": "tsv-parse",
@@ -297,7 +319,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "tsv_parse",
       "input": "text"
-    }
+    },
+    "keywords": "tsv parser tab separated values file reader converter parse and convert files"
   },
   {
     "id": "yaml-to-json",
@@ -305,13 +328,14 @@ export const TOOLS: CliTool[] = [
     "summary": "Convert the selected YAML to JSON.",
     "kind": "transform",
     "group": "Data and JSON",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/json-yaml",
     "mcp": {
       "name": "yaml_to_json",
       "input": "yaml"
-    }
+    },
+    "keywords": "json yaml yml converter format transform convert between and formats"
   },
   {
     "id": "ascii-art",
@@ -328,7 +352,8 @@ export const TOOLS: CliTool[] = [
       "args": {
         "font": "Standard"
       }
-    }
+    },
+    "keywords": "ascii art text generator figlet banner font big in dozens of fonts"
   },
   {
     "id": "case-convert",
@@ -345,7 +370,8 @@ export const TOOLS: CliTool[] = [
       "args": {
         "style": "snake"
       }
-    }
+    },
+    "keywords": "case converter text uppercase lowercase title camel pascal snake kebab convert formats"
   },
   {
     "id": "char-frequency",
@@ -356,7 +382,8 @@ export const TOOLS: CliTool[] = [
     "offline": true,
     "native": true,
     "url": "https://redbison.dev/word-counter",
-    "mcp": null
+    "mcp": null,
+    "keywords": "word counter character count words online reading time characters sentences and social limits"
   },
   {
     "id": "comma-to-lines",
@@ -370,7 +397,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "comma_to_lines",
       "input": "text"
-    }
+    },
+    "keywords": "comma to lines converter csv line convert separated"
   },
   {
     "id": "dedupe-lines",
@@ -384,7 +412,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "remove_duplicate_lines",
       "input": "text"
-    }
+    },
+    "keywords": "remove duplicate lines text deduplication unique line deduplicator from"
   },
   {
     "id": "escape-characters",
@@ -402,7 +431,8 @@ export const TOOLS: CliTool[] = [
         "mode": "escape",
         "format": "json"
       }
-    }
+    },
+    "keywords": "escape characters remove add backslash string unescape text or"
   },
   {
     "id": "extract-emails",
@@ -413,7 +443,8 @@ export const TOOLS: CliTool[] = [
     "offline": true,
     "native": true,
     "url": "https://redbison.dev/online-text-processor",
-    "mcp": null
+    "mcp": null,
+    "keywords": "text processor formatter cleaner case converter duplicate remover line sorter remove lines extra spaces empty escape characters add upper lower camel title to comma newline manipulation cleaning formatting clean format and manipulate"
   },
   {
     "id": "extract-numbers",
@@ -424,7 +455,8 @@ export const TOOLS: CliTool[] = [
     "offline": true,
     "native": true,
     "url": "https://redbison.dev/online-text-processor",
-    "mcp": null
+    "mcp": null,
+    "keywords": "text processor formatter cleaner case converter duplicate remover line sorter remove lines extra spaces empty escape characters add upper lower camel title to comma newline manipulation cleaning formatting clean format and manipulate"
   },
   {
     "id": "extract-urls",
@@ -435,7 +467,8 @@ export const TOOLS: CliTool[] = [
     "offline": true,
     "native": true,
     "url": "https://redbison.dev/online-text-processor",
-    "mcp": null
+    "mcp": null,
+    "keywords": "text processor formatter cleaner case converter duplicate remover line sorter remove lines extra spaces empty escape characters add upper lower camel title to comma newline manipulation cleaning formatting clean format and manipulate"
   },
   {
     "id": "find-duplicates",
@@ -449,7 +482,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "find_duplicate_entries",
       "input": "text"
-    }
+    },
+    "keywords": "find duplicate entries finder text analysis detector line analyzer duplicates checker and analyze in"
   },
   {
     "id": "html-escape",
@@ -460,7 +494,8 @@ export const TOOLS: CliTool[] = [
     "offline": true,
     "native": true,
     "url": "https://redbison.dev/escape-characters",
-    "mcp": null
+    "mcp": null,
+    "keywords": "escape characters remove add backslash string unescape text or"
   },
   {
     "id": "html-unescape",
@@ -471,7 +506,8 @@ export const TOOLS: CliTool[] = [
     "offline": true,
     "native": true,
     "url": "https://redbison.dev/escape-characters",
-    "mcp": null
+    "mcp": null,
+    "keywords": "escape characters remove add backslash string unescape text or"
   },
   {
     "id": "lines-to-comma",
@@ -485,7 +521,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "lines_to_comma",
       "input": "text"
-    }
+    },
+    "keywords": "lines to comma line converter separated csv convert"
   },
   {
     "id": "morse",
@@ -493,13 +530,14 @@ export const TOOLS: CliTool[] = [
     "summary": "Convert the selection to or from Morse.",
     "kind": "transform",
     "group": "Text",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/morse-code-translator",
     "mcp": {
       "name": "morse_code",
       "input": "input"
-    }
+    },
+    "keywords": "morse code translator text to decoder audio and back with light playback"
   },
   {
     "id": "nato",
@@ -507,13 +545,14 @@ export const TOOLS: CliTool[] = [
     "summary": "Spell the selection in the NATO alphabet.",
     "kind": "transform",
     "group": "Text",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/nato-phonetic-alphabet",
     "mcp": {
       "name": "nato_phonetic",
       "input": "text"
-    }
+    },
+    "keywords": "nato phonetic alphabet converter spelling alfa bravo spell text with charlie and read it aloud"
   },
   {
     "id": "number-lines",
@@ -524,7 +563,8 @@ export const TOOLS: CliTool[] = [
     "offline": true,
     "native": true,
     "url": "https://redbison.dev/online-text-processor",
-    "mcp": null
+    "mcp": null,
+    "keywords": "text processor formatter cleaner case converter duplicate remover line sorter remove lines extra spaces empty escape characters add upper lower camel title to comma newline manipulation cleaning formatting clean format and manipulate"
   },
   {
     "id": "readability",
@@ -532,13 +572,14 @@ export const TOOLS: CliTool[] = [
     "summary": "Reading grade and sentence length.",
     "kind": "inspect",
     "group": "Text",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/readability-checker",
     "mcp": {
       "name": "readability",
       "input": "text"
-    }
+    },
+    "keywords": "readability checker flesch kincaid grade level score gunning fog and smog with hard sentences"
   },
   {
     "id": "regex-test",
@@ -552,7 +593,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "regex_test",
       "input": "text"
-    }
+    },
+    "keywords": "regular expression pattern matching regex test validator and debug expressions"
   },
   {
     "id": "remove-empty-lines",
@@ -566,7 +608,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "remove_empty_lines",
       "input": "text"
-    }
+    },
+    "keywords": "remove empty lines blank text line cleaner remover and"
   },
   {
     "id": "remove-extra-spaces",
@@ -580,7 +623,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "remove_extra_spaces",
       "input": "text"
-    }
+    },
+    "keywords": "remove extra spaces text space cleaner whitespace remover normalizer clean from"
   },
   {
     "id": "reverse-lines",
@@ -591,7 +635,8 @@ export const TOOLS: CliTool[] = [
     "offline": true,
     "native": true,
     "url": "https://redbison.dev/online-text-processor",
-    "mcp": null
+    "mcp": null,
+    "keywords": "text processor formatter cleaner case converter duplicate remover line sorter remove lines extra spaces empty escape characters add upper lower camel title to comma newline manipulation cleaning formatting clean format and manipulate"
   },
   {
     "id": "reverse-text",
@@ -602,7 +647,8 @@ export const TOOLS: CliTool[] = [
     "offline": true,
     "native": true,
     "url": "https://redbison.dev/online-text-processor",
-    "mcp": null
+    "mcp": null,
+    "keywords": "text processor formatter cleaner case converter duplicate remover line sorter remove lines extra spaces empty escape characters add upper lower camel title to comma newline manipulation cleaning formatting clean format and manipulate"
   },
   {
     "id": "rot13",
@@ -613,7 +659,8 @@ export const TOOLS: CliTool[] = [
     "offline": true,
     "native": true,
     "url": "https://redbison.dev/escape-characters",
-    "mcp": null
+    "mcp": null,
+    "keywords": "escape characters remove add backslash string unescape text or"
   },
   {
     "id": "shuffle-lines",
@@ -624,7 +671,8 @@ export const TOOLS: CliTool[] = [
     "offline": true,
     "native": true,
     "url": "https://redbison.dev/online-text-processor",
-    "mcp": null
+    "mcp": null,
+    "keywords": "text processor formatter cleaner case converter duplicate remover line sorter remove lines extra spaces empty escape characters add upper lower camel title to comma newline manipulation cleaning formatting clean format and manipulate"
   },
   {
     "id": "sort-lines",
@@ -635,7 +683,8 @@ export const TOOLS: CliTool[] = [
     "offline": true,
     "native": true,
     "url": "https://redbison.dev/online-text-processor",
-    "mcp": null
+    "mcp": null,
+    "keywords": "text processor formatter cleaner case converter duplicate remover line sorter remove lines extra spaces empty escape characters add upper lower camel title to comma newline manipulation cleaning formatting clean format and manipulate"
   },
   {
     "id": "trim-lines",
@@ -646,7 +695,8 @@ export const TOOLS: CliTool[] = [
     "offline": true,
     "native": true,
     "url": "https://redbison.dev/remove-extra-spaces",
-    "mcp": null
+    "mcp": null,
+    "keywords": "remove extra spaces text space cleaner whitespace remover normalizer clean from"
   },
   {
     "id": "unique-words",
@@ -657,7 +707,8 @@ export const TOOLS: CliTool[] = [
     "offline": true,
     "native": true,
     "url": "https://redbison.dev/word-counter",
-    "mcp": null
+    "mcp": null,
+    "keywords": "word counter character count words online reading time characters sentences and social limits"
   },
   {
     "id": "url-decode",
@@ -671,7 +722,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "url_decode",
       "input": "text"
-    }
+    },
+    "keywords": "escape characters remove add backslash string unescape text or"
   },
   {
     "id": "url-encode",
@@ -685,7 +737,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "url_encode",
       "input": "text"
-    }
+    },
+    "keywords": "escape characters remove add backslash string unescape text or"
   },
   {
     "id": "word-count",
@@ -699,7 +752,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "word_count",
       "input": "text"
-    }
+    },
+    "keywords": "word counter character count words online reading time characters sentences and social limits"
   },
   {
     "id": "wrap-lines",
@@ -710,7 +764,8 @@ export const TOOLS: CliTool[] = [
     "offline": true,
     "native": true,
     "url": "https://redbison.dev/online-text-processor",
-    "mcp": null
+    "mcp": null,
+    "keywords": "text processor formatter cleaner case converter duplicate remover line sorter remove lines extra spaces empty escape characters add upper lower camel title to comma newline manipulation cleaning formatting clean format and manipulate"
   },
   {
     "id": "base64-decode",
@@ -724,7 +779,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "base64_decode",
       "input": "text"
-    }
+    },
+    "keywords": "encoding tools base64 url encode decode html entities and text in various formats"
   },
   {
     "id": "base64-encode",
@@ -738,7 +794,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "base64_encode",
       "input": "text"
-    }
+    },
+    "keywords": "encoding tools base64 url encode decode html entities and text in various formats"
   },
   {
     "id": "bcrypt-hash",
@@ -752,7 +809,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "bcrypt_hash",
       "input": "password"
-    }
+    },
+    "keywords": "bcrypt hash generator password hashing salt rounds secure authentication generate and verify hashes"
   },
   {
     "id": "bcrypt-verify",
@@ -766,7 +824,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "bcrypt_verify",
       "input": "password"
-    }
+    },
+    "keywords": "bcrypt hash generator password hashing salt rounds secure authentication generate and verify hashes"
   },
   {
     "id": "hash",
@@ -783,7 +842,8 @@ export const TOOLS: CliTool[] = [
       "args": {
         "algorithm": "sha256"
       }
-    }
+    },
+    "keywords": "hash generator md5 sha1 sha256 sha512 checksum digest generate sha and other hashes"
   },
   {
     "id": "hash-compare",
@@ -797,7 +857,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "hash_compare",
       "input": "a"
-    }
+    },
+    "keywords": "hash file verifier checksum integrity md5 sha256 validation verify using checksums"
   },
   {
     "id": "hmac",
@@ -811,7 +872,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "hmac",
       "input": "message"
-    }
+    },
+    "keywords": "hmac generator sha256 webhook signature verify sha 1 384 and 512 in hex or base64"
   },
   {
     "id": "jwt-decode",
@@ -825,7 +887,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "jwt_decode",
       "input": "token"
-    }
+    },
+    "keywords": "jwt json web token decoder verifier authentication decode and verify tokens"
   },
   {
     "id": "password",
@@ -841,7 +904,8 @@ export const TOOLS: CliTool[] = [
       "args": {
         "length": 20
       }
-    }
+    },
+    "keywords": "password generator secure random strong passphrase generate passwords"
   },
   {
     "id": "password-strength",
@@ -855,7 +919,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "password_strength",
       "input": "password"
-    }
+    },
+    "keywords": "password strength checker how secure is my entropy crack time and weaknesses of a offline"
   },
   {
     "id": "css-beautify",
@@ -869,7 +934,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "css_beautify",
       "input": "css"
-    }
+    },
+    "keywords": "css beautifier formatter minify format and sort scss less"
   },
   {
     "id": "html-beautify",
@@ -877,13 +943,14 @@ export const TOOLS: CliTool[] = [
     "summary": "Indent the selected HTML.",
     "kind": "transform",
     "group": "Formatters",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/html-beautify",
     "mcp": {
       "name": "html_beautify",
       "input": "html"
-    }
+    },
+    "keywords": "html formatter beautifier markup pretty print format and beautify code"
   },
   {
     "id": "js-beautify",
@@ -897,7 +964,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "js_beautify",
       "input": "code"
-    }
+    },
+    "keywords": "javascript beautifier js formatter minify prettify format or and typescript"
   },
   {
     "id": "sql-beautify",
@@ -905,13 +973,14 @@ export const TOOLS: CliTool[] = [
     "summary": "Indent and align the selected SQL.",
     "kind": "transform",
     "group": "Formatters",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/sql-beautify",
     "mcp": {
       "name": "sql_beautify",
       "input": "sql"
-    }
+    },
+    "keywords": "sql formatter beautifier query format pretty print and beautify queries"
   },
   {
     "id": "xml-beautify",
@@ -919,13 +988,14 @@ export const TOOLS: CliTool[] = [
     "summary": "Indent the selected XML.",
     "kind": "transform",
     "group": "Formatters",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/xml-beautify",
     "mcp": {
       "name": "xml_beautify",
       "input": "xml"
-    }
+    },
+    "keywords": "xml formatter beautifier markup pretty print validate schema format and beautify documents"
   },
   {
     "id": "yaml-beautify",
@@ -933,13 +1003,14 @@ export const TOOLS: CliTool[] = [
     "summary": "Re-indent the selected YAML.",
     "kind": "transform",
     "group": "Formatters",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/yaml-beautify",
     "mcp": {
       "name": "yaml_beautify",
       "input": "yaml"
-    }
+    },
+    "keywords": "yaml yml formatter beautifier configuration pretty print format and beautify files"
   },
   {
     "id": "chmod",
@@ -953,7 +1024,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "chmod_convert",
       "input": "mode"
-    }
+    },
+    "keywords": "chmod calculator 755 644 unix file permissions octal between symbolic and checkboxes"
   },
   {
     "id": "cron",
@@ -961,13 +1033,14 @@ export const TOOLS: CliTool[] = [
     "summary": "Describe the selected cron expression in words.",
     "kind": "inspect",
     "group": "Web and network",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/cron-expression-generator",
     "mcp": {
       "name": "cron_validate",
       "input": "expression"
-    }
+    },
+    "keywords": "cron expression generator crontab builder every 5 minutes build a schedule from plain choices and preview runs"
   },
   {
     "id": "cron-build",
@@ -980,7 +1053,8 @@ export const TOOLS: CliTool[] = [
     "url": "https://redbison.dev/cron-expression-generator",
     "mcp": {
       "name": "cron_build"
-    }
+    },
+    "keywords": "cron expression generator crontab builder every 5 minutes build a schedule from plain choices and preview runs"
   },
   {
     "id": "docker-to-compose",
@@ -994,7 +1068,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "docker_run_to_compose",
       "input": "input"
-    }
+    },
+    "keywords": "docker run to compose converter composerize convert commands yml and back"
   },
   {
     "id": "gitignore",
@@ -1002,7 +1077,7 @@ export const TOOLS: CliTool[] = [
     "summary": "Insert a .gitignore for the stacks you pick.",
     "kind": "insert",
     "group": "Web and network",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/gitignore-generator",
     "mcp": {
@@ -1012,7 +1087,8 @@ export const TOOLS: CliTool[] = [
           "node"
         ]
       }
-    }
+    },
+    "keywords": "gitignore generator node python template combine templates for languages ides and oses"
   },
   {
     "id": "http-status",
@@ -1026,7 +1102,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "http_status",
       "input": "query"
-    }
+    },
+    "keywords": "http status codes list 404 500 301 meaning reference every code with rfc and when to use it"
   },
   {
     "id": "ip-convert",
@@ -1040,7 +1117,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "ip_convert",
       "input": "value"
-    }
+    },
+    "keywords": "ip address converter decimal binary hex ipv4 ipv6 convert addresses between dotted integer and"
   },
   {
     "id": "mime-lookup",
@@ -1054,7 +1132,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "mime_lookup",
       "input": "query"
-    }
+    },
+    "keywords": "mime type lookup content file extension list find the for a or reverse"
   },
   {
     "id": "redirect-rules",
@@ -1062,13 +1141,14 @@ export const TOOLS: CliTool[] = [
     "summary": "Write redirects for your platform.",
     "kind": "transform",
     "group": "Web and network",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/redirect-generator",
     "mcp": {
       "name": "redirect_rules",
       "input": "rules"
-    }
+    },
+    "keywords": "htaccess redirect generator nginx rewrite 301 rules and 302 for netlify vercel"
   },
   {
     "id": "subnet",
@@ -1082,7 +1162,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "subnet_calculator",
       "input": "cidr"
-    }
+    },
+    "keywords": "subnet calculator cidr network mask ip range subnetting calculate subnets and"
   },
   {
     "id": "user-agent",
@@ -1096,7 +1177,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "user_agent_parse",
       "input": "userAgent"
-    }
+    },
+    "keywords": "user agent parser what is my browser detection os device and bot from a"
   },
   {
     "id": "utm-build",
@@ -1110,7 +1192,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "utm_build",
       "input": "url"
-    }
+    },
+    "keywords": "utm builder campaign url google analytics parameters urls with tags presets and bulk mode"
   },
   {
     "id": "barcode-check",
@@ -1118,7 +1201,7 @@ export const TOOLS: CliTool[] = [
     "summary": "Work out or verify a check digit.",
     "kind": "inspect",
     "group": "Generators",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/barcode-generator",
     "mcp": {
@@ -1127,7 +1210,8 @@ export const TOOLS: CliTool[] = [
       "args": {
         "mode": "auto"
       }
-    }
+    },
+    "keywords": "barcode generator ean 13 upc code 128 free a 39 and itf barcodes as png or svg"
   },
   {
     "id": "lorem",
@@ -1144,7 +1228,8 @@ export const TOOLS: CliTool[] = [
         "count": 2,
         "unit": "paragraphs"
       }
-    }
+    },
+    "keywords": "lorem ipsum generator placeholder text dummy content filler generate"
   },
   {
     "id": "random-email",
@@ -1152,12 +1237,13 @@ export const TOOLS: CliTool[] = [
     "summary": "Insert test email addresses.",
     "kind": "insert",
     "group": "Generators",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/random-email-generator",
     "mcp": {
       "name": "random_email"
-    }
+    },
+    "keywords": "random email generator fake temporary disposable testing generate addresses for"
   },
   {
     "id": "random-name",
@@ -1165,12 +1251,13 @@ export const TOOLS: CliTool[] = [
     "summary": "Insert plausible names for test data.",
     "kind": "insert",
     "group": "Generators",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/random-name-generator",
     "mcp": {
       "name": "random_name"
-    }
+    },
+    "keywords": "random name generator person company fake names character generate for people and places"
   },
   {
     "id": "random-number",
@@ -1178,12 +1265,13 @@ export const TOOLS: CliTool[] = [
     "summary": "Insert numbers in a range.",
     "kind": "insert",
     "group": "Generators",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/random-number-generator",
     "mcp": {
       "name": "random_number"
-    }
+    },
+    "keywords": "random number generator range dice lottery picker generate numbers with custom ranges"
   },
   {
     "id": "remove-accents",
@@ -1194,7 +1282,8 @@ export const TOOLS: CliTool[] = [
     "offline": true,
     "native": true,
     "url": "https://redbison.dev/url-slug-generator",
-    "mcp": null
+    "mcp": null,
+    "keywords": "url slug generator seo friendly links permalink generate slugs from text"
   },
   {
     "id": "slugify",
@@ -1208,7 +1297,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "slugify",
       "input": "text"
-    }
+    },
+    "keywords": "url slug generator seo friendly links permalink generate slugs from text"
   },
   {
     "id": "url-parse",
@@ -1219,7 +1309,8 @@ export const TOOLS: CliTool[] = [
     "offline": true,
     "native": true,
     "url": "https://redbison.dev/url-slug-generator",
-    "mcp": null
+    "mcp": null,
+    "keywords": "url slug generator seo friendly links permalink generate slugs from text"
   },
   {
     "id": "uuid",
@@ -1235,7 +1326,8 @@ export const TOOLS: CliTool[] = [
       "args": {
         "count": 1
       }
-    }
+    },
+    "keywords": "uuid generator unique identifier guid random id generate identifiers uuids"
   },
   {
     "id": "date-diff",
@@ -1249,7 +1341,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "date_diff",
       "input": "from"
-    }
+    },
+    "keywords": "date difference calculator days between age duration calculate two dates"
   },
   {
     "id": "epoch",
@@ -1263,7 +1356,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "epoch_convert",
       "input": "value"
-    }
+    },
+    "keywords": "epoch converter unix timestamp date time conversion convert timestamps to dates"
   },
   {
     "id": "number-to-words",
@@ -1271,13 +1365,14 @@ export const TOOLS: CliTool[] = [
     "summary": "Write the selected number out in words.",
     "kind": "transform",
     "group": "Time and numbers",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/number-to-words-converter",
     "mcp": {
       "name": "number_to_words",
       "input": "value"
-    }
+    },
+    "keywords": "number to words converter spell out numbers check writing amount in written english including ordinals and amounts"
   },
   {
     "id": "timezone-convert",
@@ -1285,13 +1380,14 @@ export const TOOLS: CliTool[] = [
     "summary": "Move the selected timestamp to another zone.",
     "kind": "inspect",
     "group": "Time and numbers",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/timezone-converter",
     "mcp": {
       "name": "timezone_convert",
       "input": "timestamp"
-    }
+    },
+    "keywords": "timezone converter world time zone conversion utc gmt convert between different timezones"
   },
   {
     "id": "list-compare",
@@ -1305,7 +1401,8 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "list_compare",
       "input": "a"
-    }
+    },
+    "keywords": "list comparison diff tool text analyzer find differences compare lists data matching duplicate finder set difference unique items common two to and similarities"
   },
   {
     "id": "text-diff",
@@ -1313,13 +1410,14 @@ export const TOOLS: CliTool[] = [
     "summary": "Compare the selection with your clipboard.",
     "kind": "inspect",
     "group": "Comparing",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/online-diff-tool",
     "mcp": {
       "name": "text_diff",
       "input": "a"
-    }
+    },
+    "keywords": "diff tool text comparison file code beyond compare side by document change detection checker analyzer two texts with highlighted differences just like"
   },
   {
     "id": "color-convert",
@@ -1327,13 +1425,14 @@ export const TOOLS: CliTool[] = [
     "summary": "Read the selected colour in every format.",
     "kind": "inspect",
     "group": "Colour and design",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/hex-to-rgb-converter",
     "mcp": {
       "name": "color_convert",
       "input": "color"
-    }
+    },
+    "keywords": "hex to rgb converter hsl css color code conversion swatch any in and out with alpha a live"
   },
   {
     "id": "color-palette",
@@ -1341,7 +1440,7 @@ export const TOOLS: CliTool[] = [
     "summary": "Generate a palette from one colour.",
     "kind": "inspect",
     "group": "Colour and design",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/color-palette-generator",
     "mcp": {
@@ -1352,7 +1451,8 @@ export const TOOLS: CliTool[] = [
         "wheel": "oklch",
         "name": "palette"
       }
-    }
+    },
+    "keywords": "color palette generator scheme complementary triadic analogous harmonious palettes from one and more"
   },
   {
     "id": "contrast-check",
@@ -1360,13 +1460,14 @@ export const TOOLS: CliTool[] = [
     "summary": "Does this pair meet WCAG contrast?",
     "kind": "inspect",
     "group": "Colour and design",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/contrast-checker",
     "mcp": {
       "name": "contrast_check",
       "input": "foreground"
-    }
+    },
+    "keywords": "contrast checker accessibility wcag compliance color ratio check for"
   },
   {
     "id": "css-gradient",
@@ -1374,12 +1475,13 @@ export const TOOLS: CliTool[] = [
     "summary": "Generate a gradient from colour stops.",
     "kind": "insert",
     "group": "Colour and design",
-    "offline": false,
+    "offline": true,
     "native": false,
     "url": "https://redbison.dev/css-gradient-generator",
     "mcp": {
       "name": "css_gradient"
-    }
+    },
+    "keywords": "css gradient generator linear radial background colors generate gradients visually"
   }
 ];
 
