@@ -5,7 +5,9 @@
  * with Date.now().
  */
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { GROUPS, initialState, reduce, runCommand, tickExtra, extraTickMs, currentExtra, type Key, type State } from '../tui/state';
+import { GROUPS, initialState, reduce, runCommand, tickExtra, extraTickMs, currentExtra, visibleTools, type Key, type State } from '../tui/state';
+import { TOOLS } from '../catalog';
+import { EXTRA_ROWS } from '../tui/extras';
 import { render, pageSize } from '../tui/render';
 import { makeTheme, plain } from '../tui/theme';
 import { createApp } from '../tui/app';
@@ -70,19 +72,58 @@ describe('getting in and out', () => {
     expect(s.status?.kind).toBe('error');
   });
 
-  it('is findable: the Extras row ends the categories view and opens the menu', () => {
+  it('is findable: the Extras row ends the categories view and lists them', () => {
     let s = press(initialState(), [key('f'), key('G', { shift: true, name: 'g' })]);
     expect(s.cursor).toBe(GROUPS.length); // the synthetic last row
     s = press(s, [key('return')]);
+    expect(s.mode).toBe('list');
+    expect(s.group).toBe('Extras');
+    expect(visibleTools(s).map((t) => t.id)).toContain('snake');
+    // ...and enter on a row opens it, like any category.
+    s = press(press(s, [key('G', { shift: true, name: 'g' })]), [key('return')]);
     expect(s.mode).toBe('extra');
-    expect(s.extra?.id).toBe('games');
   });
 
-  it('is findable: typing /snake points at the game while the prompt is open', () => {
-    const s = press(initialState(), [key('/'), ...type('snake')]);
-    expect(s.prompt?.kind).toBe('filter');
-    const out = text(s);
-    expect(out).toContain(':snake');
+  it('is findable: the extras are the last rows of the whole catalogue', () => {
+    const rows = visibleTools(initialState());
+    expect(rows).toHaveLength(TOOLS.length + EXTRA_ROWS.length);
+    const tail = rows.slice(-EXTRA_ROWS.length).map((t) => t.id);
+    expect(tail).toEqual(EXTRA_ROWS.map((t) => t.id));
+    // G lands on one, enter opens it.
+    const s = press(initialState(), [key('G', { shift: true, name: 'g' }), key('return')]);
+    expect(s.mode).toBe('extra');
+    expect(s.extra?.id).toBe(EXTRA_ROWS[EXTRA_ROWS.length - 1].id);
+  });
+
+  it('is findable: /snake shows the game in the list and enter opens it', () => {
+    let s = press(initialState(), [key('/'), ...type('snake'), key('return')]);
+    expect(visibleTools(s)[0]?.id).toBe('snake');
+    expect(text(s)).toContain('Extras');
+    s = press(s, [key('return')]);
+    expect(s.mode).toBe('extra');
+    expect(s.extra?.id).toBe('snake');
+    // An alias works as a search word too.
+    const flipped = press(initialState(), [key('/'), ...type('flip')]);
+    expect(visibleTools(flipped).map((t) => t.id)).toContain('coin');
+  });
+
+  it('treats an extra row like a row: d opens it, y copies its command', () => {
+    const toSnake = (s: State) => {
+      let at = s;
+      const i = visibleTools(at).findIndex((t) => t.id === 'snake');
+      for (let n = 0; n < i; n += 1) at = press(at, [key('down')]);
+      return at;
+    };
+    const d = press(toSnake(initialState()), [key('d')]);
+    expect(d.mode).toBe('extra');
+    expect(d.extra?.id).toBe('snake');
+    const y = reduce(toSnake(initialState()), key('y'), 14, 7);
+    expect(y.effect).toEqual({ kind: 'copy', text: 'redbison snake' });
+  });
+
+  it('keeps the extras under the local-only filter, since they are', () => {
+    const s = press(initialState(), [key('l')]);
+    expect(visibleTools(s).map((t) => t.id)).toContain('tetris');
   });
 });
 

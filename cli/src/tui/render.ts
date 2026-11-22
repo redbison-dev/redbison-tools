@@ -26,7 +26,7 @@ import {
   type State,
 } from './state';
 import { plain, type Paint, type Theme } from './theme';
-import { extraById } from './extras';
+import { extraById, EXTRA_ROWS } from './extras';
 import { MENU_ROWS } from './extras/menu';
 
 export type Size = { width: number; height: number };
@@ -166,7 +166,7 @@ function infoBlock(state: State, theme: Theme, version: string): { text: string;
     ? extraRows
     : [
         ['Catalogue', 'redbison.dev', theme.infoVal],
-        ['Tools', String(TOOLS.length), theme.infoVal],
+        ['Tools', `${TOOLS.length} + ${EXTRA_ROWS.length} extras`, theme.infoVal],
         ['Showing', `${state.group ?? (state.localOnly ? 'local only' : 'all tools')} [${visibleTools(state).length}]`, theme.infoVal],
         ['Filter', state.filter ? `/${state.filter}` : '—', state.filter ? theme.filter : theme.dim],
         ['Offline', state.offline ? 'on, nothing is sent' : 'off', state.offline ? theme.ok : theme.dim],
@@ -721,7 +721,7 @@ function helpLines(theme: Theme): Doc[] {
   ]);
   lines.push([
     { text: '  ', paint: theme.menuKey },
-    { text: '  each has its own command too: :snake, :clock, :random 1 100 3', paint: theme.dim },
+    { text: '  they are the last rows of the tool list; each has its own command too: :snake, :random 1 100 3', paint: theme.dim },
   ]);
   lines.push([{ text: '' }]);
   lines.push([{ text: '  Everything here is also a command line:', paint: theme.title }]);
@@ -838,16 +838,13 @@ function promptLine(state: State, theme: Theme, width: number): string | null {
   if (!state.prompt) return null;
   const { kind, text } = state.prompt;
   const sign = kind === 'filter' ? '/' : kind === 'command' ? '>' : kind === 'options' ? 'options> ' : 'input> ';
-  // Someone typing /snake is looking for the game, and the tool list cannot
-  // show it; the hint line can.
-  const sought = kind === 'filter' ? extraById(text.trim().split(/\s+/)[0] ?? '') : undefined;
+  // /snake used to need a hint pointing at :snake; the extras are rows of
+  // the list now, so the filter simply shows them.
   const hint =
     kind === 'command'
       ? '   a tool id, a category, an extra, offline, help, q'
       : kind === 'filter'
-        ? sought
-          ? `   ${sought.title} is an extra: esc, then :${sought.id} opens it`
-          : '   a name, or what you want it to do; enter keeps it, esc clears'
+        ? '   a name, or what you want it to do; enter keeps it, esc clears'
         : kind === 'options'
           ? '   key=value, space separated'
           : '   enter runs it';

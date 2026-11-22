@@ -4,6 +4,7 @@
  * to the command line.
  */
 import type { Extra } from './core';
+import type { CliTool } from '../../catalog';
 
 /**
  * The registry erases each extra's own state type: the holder (state.ts)
@@ -39,5 +40,36 @@ for (const e of EXTRAS) {
 export function extraById(name: string): AnyExtra | undefined {
   return INDEX.get(name.toLowerCase());
 }
+
+/* ------------------------------------------------------- rows for the list */
+
+/** The reserved category name the main list shows the extras under. */
+export const EXTRA_GROUP = 'Extras';
+
+const GAME_IDS = new Set(['snake', 'tetris', 'breakout', 'blocks']);
+
+/**
+ * The extras as rows of the main tool list, which is where people actually
+ * look. A hint in the status line and a row at the end of the categories view
+ * both shipped first, and the games still went unseen — nothing behind a
+ * keystroke is discoverable from the default screen. So the nine extras ride
+ * at the end of the catalogue as ordinary rows: scrollable, searchable by
+ * their aliases, and opened by enter like everything else. The menu itself
+ * stays out; it is a door, not a thing.
+ */
+export const EXTRA_ROWS: CliTool[] = EXTRAS.filter((e) => e.id !== menu.id).map((e) => ({
+  id: e.id,
+  title: e.title,
+  summary: e.summary,
+  kind: 'inspect',
+  group: EXTRA_GROUP,
+  offline: true,
+  native: true,
+  // The page documenting the CLI and its extras; the games have no page of
+  // their own under these ids.
+  url: 'https://redbison.dev/cli',
+  mcp: null,
+  keywords: [e.id, ...(e.aliases ?? []), 'extra', ...(GAME_IDS.has(e.id) ? ['game', 'games', 'arcade', 'play'] : [])].join(' '),
+}));
 
 export type { Extra, ExtraKey, ExtraStep, Seg } from './core';

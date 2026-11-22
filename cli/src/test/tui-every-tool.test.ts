@@ -31,6 +31,7 @@ import { optionsFor } from '../options';
 import { runTool, RunError } from '../run';
 import { createApp, runOnce, type App, type AppDeps } from '../tui/app';
 import { commandFor, defaultOptions, initialState, visibleTools, type Key } from '../tui/state';
+import { EXTRA_ROWS } from '../tui/extras';
 import { oneLine, render, type Size } from '../tui/render';
 import { makeTheme, plain } from '../tui/theme';
 
@@ -255,7 +256,7 @@ describe('every category', () => {
     void h.app.key(key('3'));
     void h.app.key(key('0'));
     expect(h.app.state().group).toBeNull();
-    expect(visibleTools(h.app.state())).toHaveLength(TOOLS.length);
+    expect(visibleTools(h.app.state())).toHaveLength(TOOLS.length + EXTRA_ROWS.length);
   });
 
   it('renders the category list to an exact frame', () => {

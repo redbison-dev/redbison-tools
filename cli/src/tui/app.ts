@@ -214,7 +214,7 @@ export async function startTui(
       offline: Boolean(opts.offline),
       // Seeded here rather than in initialState so the reducer's tests keep
       // their quiet starting state; any keystroke clears it, like any status.
-      status: { text: 'Extras: a clock, a stopwatch, a coin, a splitter and four games — f lists them, :games opens them.', kind: 'info' },
+      status: { text: 'Extras: a clock, a stopwatch, a coin, a splitter and four games — G jumps to them.', kind: 'info' },
     },
   });
 

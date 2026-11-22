@@ -54,12 +54,12 @@ Node 18 or newer is required. That is the only dependency.
 Run `redbison` with nothing after it and you get a full-screen picker:
 
 ```
- Catalogue: redbison.dev           <0> all tools                   ███  ████ ███  ███  ███   ███ ███  █  █
- Tools:     100                    <1> Data and JSON               █  █ █    █  █ █  █  █   █    █  █ ██ █
- Showing:   all tools [2]          <2> Text                        ███  ███  █  █ ███   █   ███  █  █ █ ██
- Filter:    /b64                   <3> Encoding and hashing        █ █  █    █  █ █  █  █      █ █  █ █  █     █
- Offline:   off                    <4> Formatters                  █  █ █    █  █ █  █  █      █ █  █ █  █   █▀█ █▀█ █ █
- Version:   0.2.0                  <f> all categories              █  █ ████ ███  ███  ███  ███  ███  █  █ ▄ █▄█ ▀█▄ ▀▄▀
+ Catalogue: redbison.dev           <0> all tools                  ███  ████ ███  ███  ███   ███ ███  █  █
+ Tools:     100 + 9 extras         <1> Data and JSON              █  █ █    █  █ █  █  █   █    █  █ ██ █
+ Showing:   all tools [2]          <2> Text                       ███  ███  █  █ ███   █   ███  █  █ █ ██
+ Filter:    /b64                   <3> Encoding and hashing       █ █  █    █  █ █  █  █      █ █  █ █  █     █
+ Offline:   off                    <4> Formatters                 █  █ █    █  █ █  █  █      █ █  █ █  █   █▀█ █▀█ █ █
+ Version:   0.3.1                  <f> categories & extras        █  █ ████ ███  ███  ███  ███  ███  █  █ ▄ █▄█ ▀█▄ ▀▄▀
 
 ┌─ Tools(all)[2] /b64 ─────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ NAME                   CATEGORY              WHAT IT DOES                                                            │
@@ -89,8 +89,10 @@ Run `redbison` with nothing after it and you get a full-screen picker:
 Beside the hundred tools there is a drawer of things a terminal is good at: a clock and a
 stopwatch in block digits, a coin that actually turns over, a random-number draw, a splitter
 that deals names into even groups, and four games — snake, tetris, breakout and blocks (the
-1010 kind: fit pieces, full rows and columns clear). `:games` inside the picker lists them;
-each also answers to its own command, `:snake`, `:clock`, `:random 1 100 3`, `:split 4`.
+1010 kind: fit pieces, full rows and columns clear). They are the last rows of the picker's
+list, under their own Extras category — `G` jumps to them, `/` finds them by name or alias,
+and enter opens one like any tool. `:games` lists them too; each also answers to its own
+command, `:snake`, `:clock`, `:random 1 100 3`, `:split 4`.
 
 Each is a command outside the picker too. The screens need a live terminal:
 

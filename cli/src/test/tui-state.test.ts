@@ -11,6 +11,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { TOOLS, byId } from '../catalog';
+import { EXTRA_ROWS, extraById } from '../tui/extras';
 import { EXAMPLES } from '../examples';
 import { optionsFor } from '../options';
 import {
@@ -44,10 +45,10 @@ const type = (text: string): Key[] => [...text].map((c) => ({ name: c, seq: c })
 const find = (text: string): (string | Key)[] => ['/', ...type(text), 'return'];
 
 describe('the list', () => {
-  it('starts on the first tool of the whole catalogue', () => {
+  it('starts on the first tool of the whole catalogue, extras at the end', () => {
     const s = initialState();
     expect(s.cursor).toBe(0);
-    expect(visibleTools(s)).toHaveLength(TOOLS.length);
+    expect(visibleTools(s)).toHaveLength(TOOLS.length + EXTRA_ROWS.length);
   });
 
   it('moves with the arrows and with j and k', () => {
@@ -57,10 +58,11 @@ describe('the list', () => {
   });
 
   it('stops at both ends rather than wrapping', () => {
+    const last = TOOLS.length + EXTRA_ROWS.length - 1;
     expect(press(initialState(), ['up', 'up', 'up']).cursor).toBe(0);
     const bottom = press(initialState(), [{ name: 'g', shift: true, seq: 'G' }]);
-    expect(bottom.cursor).toBe(TOOLS.length - 1);
-    expect(press(bottom, ['down', 'down']).cursor).toBe(TOOLS.length - 1);
+    expect(bottom.cursor).toBe(last);
+    expect(press(bottom, ['down', 'down']).cursor).toBe(last);
   });
 
   it('keeps the cursor inside the window it scrolled to', () => {
@@ -104,7 +106,7 @@ describe('filtering with /', () => {
     expect(visibleTools(filtered)).toHaveLength(0);
     const cleared = press(filtered, ['escape']);
     expect(cleared.filter).toBe('');
-    expect(visibleTools(cleared)).toHaveLength(TOOLS.length);
+    expect(visibleTools(cleared)).toHaveLength(TOOLS.length + EXTRA_ROWS.length);
   });
 
   it('backspace and ctrl-u edit the query', () => {
@@ -137,10 +139,10 @@ describe('categories', () => {
     expect(drilled.group).toBe(GROUPS[1]);
   });
 
-  it('l keeps only the tools that need no network', () => {
+  it('l keeps only the tools that need no network, extras included', () => {
     const s = press(initialState(), ['l']);
     expect(visibleTools(s).every((t) => t.offline)).toBe(true);
-    expect(visibleTools(s).length).toBe(TOOLS.filter((t) => t.offline).length);
+    expect(visibleTools(s).length).toBe(TOOLS.filter((t) => t.offline).length + EXTRA_ROWS.length);
   });
 });
 
@@ -474,11 +476,14 @@ describe('the options line survives a round trip', () => {
   });
 });
 
-describe('every tool the list can reach is a real one', () => {
-  it('each id resolves in the catalogue', () => {
-    for (const group of [null, ...GROUPS]) {
+describe('every row the list can reach is a real thing', () => {
+  it('each id resolves in the catalogue, or in the extras for an Extras row', () => {
+    for (const group of [null, ...GROUPS, 'Extras']) {
       const s: State = { ...initialState(), group };
-      for (const tool of visibleTools(s)) expect(byId(tool.id)).toBeTruthy();
+      for (const row of visibleTools(s)) {
+        if (row.group === 'Extras') expect(extraById(row.id), row.id).toBeTruthy();
+        else expect(byId(row.id), row.id).toBeTruthy();
+      }
     }
   });
 });

@@ -17,7 +17,7 @@ import { optionsFor } from '../options';
 import { EXAMPLES } from '../examples';
 import { coerce, ArgError } from '../args';
 import { searchTools } from '../search';
-import { extraById, type AnyExtra } from './extras';
+import { extraById, EXTRA_GROUP, EXTRA_ROWS, type AnyExtra } from './extras';
 
 export type Key = {
   name: string;
@@ -99,11 +99,25 @@ export function initialState(): State {
  * what someone who knows the catalogue is reaching for.
  */
 export function visibleTools(state: State): CliTool[] {
-  let tools = TOOLS;
-  if (state.group) tools = tools.filter((t) => t.group === state.group);
+  // The extras ride at the end of the whole catalogue and under their own
+  // reserved category, as ordinary rows: the default screen is the only place
+  // everybody looks, and anything only reachable through a keystroke or a
+  // command goes unfound.
+  let tools: CliTool[] =
+    state.group === EXTRA_GROUP
+      ? EXTRA_ROWS
+      : state.group
+        ? TOOLS.filter((t) => t.group === state.group)
+        : [...TOOLS, ...EXTRA_ROWS];
   if (state.localOnly) tools = tools.filter((t) => t.offline);
   if (!state.filter.trim()) return tools;
   return searchTools(state.filter, tools).map((hit) => hit.tool);
+}
+
+/** The extra a list row stands for, or undefined for a real tool. */
+function extraUnderCursor(s: State): AnyExtra | undefined {
+  const row = s.mode === 'groups' ? null : visibleTools(s)[s.cursor] ?? null;
+  return row?.group === EXTRA_GROUP ? extraById(row.id) : undefined;
 }
 
 /** How many rows the current list view has, whatever it is listing. */
@@ -377,7 +391,11 @@ function openSelected(s: State, mode: Mode): State {
  * every later enter from the list ran that tool instead of the one under the
  * bar — with the right name nowhere on screen.
  */
-function startRun(s: State): Step {
+function startRun(s: State, seed: number): Step {
+  // Enter on an extra's row opens the extra: there is nothing to run, and the
+  // docs/input machinery below only knows catalogue tools.
+  const ex = s.mode === 'list' ? extraUnderCursor(s) : undefined;
+  if (ex) return { state: openExtra(s, ex, seed) };
   const tool = s.mode === 'list' ? underCursor(s) : s.selected ? byId(s.selected) : underCursor(s);
   if (!tool) return { state: { ...s, status: { text: 'Nothing selected.', kind: 'warn' } } };
   const base: State = {
@@ -535,7 +553,7 @@ function runCommandInner(s: State, raw: string, page: number, seed: number): Ste
     };
   }
 
-  const group = GROUPS.find((g) => g.toLowerCase().startsWith(text.toLowerCase()));
+  const group = [...GROUPS, EXTRA_GROUP].find((g) => g.toLowerCase().startsWith(text.toLowerCase()));
   if (group) {
     return { state: reframe({ ...base, mode: 'list', group, cursor: 0, scroll: 0 }, page) };
   }
@@ -624,7 +642,7 @@ export function reduce(state: State, key: Key, page = 20, seed = Date.now()): St
   if (s.mode === 'extra') return extraKey(s, key, seed);
 
   // Reading panes: docs, output and help scroll rather than navigate.
-  if (s.mode === 'docs' || s.mode === 'output' || s.mode === 'help') return pane(s, key, page);
+  if (s.mode === 'docs' || s.mode === 'output' || s.mode === 'help') return pane(s, key, page, seed);
 
   switch (key.name) {
     case 'q':
@@ -650,9 +668,13 @@ export function reduce(state: State, key: Key, page = 20, seed = Date.now()): St
       return { state: move(s, rowCount(s), page) };
     case 'g':
       return { state: key.shift ? move(s, rowCount(s), page) : reframe({ ...s, cursor: 0, scroll: 0 }, page) };
-    case 'd':
+    case 'd': {
       if (key.ctrl) return { state: move(s, Math.ceil(page / 2), page) };
+      // An extra has no docs pane; its screen is its documentation.
+      const ex = extraUnderCursor(s);
+      if (ex) return { state: openExtra(s, ex, seed) };
       return { state: openSelected(s, 'docs') };
+    }
     case 'u':
       if (key.ctrl) return { state: move(s, -Math.ceil(page / 2), page) };
       return { state: s };
@@ -662,14 +684,12 @@ export function reduce(state: State, key: Key, page = 20, seed = Date.now()): St
     case 'return':
     case 'enter':
       if (s.mode === 'groups') {
-        if (s.cursor === GROUPS.length) {
-          const menu = extraById('games');
-          return { state: menu ? openExtra(s, menu, seed) : s };
-        }
-        const group = GROUPS[s.cursor];
+        // The synthetic last row behaves like every real category: enter
+        // shows its rows in the list, where enter again opens one.
+        const group = s.cursor === GROUPS.length ? EXTRA_GROUP : GROUPS[s.cursor];
         return { state: reframe({ ...s, mode: 'list', group, cursor: 0, scroll: 0 }, page) };
       }
-      return startRun(s);
+      return startRun(s, seed);
     case 'y':
       return yank(s);
     case 'o': {
@@ -704,8 +724,9 @@ export function reduce(state: State, key: Key, page = 20, seed = Date.now()): St
 
   // A digit jumps to a group, 0 to the whole catalogue, the way the
   // terminal applications this borrows its shape from do it. All nine
-  // digits are spoken for by the groups, so the Extras row in `f` has no
-  // digit; enter on it, or :games, is the way in.
+  // digits are spoken for by the groups, so Extras has no digit; its rows
+  // sit at the end of the whole catalogue, and enter on the `f` view's last
+  // row (or :games) also reaches them.
   if (/^[0-9]$/.test(key.name) && !key.ctrl) {
     const n = Number(key.name);
     if (n === 0) return { state: reframe({ ...s, mode: 'list', group: null, cursor: 0, scroll: 0 }, page) };
@@ -721,7 +742,7 @@ export function reduce(state: State, key: Key, page = 20, seed = Date.now()): St
 }
 
 /** Scrolling and leaving the reading panes. */
-function pane(s: State, key: Key, page: number): Step {
+function pane(s: State, key: Key, page: number, seed: number): Step {
   const back: State = { ...s, mode: s.mode === 'output' && s.selected ? 'docs' : 'list', pane: 0, status: null };
 
   switch (key.name) {
@@ -751,8 +772,8 @@ function pane(s: State, key: Key, page: number): Step {
       return { state: s };
     case 'return':
     case 'enter':
-      if (s.mode === 'docs') return startRun(s);
-      if (s.mode === 'output') return startRun({ ...s, mode: 'docs' });
+      if (s.mode === 'docs') return startRun(s, seed);
+      if (s.mode === 'output') return startRun({ ...s, mode: 'docs' }, seed);
       return { state: s };
     case 'e':
       if (s.mode === 'docs' || s.mode === 'output') {
