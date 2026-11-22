@@ -108,7 +108,10 @@ export function visibleTools(state: State): CliTool[] {
 
 /** How many rows the current list view has, whatever it is listing. */
 export function rowCount(state: State): number {
-  return state.mode === 'groups' ? GROUPS.length : visibleTools(state).length;
+  // The categories view carries one synthetic row after the real groups:
+  // Extras, which opens the games menu. That is where someone who has not
+  // read the help finds the clock and the games.
+  return state.mode === 'groups' ? GROUPS.length + 1 : visibleTools(state).length;
 }
 
 export function selectedTool(state: State): CliTool | null {
@@ -659,6 +662,10 @@ export function reduce(state: State, key: Key, page = 20, seed = Date.now()): St
     case 'return':
     case 'enter':
       if (s.mode === 'groups') {
+        if (s.cursor === GROUPS.length) {
+          const menu = extraById('games');
+          return { state: menu ? openExtra(s, menu, seed) : s };
+        }
         const group = GROUPS[s.cursor];
         return { state: reframe({ ...s, mode: 'list', group, cursor: 0, scroll: 0 }, page) };
       }
@@ -696,7 +703,9 @@ export function reduce(state: State, key: Key, page = 20, seed = Date.now()): St
   }
 
   // A digit jumps to a group, 0 to the whole catalogue, the way the
-  // terminal applications this borrows its shape from do it.
+  // terminal applications this borrows its shape from do it. All nine
+  // digits are spoken for by the groups, so the Extras row in `f` has no
+  // digit; enter on it, or :games, is the way in.
   if (/^[0-9]$/.test(key.name) && !key.ctrl) {
     const n = Number(key.name);
     if (n === 0) return { state: reframe({ ...s, mode: 'list', group: null, cursor: 0, scroll: 0 }, page) };

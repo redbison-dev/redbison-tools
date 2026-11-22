@@ -5,7 +5,7 @@
  * with Date.now().
  */
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { initialState, reduce, runCommand, tickExtra, extraTickMs, currentExtra, type Key, type State } from '../tui/state';
+import { GROUPS, initialState, reduce, runCommand, tickExtra, extraTickMs, currentExtra, type Key, type State } from '../tui/state';
 import { render, pageSize } from '../tui/render';
 import { makeTheme, plain } from '../tui/theme';
 import { createApp } from '../tui/app';
@@ -68,6 +68,21 @@ describe('getting in and out', () => {
   it('does not let an extra swallow an unknown command', () => {
     const s = press(open('clock'), [key(':'), ...type('no-such-thing'), key('return')]);
     expect(s.status?.kind).toBe('error');
+  });
+
+  it('is findable: the Extras row ends the categories view and opens the menu', () => {
+    let s = press(initialState(), [key('f'), key('G', { shift: true, name: 'g' })]);
+    expect(s.cursor).toBe(GROUPS.length); // the synthetic last row
+    s = press(s, [key('return')]);
+    expect(s.mode).toBe('extra');
+    expect(s.extra?.id).toBe('games');
+  });
+
+  it('is findable: typing /snake points at the game while the prompt is open', () => {
+    const s = press(initialState(), [key('/'), ...type('snake')]);
+    expect(s.prompt?.kind).toBe('filter');
+    const out = text(s);
+    expect(out).toContain(':snake');
   });
 });
 

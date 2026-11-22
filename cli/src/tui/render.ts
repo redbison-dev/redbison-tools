@@ -26,6 +26,8 @@ import {
   type State,
 } from './state';
 import { plain, type Paint, type Theme } from './theme';
+import { extraById } from './extras';
+import { MENU_ROWS } from './extras/menu';
 
 export type Size = { width: number; height: number };
 
@@ -200,7 +202,7 @@ function menuBlock(
     num('2', group(2)),
     num('3', group(3)),
     num('4', group(4)),
-    key('f', 'all categories'),
+    key('f', 'categories & extras'),
   ];
   /*
    * This column is the first thing the layout drops: it needs 133 columns to
@@ -324,7 +326,7 @@ function titleBar(state: State, theme: Theme, width: number): string {
           ? 'all'
           : state.group ?? (state.localOnly ? 'local' : 'all');
   const count =
-    state.mode === 'groups' ? GROUPS.length : state.mode === 'list' ? visibleTools(state).length : null;
+    state.mode === 'groups' ? GROUPS.length + 1 : state.mode === 'list' ? visibleTools(state).length : null;
 
   const segs: { text: string; paint?: Paint }[] = [
     { text: '┌─ ', paint: theme.border },
@@ -399,6 +401,22 @@ function listBody(state: State, theme: Theme, width: number, rows: number): stri
   const body = rows - 1;
   if (!tools.length) {
     out.push(framed([{ text: '  Nothing matches that. esc clears the filter.', paint: theme.warn }], theme, width));
+    // The searched-for thing may be an extra: /snake finds no tool, but
+    // telling someone snake does not exist here would be a lie.
+    const extra = extraById(state.filter.trim().split(/\s+/)[0] ?? '');
+    if (extra) {
+      out.push(
+        framed(
+          [
+            { text: `  ${extra.title} is an extra: esc, then `, paint: theme.body },
+            { text: `:${extra.id}`, paint: theme.menuKey },
+            { text: ' opens it.', paint: theme.body },
+          ],
+          theme,
+          width,
+        ),
+      );
+    }
     while (out.length < rows) out.push(framed([{ text: '' }], theme, width));
     return out;
   }
@@ -446,27 +464,45 @@ function groupBody(state: State, theme: Theme, width: number, rows: number): str
       width,
     ),
   );
+  // The real groups, then one synthetic row: the extras. All of them run
+  // locally, so the LOCAL column tells the truth there too.
+  const items: { n: number; name: string; count: number; local: number; sample: string }[] = GROUPS.map(
+    (group, i) => {
+      const inGroup = TOOLS.filter((t) => t.group === group);
+      return {
+        n: i + 1,
+        name: group,
+        count: inGroup.length,
+        local: inGroup.filter((t) => t.offline).length,
+        sample: inGroup.slice(0, 4).map((t) => t.id).join(', '),
+      };
+    },
+  );
+  items.push({
+    n: GROUPS.length + 1,
+    name: 'Extras',
+    count: MENU_ROWS.length,
+    local: MENU_ROWS.length,
+    sample: MENU_ROWS.slice(0, 5).map((r) => r.id).join(', '),
+  });
   for (let i = 0; i < rows - 1; i += 1) {
-    const group = GROUPS[state.scroll + i];
-    if (!group) {
+    const item = items[state.scroll + i];
+    if (!item) {
       out.push(framed([{ text: '' }], theme, width));
       continue;
     }
-    const inGroup = TOOLS.filter((t) => t.group === group);
-    const local = inGroup.filter((t) => t.offline).length;
-    const sample = inGroup.slice(0, 4).map((t) => t.id).join(', ');
-    const text = ` ${pad(String(GROUPS.indexOf(group) + 1), 3)}${pad(group, 26)}${pad(String(inGroup.length), 7)}${pad(String(local), 7)}${sample}`;
+    const text = ` ${pad(String(item.n), 3)}${pad(item.name, 26)}${pad(String(item.count), 7)}${pad(String(item.local), 7)}${item.sample}`;
     if (state.scroll + i === state.cursor) {
       out.push(framed([{ text: pad(trunc(text, width - 2), width - 2), paint: theme.cursor }], theme, width));
     } else {
       out.push(
         framed(
           [
-            { text: ` ${pad(String(GROUPS.indexOf(group) + 1), 3)}`, paint: theme.menuNumKey },
-            { text: pad(group, 26), paint: theme.row },
-            { text: pad(String(inGroup.length), 7), paint: theme.counter },
-            { text: pad(String(local), 7), paint: theme.local },
-            { text: sample, paint: theme.body },
+            { text: ` ${pad(String(item.n), 3)}`, paint: theme.menuNumKey },
+            { text: pad(item.name, 26), paint: theme.row },
+            { text: pad(String(item.count), 7), paint: theme.counter },
+            { text: pad(String(item.local), 7), paint: theme.local },
+            { text: item.sample, paint: theme.body },
           ],
           theme,
           width,
@@ -802,11 +838,16 @@ function promptLine(state: State, theme: Theme, width: number): string | null {
   if (!state.prompt) return null;
   const { kind, text } = state.prompt;
   const sign = kind === 'filter' ? '/' : kind === 'command' ? '>' : kind === 'options' ? 'options> ' : 'input> ';
+  // Someone typing /snake is looking for the game, and the tool list cannot
+  // show it; the hint line can.
+  const sought = kind === 'filter' ? extraById(text.trim().split(/\s+/)[0] ?? '') : undefined;
   const hint =
     kind === 'command'
-      ? '   a tool id, a category, offline, help, q'
+      ? '   a tool id, a category, an extra, offline, help, q'
       : kind === 'filter'
-        ? '   a name, or what you want it to do; enter keeps it, esc clears'
+        ? sought
+          ? `   ${sought.title} is an extra: esc, then :${sought.id} opens it`
+          : '   a name, or what you want it to do; enter keeps it, esc clears'
         : kind === 'options'
           ? '   key=value, space separated'
           : '   enter runs it';

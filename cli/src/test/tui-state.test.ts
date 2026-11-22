@@ -130,7 +130,8 @@ describe('categories', () => {
   it('f opens the category list, and enter drills into one', () => {
     const list = press(initialState(), ['f']);
     expect(list.mode).toBe('groups');
-    expect(rowCount(list)).toBe(GROUPS.length);
+    // One row per group, plus the Extras row at the end.
+    expect(rowCount(list)).toBe(GROUPS.length + 1);
     const drilled = press(list, ['down', 'return']);
     expect(drilled.mode).toBe('list');
     expect(drilled.group).toBe(GROUPS[1]);

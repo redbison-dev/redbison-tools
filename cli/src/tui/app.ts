@@ -210,7 +210,12 @@ export async function startTui(
     theme: palette,
     version,
     quit: () => done(0),
-    start: { offline: Boolean(opts.offline) },
+    start: {
+      offline: Boolean(opts.offline),
+      // Seeded here rather than in initialState so the reducer's tests keep
+      // their quiet starting state; any keystroke clears it, like any status.
+      status: { text: 'Extras: a clock, a stopwatch, a coin, a splitter and four games — f lists them, :games opens them.', kind: 'info' },
+    },
   });
 
   const enter = () => {
