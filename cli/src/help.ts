@@ -115,6 +115,11 @@ export function overviewHelp(): string {
     `${local} of the ${TOOLS.length} run entirely on your machine. The rest send the`,
     'input to redbison.dev; --offline refuses rather than sending anything.',
     '',
+    `There are extras beside the tools: ${BIN} clock, stopwatch, snake, tetris,`,
+    `breakout and blocks are full-screen; ${BIN} coin, random and split print`,
+    `plainly and compose on pipes. ${BIN} games lists them, as does :games inside`,
+    'the picker.',
+    '',
   ];
 
   for (const [group, tools] of groups) {

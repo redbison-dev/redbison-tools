@@ -19,7 +19,7 @@
  */
 import { spawn, spawnSync } from 'node:child_process';
 import { runTool, RunError } from '../run';
-import { applyResult, initialState, reduce, type Effect, type Key, type State } from './state';
+import { applyResult, extraTickMs, initialState, reduce, runCommand, tickExtra, type Effect, type Key, type State } from './state';
 import { pageSize, render, type Size } from './render';
 import { colourLevel, makeTheme, type Theme } from './theme';
 
@@ -48,6 +48,12 @@ export type App = {
   frame: () => string[];
   draw: () => void;
   key: (key: Key) => Promise<void>;
+  /** Advance the extra on screen to `now` and redraw. */
+  tick: (now: number) => void;
+  /** How often tick wants calling right now, or null for not at all. */
+  tickMs: () => number | null;
+  /** Run a `:` command as if typed, for starting on a given screen. */
+  command: (text: string) => void;
 };
 
 export function createApp(deps: AppDeps): App {
@@ -105,6 +111,20 @@ export function createApp(deps: AppDeps): App {
         state = { ...state, running: false, status: { text: `That went wrong: ${(e as Error).message}`, kind: 'error' } };
       }
       draw();
+    },
+    tick(now: number) {
+      // Same containment rule as key(): a game's bug may cost a frame, never
+      // the terminal.
+      try {
+        state = tickExtra(state, now);
+      } catch (e) {
+        state = { ...state, status: { text: `That went wrong: ${(e as Error).message}`, kind: 'error' } };
+      }
+      draw();
+    },
+    tickMs: () => extraTickMs(state),
+    command(text: string) {
+      state = runCommand(state, text, pageSize(deps.size())).state;
     },
   };
 }
@@ -166,7 +186,7 @@ export function openInBrowser(url: string): void {
  */
 export async function startTui(
   version: string,
-  opts: { theme?: string; offline?: boolean } = {},
+  opts: { theme?: string; offline?: boolean; screen?: string } = {},
 ): Promise<number> {
   const { stdin, stdout } = process;
   const readline = await import('node:readline');
@@ -206,14 +226,32 @@ export async function startTui(
     stdout.write('\x1b[?25h\x1b[?1049l');
   };
 
+  /*
+   * The extras' clock. The reducer stays pure; this is the one place a timer
+   * exists, re-matched to whatever is on screen after every keystroke so the
+   * clock stops the moment the game is left. A rate change mid-screen never
+   * happens (tickMs is a constant per extra), so start/stop is the whole job.
+   */
+  let timer: ReturnType<typeof setInterval> | null = null;
+  let timerMs: number | null = null;
+  const syncTimer = () => {
+    const ms = app.tickMs();
+    if (ms === timerMs) return;
+    if (timer) clearInterval(timer);
+    timer = ms ? setInterval(() => app.tick(Date.now()), ms) : null;
+    timerMs = ms;
+  };
+
   const onKey = (seq: string, key: { name?: string; ctrl?: boolean; shift?: boolean; meta?: boolean } | undefined) => {
-    void app.key({
-      name: key?.name ?? seq ?? '',
-      ctrl: key?.ctrl,
-      shift: key?.shift,
-      meta: key?.meta,
-      seq,
-    });
+    void app
+      .key({
+        name: key?.name ?? seq ?? '',
+        ctrl: key?.ctrl,
+        shift: key?.shift,
+        meta: key?.meta,
+        seq,
+      })
+      .then(syncTimer);
   };
 
   const onResize = () => app.draw();
@@ -248,9 +286,14 @@ export async function startTui(
   process.on('SIGINT', onSignal);
   process.on('SIGTERM', onSignal);
   process.on('exit', restore);
+  // `redbison snake` lands straight on the game, through the same command
+  // the picker's `:` prompt runs, so there is exactly one way in.
+  if (opts.screen) app.command(opts.screen);
+  syncTimer();
   app.draw();
 
   const code = await finished;
+  if (timer) clearInterval(timer);
 
   stdin.off('keypress', onKey);
   stdout.off('resize', onResize);

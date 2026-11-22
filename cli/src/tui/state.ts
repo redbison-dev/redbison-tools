@@ -7,12 +7,17 @@
  * run a tool, read the output, back out — without a pty. The imperative shell
  * in app.ts is then small enough to read in one sitting, which is where the
  * bugs would otherwise hide.
+ *
+ * Two arguments carry the impurity in from the edges instead: `seed`, which
+ * only the extras use and which defaults to Date.now() for the real shell
+ * while every test passes its own, and the `now` handed to tickExtra.
  */
 import { TOOLS, GROUP_ORDER, byId, type CliTool } from '../catalog';
 import { optionsFor } from '../options';
 import { EXAMPLES } from '../examples';
 import { coerce, ArgError } from '../args';
 import { searchTools } from '../search';
+import { extraById, type AnyExtra } from './extras';
 
 export type Key = {
   name: string;
@@ -23,7 +28,7 @@ export type Key = {
   seq?: string;
 };
 
-export type Mode = 'list' | 'groups' | 'docs' | 'input' | 'output' | 'help';
+export type Mode = 'list' | 'groups' | 'docs' | 'input' | 'output' | 'help' | 'extra';
 
 export type PromptKind = 'filter' | 'command' | 'input' | 'options';
 
@@ -49,6 +54,8 @@ export type State = {
   status: Status | null;
   running: boolean;
   quit: boolean;
+  /** The extra on screen while mode is 'extra', with its own state. */
+  extra: { id: string; es: unknown } | null;
 };
 
 export type Effect =
@@ -79,6 +86,7 @@ export function initialState(): State {
     status: null,
     running: false,
     quit: false,
+    extra: null,
   };
 }
 
@@ -410,8 +418,65 @@ export function applyResult(
   };
 }
 
+/* ------------------------------------------------------------------ extras */
+
+/** The extra on screen, with its handlers, or null. */
+export function currentExtra(s: State): { extra: AnyExtra; es: unknown } | null {
+  if (s.mode !== 'extra' || !s.extra) return null;
+  const extra = extraById(s.extra.id);
+  return extra ? { extra, es: s.extra.es } : null;
+}
+
+function openExtra(s: State, extra: AnyExtra, seed: number, arg?: string): State {
+  return {
+    ...s,
+    mode: 'extra',
+    prompt: null,
+    status: null,
+    extra: { id: extra.id, es: extra.init(seed, arg || undefined) },
+  };
+}
+
+/**
+ * The shell calls this on the extra's own clock. Everything the extra does
+ * with the time happens in its tick; nothing else in this module sees a
+ * clock.
+ */
+export function tickExtra(s: State, now: number): State {
+  const here = currentExtra(s);
+  if (!here?.extra.tick) return s;
+  return { ...s, extra: { id: here.extra.id, es: here.extra.tick(here.es, now) } };
+}
+
+/** How often the shell should tick the current screen, or null for never. */
+export function extraTickMs(s: State): number | null {
+  return currentExtra(s)?.extra.tickMs ?? null;
+}
+
+/** A keystroke while an extra is up: escape leaves, : commands, the rest is its. */
+function extraKey(s: State, key: Key, seed: number): Step {
+  const here = currentExtra(s);
+  if (!here) return { state: { ...s, mode: 'list', extra: null } };
+  if (key.name === 'escape') return { state: { ...s, mode: 'list', extra: null, status: null } };
+  if (key.name === ':' || key.seq === ':') return { state: { ...s, prompt: { kind: 'command', text: '' }, status: null } };
+  const step = here.extra.key(here.es, key);
+  if ('exit' in step) return { state: { ...s, mode: 'list', extra: null, status: null } };
+  if ('switch' in step) {
+    const to = extraById(step.switch);
+    return { state: to ? openExtra(s, to, seed) : s };
+  }
+  return { state: { ...s, extra: { id: here.extra.id, es: step.es } } };
+}
+
 /** `:` commands, which are the fast path for people who know what they want. */
-export function runCommand(s: State, raw: string, page: number): Step {
+export function runCommand(s: State, raw: string, page: number, seed = Date.now()): Step {
+  const step = runCommandInner(s, raw, page, seed);
+  // A command that lands anywhere else is also how an extra is left.
+  const st = step.state;
+  return st.mode !== 'extra' && st.extra ? { ...step, state: { ...st, extra: null } } : step;
+}
+
+function runCommandInner(s: State, raw: string, page: number, seed: number): Step {
   const text = raw.trim().replace(/^:/, '');
   const [verb, ...rest] = text.split(/\s+/);
   const arg = rest.join(' ');
@@ -450,6 +515,11 @@ export function runCommand(s: State, raw: string, page: number): Step {
       break;
   }
 
+  // The extras answer to their id and their aliases, with whatever followed
+  // as the argument: `:random 1 100 3`, `:split 4`.
+  const wanted = extraById(verb);
+  if (wanted) return { state: openExtra(base, wanted, seed, arg) };
+
   const tool = byId(text);
   if (tool) {
     const inList = visibleTools(base).findIndex((t) => t.id === tool.id);
@@ -473,7 +543,7 @@ export function runCommand(s: State, raw: string, page: number): Step {
 const PRINTABLE = /^[\x20-\x7e]$/;
 
 /** Typing into the one-line prompts. */
-function editPrompt(s: State, key: Key, page: number): Step {
+function editPrompt(s: State, key: Key, page: number, seed: number): Step {
   const prompt = s.prompt!;
   const text = prompt.text;
 
@@ -489,7 +559,7 @@ function editPrompt(s: State, key: Key, page: number): Step {
 
   if (key.name === 'return' || key.name === 'enter') {
     if (prompt.kind === 'filter') return { state: { ...s, prompt: null } };
-    if (prompt.kind === 'command') return runCommand(s, text, page);
+    if (prompt.kind === 'command') return runCommand(s, text, page, seed);
     if (prompt.kind === 'options') {
       const parsed = parseOptionLine(s.selected ?? '', text);
       if (parsed.error) {
@@ -541,12 +611,14 @@ function commitPrompt(s: State, text: string, page: number): Step {
  * `page` is how many rows the list has room for, which only the renderer
  * knows; passing it in keeps this function free of terminal size.
  */
-export function reduce(state: State, key: Key, page = 20): Step {
+export function reduce(state: State, key: Key, page = 20, seed = Date.now()): Step {
   const s: State = { ...state, status: state.status };
 
   if (key.ctrl && key.name === 'c') return { state: { ...s, quit: true }, effect: { kind: 'quit' } };
 
-  if (s.prompt) return editPrompt(s, key, page);
+  if (s.prompt) return editPrompt(s, key, page, seed);
+
+  if (s.mode === 'extra') return extraKey(s, key, seed);
 
   // Reading panes: docs, output and help scroll rather than navigate.
   if (s.mode === 'docs' || s.mode === 'output' || s.mode === 'help') return pane(s, key, page);

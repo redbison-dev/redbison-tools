@@ -84,6 +84,41 @@ Run `redbison` with nothing after it and you get a full-screen picker:
 - `:` takes a tool id, a category, `offline`, `help` or `q`.
 - `?` lists every key. `q` or `ctrl-c` leaves.
 
+### The extras
+
+Beside the hundred tools there is a drawer of things a terminal is good at: a clock and a
+stopwatch in block digits, a coin that actually turns over, a random-number draw, a splitter
+that deals names into even groups, and four games — snake, tetris, breakout and blocks (the
+1010 kind: fit pieces, full rows and columns clear). `:games` inside the picker lists them;
+each also answers to its own command, `:snake`, `:clock`, `:random 1 100 3`, `:split 4`.
+
+Each is a command outside the picker too. The screens need a live terminal:
+
+```console
+$ redbison snake
+$ redbison stopwatch
+```
+
+while `coin`, `random` and `split` print plainly and compose like everything else:
+
+```console
+$ redbison coin
+tails
+
+$ redbison random 1 100 3
+62
+4
+81
+
+$ cut -d, -f1 people.csv | redbison split 4
+Group 1: dee, flo
+Group 2: bo, gus
+Group 3: ann, cy
+Group 4: ed, hal
+```
+
+Everything here runs on your machine; none of the extras ever touch the network.
+
 ### Finding a tool by what it does
 
 The names are no help if you do not already know them, so `search` matches the same keywords

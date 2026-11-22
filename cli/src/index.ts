@@ -15,6 +15,7 @@ import { byId, TOOLS } from './catalog';
 import { overviewHelp, toolHelp, listPlain, searchHelp } from './help';
 import { formatHits, searchTools } from './search';
 import { runTool, RunError } from './run';
+import { runExtrasCommand } from './extrasCommands';
 
 /*
  * Read from the manifest rather than written twice. A hand-kept copy went
@@ -93,6 +94,13 @@ export function wantsUi(parsed: {
 }
 
 export async function main(argv: string[], opts: { tty?: boolean } = {}): Promise<number> {
+  // The extras answer first — `redbison snake`, `redbison coin` — but never
+  // over a real tool's name; runExtrasCommand checks the catalogue itself.
+  if (argv[0] && !argv[0].startsWith('-')) {
+    const code = await runExtrasCommand(argv[0], argv.slice(1), opts);
+    if (code !== null) return code;
+  }
+
   let parsed;
   try {
     parsed = parseArgs(argv);

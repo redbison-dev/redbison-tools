@@ -19,6 +19,7 @@ import { EXAMPLES } from '../examples';
 import {
   GROUPS,
   commandFor,
+  currentExtra,
   optionLine,
   selectedTool,
   visibleTools,
@@ -148,16 +149,27 @@ function fit(segments: { text: string; paint?: Paint }[], width: number): string
 /* ------------------------------------------------------------------ header */
 
 function infoBlock(state: State, theme: Theme, version: string): { text: string; paint?: Paint }[][] {
-  const shown = visibleTools(state).length;
-  const where = state.group ?? (state.localOnly ? 'local only' : 'all tools');
-  const rows: [string, string, Paint][] = [
-    ['Catalogue', 'redbison.dev', theme.infoVal],
-    ['Tools', String(TOOLS.length), theme.infoVal],
-    ['Showing', `${where} [${shown}]`, theme.infoVal],
-    ['Filter', state.filter ? `/${state.filter}` : '—', state.filter ? theme.filter : theme.dim],
-    ['Offline', state.offline ? 'on, nothing is sent' : 'off', state.offline ? theme.ok : theme.dim],
-    ['Version', version, theme.infoVal],
-  ];
+  // An extra brings its own figures: a score, a tally, a lap count. The rows
+  // that describe the catalogue would all be noise under a game of snake.
+  const here = currentExtra(state);
+  const extraRows: [string, string, Paint][] = here
+    ? [
+        ['Catalogue', 'redbison.dev', theme.infoVal] as [string, string, Paint],
+        ['Screen', here.extra.title, theme.infoVal] as [string, string, Paint],
+        ...(here.extra.info?.(here.es) ?? []).slice(0, 3).map(([k, v]): [string, string, Paint] => [k, v, theme.infoVal]),
+        ['Version', version, theme.infoVal] as [string, string, Paint],
+      ].slice(0, 6)
+    : [];
+  const rows: [string, string, Paint][] = here
+    ? extraRows
+    : [
+        ['Catalogue', 'redbison.dev', theme.infoVal],
+        ['Tools', String(TOOLS.length), theme.infoVal],
+        ['Showing', `${state.group ?? (state.localOnly ? 'local only' : 'all tools')} [${visibleTools(state).length}]`, theme.infoVal],
+        ['Filter', state.filter ? `/${state.filter}` : '—', state.filter ? theme.filter : theme.dim],
+        ['Offline', state.offline ? 'on, nothing is sent' : 'off', state.offline ? theme.ok : theme.dim],
+        ['Version', version, theme.infoVal],
+      ];
   return rows.map(([k, v, paint]) => [
     { text: pad(`${k}:`, 11), paint: theme.infoKey },
     { text: v, paint },
@@ -298,9 +310,13 @@ function header(state: State, theme: Theme, size: Size, version: string): string
 /* ------------------------------------------------------------------- frame */
 
 function titleBar(state: State, theme: Theme, width: number): string {
-  const what = state.mode === 'groups' ? 'Categories' : state.mode === 'help' ? 'Help' : state.mode === 'docs' ? 'Docs' : state.mode === 'output' ? 'Output' : state.mode === 'input' ? 'Input' : 'Tools';
-  const scope =
-    state.mode === 'help'
+  const here = currentExtra(state);
+  const what = here
+    ? here.extra.title
+    : state.mode === 'groups' ? 'Categories' : state.mode === 'help' ? 'Help' : state.mode === 'docs' ? 'Docs' : state.mode === 'output' ? 'Output' : state.mode === 'input' ? 'Input' : 'Tools';
+  const scope = here
+    ? `:${here.extra.id}`
+    : state.mode === 'help'
       ? 'keys'
       : state.mode === 'docs' || state.mode === 'output' || state.mode === 'input'
         ? state.selected ?? ''
@@ -662,6 +678,16 @@ function helpLines(theme: Theme): Doc[] {
     ]);
   }
   lines.push([{ text: '' }]);
+  lines.push([{ text: '  Extras', paint: theme.title }]);
+  lines.push([
+    { text: '  :games', paint: theme.menuKey },
+    { text: '  a clock, a stopwatch, a coin, a splitter, and four games', paint: theme.body },
+  ]);
+  lines.push([
+    { text: '  ', paint: theme.menuKey },
+    { text: '  each has its own command too: :snake, :clock, :random 1 100 3', paint: theme.dim },
+  ]);
+  lines.push([{ text: '' }]);
   lines.push([{ text: '  Everything here is also a command line:', paint: theme.title }]);
   lines.push([{ text: '    redbison json-format --indent 4 @data.json', paint: theme.ok }]);
   lines.push([{ text: '    redbison --list | grep local', paint: theme.ok }]);
@@ -688,6 +714,24 @@ function paneBody(state: State, theme: Theme, width: number, rows: number): stri
   return out;
 }
 
+/* ------------------------------------------------------------------ extras */
+
+/**
+ * An extra draws its own content; the chrome around it — the frame, the
+ * title, the crumbs, the key strip — stays this module's, so a game sits in
+ * exactly the box a tool list does.
+ */
+function extraBody(state: State, theme: Theme, width: number, rows: number): string[] {
+  const here = currentExtra(state);
+  if (!here) return Array.from({ length: rows }, () => framed([{ text: '' }], theme, width));
+  const content = here.extra.render(here.es, theme, width, rows);
+  const out: string[] = [];
+  for (let i = 0; i < rows; i += 1) {
+    out.push(framed(content[i] ?? [{ text: '' }], theme, width));
+  }
+  return out;
+}
+
 /* ------------------------------------------------------------------ footer */
 
 /**
@@ -701,6 +745,8 @@ function paneBody(state: State, theme: Theme, width: number, rows: number): stri
  * crumb trail keeps the left.
  */
 function keyStrip(state: State): [string, string][] {
+  const here = currentExtra(state);
+  if (here) return here.extra.hints?.(here.es) ?? [['esc', 'back']];
   if (state.mode === 'help') return [['esc', 'back'], ['q', 'quit']];
   // Named for what it copies right now, because "copy" alone left people
   // guessing whether it meant the answer or the row.
@@ -709,11 +755,14 @@ function keyStrip(state: State): [string, string][] {
 }
 
 function crumbs(state: State, theme: Theme, width: number): string {
-  const trail: string[] = [state.mode === 'groups' ? 'categories' : 'tools'];
-  if (state.group) trail.push(state.group.toLowerCase());
-  if (state.localOnly) trail.push('local');
-  if (state.selected && state.mode !== 'list' && state.mode !== 'groups') trail.push(state.selected);
-  if (state.mode === 'help') trail.push('help');
+  const here = currentExtra(state);
+  const trail: string[] = here ? ['extras', here.extra.id] : [state.mode === 'groups' ? 'categories' : 'tools'];
+  if (!here) {
+    if (state.group) trail.push(state.group.toLowerCase());
+    if (state.localOnly) trail.push('local');
+    if (state.selected && state.mode !== 'list' && state.mode !== 'groups') trail.push(state.selected);
+    if (state.mode === 'help') trail.push('help');
+  }
 
   const segs: { text: string; paint?: Paint }[] = [];
   trail.forEach((c, i) => {
@@ -799,6 +848,7 @@ export function render(state: State, theme: Theme, size: Size, version: string):
   lines.push(titleBar(state, theme, width));
   if (state.mode === 'list') lines.push(...listBody(state, theme, width, bodyRows));
   else if (state.mode === 'groups') lines.push(...groupBody(state, theme, width, bodyRows));
+  else if (state.mode === 'extra') lines.push(...extraBody(state, theme, width, bodyRows));
   else lines.push(...paneBody(state, theme, width, bodyRows));
   lines.push(bottomBar(theme, width));
   lines.push(crumbs(state, theme, width));
