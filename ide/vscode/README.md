@@ -1,7 +1,9 @@
-# RedBison Tools
+# RedBison Dev Tools
 
 A hundred everyday developer tools on the current selection, without leaving
-the editor. Sixty-five of them never touch the network.
+the editor. Eighty-nine of them never touch the network.
+
+![RedBison Dev Tools formatting JSON, decoding a JWT and converting JSON to YAML, all on the current selection](media/demo.gif)
 
 Select some text, press **Ctrl+Shift+P** and type *RedBison*, or right-click
 and pick **RedBison**. A transform replaces the selection as a single undo
@@ -35,7 +37,7 @@ Run **RedBison: Browse the tools** for the full list with descriptions, or
 
 ## Offline
 
-**Sixty-five of the hundred need no network.** Anything built on Node's own
+**Eighty-nine of the hundred need no network.** Anything built on Node's own
 crypto, a JSON parser or string handling runs in the editor: hashing, HMAC,
 Base64, URL and HTML encoding, JWT decode, UUIDs, passwords, case conversion,
 line operations, number bases, epoch conversion, regex testing, HTTP status
@@ -68,3 +70,9 @@ account. The eighty-nine offline commands send nothing at all.
 
 MIT licensed, built in the open:
 [github.com/redbison-dev/redbison-tools](https://github.com/redbison-dev/redbison-tools)
+
+## In the editor
+
+![The command palette filtered to RedBison commands](media/shots/scene1-palette.png)
+
+![A decoded JWT opened beside the file, signature honestly marked unverified](media/shots/scene3-jwt.png)
