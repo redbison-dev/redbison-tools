@@ -228,9 +228,14 @@ const blocks: Extra<BlocksState> = {
       }
     });
 
+    // From scale 3 up, a gutter at each cell's right and bottom edge keeps
+    // every placed cell a visible square tile rather than a merged slab.
+    const g = k >= 3 ? 1 : 0;
+    const tile = (ch: string, solid: boolean) => (solid ? ch.repeat(2 * (k - g)) + ' '.repeat(2 * g) : ' '.repeat(2 * k));
     for (let y = 0; y < SIZE; y += 1) {
       for (let r = 0; r < k; r += 1) {
         const d = y * k + r; // the display row, which is what the tray rides beside
+        const solid = r < k - g;
         const segs: Seg[] = [{ text: ' '.repeat(leftPad) }, { text: '▕', paint: theme.border }];
         // One dot per cell whatever the scale, on the cell's middle row: a
         // dot on every row reads as a column of debris, not an empty cell.
@@ -238,8 +243,8 @@ const blocks: Extra<BlocksState> = {
         for (let x = 0; x < SIZE; x += 1) {
           const inGhost = ghost.has(`${x},${y}`);
           const cell = es.board[y][x];
-          if (inGhost) segs.push({ text: (legal ? '▒' : '░').repeat(2 * k), paint: legal ? theme.titleHi : theme.error });
-          else if (cell) segs.push({ text: '█'.repeat(2 * k), paint: palette[cell] });
+          if (inGhost) segs.push({ text: tile(legal ? '▒' : '░', solid), paint: legal ? theme.titleHi : theme.error });
+          else if (cell) segs.push({ text: tile('█', solid), paint: palette[cell] });
           else segs.push({ text: dotRow ? `${' '.repeat(k - 1)}·${' '.repeat(k)}` : ' '.repeat(2 * k), paint: theme.dim });
         }
         segs.push({ text: '▏', paint: theme.border });

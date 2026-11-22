@@ -167,7 +167,9 @@ const snake: Extra<SnakeState> = {
 
     // The walls are fatal, so they are drawn: a court with invisible edges
     // reads as an endless field right up to the collision that says otherwise.
-    const board = halfBlocks(grid, palette, k, k).map((segs) =>
+    // From scale 3 up, a one-pixel gutter makes each segment its own square
+    // tile instead of a continuous bar.
+    const board = halfBlocks(grid, palette, k, k, k >= 3 ? 1 : 0).map((segs) =>
       centre([{ text: '▐', paint: theme.border }, ...segs, { text: '▌', paint: theme.border }], width - 2),
     );
     const lines: Seg[][] = [

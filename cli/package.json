@@ -1,6 +1,6 @@
 {
   "name": "@redbison/cli",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "The redbison.dev tools in your terminal: 100 developer utilities with a full-screen picker, 89 of which never touch the network.",
   "keywords": [
     "cli",

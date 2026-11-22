@@ -131,31 +131,46 @@ export function fitScale(availW: number, availRows: number, baseW: number, baseP
  * `cellW` repeats each cell horizontally in characters, `cellH` vertically
  * in pixel rows. A pixel stands about as tall as a character is wide, so a
  * cell looks square when the two are equal — unequal and every piece
- * stretches into a bar. A char can only take one paint, so
- * where the top and bottom halves belong to different things the top wins: a
- * one-character colour approximation, never a wrong shape.
+ * stretches into a bar. `gap` leaves that many empty pixels at each cell's
+ * right and bottom edge, so at a big scale every cell reads as its own
+ * square tile: without it, adjacent cells of one colour merge into a solid
+ * run and a snake or a tetromino is a bar again, however square its cells.
+ * A char can only take one paint, so where the top and bottom halves belong
+ * to different things the top wins: a one-character colour approximation,
+ * never a wrong shape.
  */
 export function halfBlocks(
   grid: number[][],
   palette: (Paint | undefined)[],
   cellW = 2,
   cellH = 1,
+  gap = 0,
 ): Seg[][] {
-  const rows = cellH === 1 ? grid : grid.flatMap((row) => Array.from({ length: cellH }, () => row));
+  const fw = Math.max(1, cellW - gap);
+  const fh = Math.max(1, cellH - gap);
+  const px: number[][] = [];
+  for (const row of grid) {
+    for (let r = 0; r < cellH; r += 1) {
+      const line: number[] = [];
+      for (const v of row) {
+        for (let c = 0; c < cellW; c += 1) line.push(v && r < fh && c < fw ? v : 0);
+      }
+      px.push(line);
+    }
+  }
   const out: Seg[][] = [];
-  for (let y = 0; y < rows.length; y += 2) {
-    const top = rows[y];
-    const bottom = rows[y + 1] ?? top.map(() => 0);
+  for (let y = 0; y < px.length; y += 2) {
+    const top = px[y];
+    const bottom = px[y + 1] ?? top.map(() => 0);
     const segs: Seg[] = [];
     for (let x = 0; x < top.length; x += 1) {
       const t = top[x];
       const b = bottom[x];
       const ch = t && b ? '█' : t ? '▀' : b ? '▄' : ' ';
       const paint = palette[t || b];
-      const text = ch.repeat(cellW);
       const last = segs[segs.length - 1];
-      if (last && last.paint === paint) last.text += text;
-      else segs.push({ text, paint });
+      if (last && last.paint === paint) last.text += ch;
+      else segs.push({ text: ch, paint });
     }
     out.push(segs);
   }

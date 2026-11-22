@@ -241,7 +241,9 @@ const tetris: Extra<TetrisState> = {
       theme.titleHi, // the falling piece
     ];
 
-    const board = halfBlocks(grid, palette, k, k);
+    // From scale 3 up, a one-pixel gutter shows each cell of a piece as its
+    // own square, the way every tetris since the NES has drawn its grid.
+    const board = halfBlocks(grid, palette, k, k, k >= 3 ? 1 : 0);
     // The next piece beside the well, same square cells at type size.
     const preview: number[][] = Array.from({ length: 4 }, () => Array<number>(4).fill(0));
     for (const [x, y] of SHAPES[es.next][0]) preview[y][x] = COLOUR[es.next];
