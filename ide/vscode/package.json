@@ -2,7 +2,7 @@
   "name": "redbison-tools",
   "displayName": "RedBison Tools",
   "description": "Format JSON, decode a JWT, hash a string, convert a timestamp and 96 more developer tools, on the selection, without leaving the editor. 89 run offline.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "redbison",
   "license": "MIT",
   "icon": "media/icon.png",
@@ -560,12 +560,12 @@
       },
       {
         "command": "redbison.run",
-        "title": "Run a tool…",
+        "title": "Run a tool\u2026",
         "category": "RedBison"
       },
       {
         "command": "redbison.options",
-        "title": "Run a tool with options…",
+        "title": "Run a tool with options\u2026",
         "category": "RedBison"
       },
       {
