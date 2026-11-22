@@ -8,6 +8,7 @@
  * diagnostics, hints, the fact that a tool ran on the server — goes to
  * standard error, where a pipe will not pick it up.
  */
+import { BINARY_TOOLS, BinaryToolError, runBinary } from './binary';
 import { readFileSync } from 'node:fs';
 import { version as VERSION } from '../package.json';
 import { parseArgs, ArgError } from './args';
@@ -45,6 +46,13 @@ async function readStdin(): Promise<string> {
   const chunks: Buffer[] = [];
   for await (const chunk of process.stdin) chunks.push(chunk as Buffer);
   return Buffer.concat(chunks).toString('utf8');
+}
+
+async function readStdinRaw(): Promise<Uint8Array> {
+  if (process.stdin.isTTY) return new Uint8Array(0);
+  const chunks: Buffer[] = [];
+  for await (const chunk of process.stdin) chunks.push(chunk as Buffer);
+  return new Uint8Array(Buffer.concat(chunks));
 }
 
 /** The words that mean "search" when they appear where a tool name goes. */
@@ -207,6 +215,44 @@ export async function main(argv: string[], opts: { tty?: boolean } = {}): Promis
   if (parsed.help) {
     process.stdout.write(`${toolHelp(tool)}\n`);
     return 0;
+  }
+
+  // The file-based viewers read bytes, not text: a Parquet footer or an
+  // Avro container would be destroyed by utf-8 decoding, so they take the
+  // raw buffer and never enter the text pipeline below.
+  if (BINARY_TOOLS.has(tool.id)) {
+    let bytes: Uint8Array | null = null;
+    if (parsed.input !== undefined) bytes = new TextEncoder().encode(parsed.input);
+    else if (parsed.file) {
+      try {
+        bytes = new Uint8Array(readFileSync(parsed.file));
+      } catch (e) {
+        process.stderr.write(`Could not read ${parsed.file}: ${(e as Error).message}\n`);
+        return 2;
+      }
+    } else {
+      const raw = await readStdinRaw();
+      if (raw.length) bytes = raw;
+    }
+    if (!bytes || !bytes.length) {
+      process.stderr.write(
+        `${tool.id} reads a file. Pass it with --file or on a pipe:\n` +
+          `  redbison ${tool.id} --file data${tool.id === 'parquet-inspect' ? '.parquet' : '.avro'}\n`,
+      );
+      return 2;
+    }
+    try {
+      const out = runBinary(tool.id, bytes);
+      process.stdout.write(out.endsWith('\n') ? out : `${out}\n`);
+      return 0;
+    } catch (e) {
+      if (e instanceof BinaryToolError) {
+        process.stderr.write(`${e.message}\n`);
+        return 1;
+      }
+      process.stderr.write(`${tool.id} failed: ${(e as Error).message}\n`);
+      return 1;
+    }
   }
 
   // Input: an argument, then a file, then standard input. A generator takes

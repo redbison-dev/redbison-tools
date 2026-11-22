@@ -2311,5 +2311,56 @@
       },
       "expect": "  a"
     }
+  ],
+  "json-tree": [
+    {
+      "name": "draws keys, indices and previews",
+      "input": "{\"name\":\"Ada\",\"tags\":[\"math\",\"code\"]}",
+      "expect": "{} 2 keys\n├─ name: \"Ada\"\n└─ tags: [] 2 items\n   ├─ [0]: \"math\"\n   └─ [1]: \"code\""
+    },
+    {
+      "name": "array root with a nested object",
+      "input": "[1,{\"ok\":true}]",
+      "expect": "[] 2 items\n├─ [0]: 1\n└─ [1]: {} 1 key\n   └─ ok: true"
+    },
+    {
+      "name": "invalid JSON is refused",
+      "input": "{oops}",
+      "throws": "JSON"
+    }
+  ],
+  "xml-tree": [
+    {
+      "name": "elements with attributes, children and text",
+      "input": "<order id=\"7\"><item sku=\"a-1\">Widget</item><note/></order>",
+      "expect": "<order>  1 attribute  2 children\n├─ <item>  1 attribute  \"Widget\"\n└─ <note>"
+    },
+    {
+      "name": "nesting stays straight",
+      "input": "<r><a><b/></a></r>",
+      "expect": "<r>  1 child\n└─ <a>  1 child\n   └─ <b>"
+    },
+    {
+      "name": "a mismatched close is refused by name",
+      "input": "<a><b></a>",
+      "throws": "Expected </b>"
+    }
+  ],
+  "avro-check": [
+    {
+      "name": "a valid record is summarised",
+      "input": "{\"type\":\"record\",\"name\":\"User\",\"fields\":[{\"name\":\"id\",\"type\":\"long\"}]}",
+      "expect": "Valid Avro schema: record User"
+    },
+    {
+      "name": "a bad schema lists its faults",
+      "input": "{\"type\":\"record\",\"name\":\"9bad\",\"fields\":[]}",
+      "throws": "Not a valid Avro schema"
+    },
+    {
+      "name": "non-JSON is refused",
+      "input": "not json",
+      "throws": "JSON"
+    }
   ]
 }

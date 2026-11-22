@@ -58,6 +58,10 @@ import {
 } from '../../../src/lib/tools/specialty-converters';
 import { readability, analyzeSentences, fleschBand } from '../../../src/lib/tools/w500/writing';
 import { colorForms, contrastReport, gradientCss } from '../../../src/lib/tools/w500/color-basics';
+// The format viewers: trees and schema checks the editor can draw itself.
+import { renderJsonTree } from '../../../src/lib/tools/json-tree';
+import { renderXmlTree } from '../../../src/lib/tools/xml-tree';
+import { checkAvroSchema, describeType } from '../../../src/lib/tools/avro-tools';
 import { randomEmails, randomNames, randomNumbers } from '../../../src/lib/tools/random-testdata';
 import { tidyYaml, toYaml, yamlToValue } from '../../../src/lib/tools/w500/data-yaml-lite';
 import { beautifyHtml, beautifySql, beautifyXml } from '../../../src/lib/tools/w500/markup-beautify';
@@ -1042,6 +1046,21 @@ export function runLocal(id: string, input: string, options: LocalOptions = {}):
     case 'text-diff':
       return diffText(input, String(options.b ?? '')).patch;
 
+    case 'json-tree':
+      return refuse(() => renderJsonTree(input));
+    case 'xml-tree':
+      return refuse(() => renderXmlTree(input));
+    case 'avro-check': {
+      const schema = refuse(() => JSON.parse(input) as unknown);
+      const { errors } = checkAvroSchema(schema);
+      if (errors.length) throw new LocalToolError(`Not a valid Avro schema:\n${errors.map((e) => `  ${e}`).join('\n')}`);
+      return `Valid Avro schema: ${describeType(schema)}`;
+    }
+    case 'parquet-inspect':
+      // A Parquet file is binary; a selection cannot carry it. The CLI reads
+      // the file itself and never reaches this branch.
+      throw new LocalToolError('Parquet files are binary: run redbison parquet-inspect --file data.parquet.');
+
     default:
       return undefined;
   }
@@ -1065,6 +1084,8 @@ export const LOCAL_IDS = [
   'tsv-parse', 'find-duplicates', 'remove-extra-spaces', 'remove-empty-lines', 'comma-to-lines',
   'hash-compare', 'escape-characters', 'subnet', 'ip-convert', 'chmod', 'ieee754',
   'military-time', 'binary-text', 'date-diff', 'list-compare', 'utm-build',
+  // The format viewers.
+  'json-tree', 'xml-tree', 'avro-check', 'parquet-inspect',
 ] as const;
 
 export const isLocal = (id: string): boolean => (LOCAL_IDS as readonly string[]).includes(id);

@@ -37,7 +37,9 @@ const cases = Object.fromEntries(
 
 describe('shared behaviour cases', () => {
   it('covers the local catalog', () => {
-    const local = TOOLS.filter((t) => t.offline).map((t) => t.id);
+    // parquet-inspect reads bytes, so the text case table cannot hold it;
+    // its end-to-end coverage is src/test/format-viewers.test.ts.
+    const local = TOOLS.filter((t) => t.offline && t.id !== 'parquet-inspect').map((t) => t.id);
     const missing = local.filter((id) => !cases[id]?.length);
     expect(missing, 'local tools with no cases').toEqual([]);
   });

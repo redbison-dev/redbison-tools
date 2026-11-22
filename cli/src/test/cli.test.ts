@@ -180,7 +180,7 @@ describe('help', () => {
     const r = await run(['--help']);
     expect(r.code).toBe(0);
     expect(r.out).toMatch(/Data and JSON:/);
-    expect(r.out).toMatch(/100 developer tools/);
+    expect(r.out).toMatch(new RegExp(`${TOOLS.length} developer tools`));
   });
 
   it('no arguments at all prints help but exits non-zero', async () => {

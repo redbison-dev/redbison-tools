@@ -17,6 +17,21 @@ export const GROUP_ORDER = ["Data and JSON","Text","Encoding and hashing","Forma
 
 export const TOOLS: CliTool[] = [
   {
+    "id": "avro-check",
+    "title": "Check an Avro schema",
+    "summary": "Validate the selected Avro schema against the 1.11 spec.",
+    "kind": "inspect",
+    "group": "Data and JSON",
+    "offline": true,
+    "native": false,
+    "url": "https://redbison.dev/avro-tools",
+    "mcp": {
+      "name": "avro_check",
+      "input": "text"
+    },
+    "keywords": "avro tools apache serialization schema data format work with"
+  },
+  {
     "id": "binary-text",
     "title": "Binary and text",
     "summary": "Convert the selection to or from binary.",
@@ -185,6 +200,21 @@ export const TOOLS: CliTool[] = [
     "keywords": "json yaml yml converter format transform convert between and formats"
   },
   {
+    "id": "json-tree",
+    "title": "JSON tree",
+    "summary": "Outline the selected JSON as a tree.",
+    "kind": "inspect",
+    "group": "Data and JSON",
+    "offline": true,
+    "native": false,
+    "url": "https://redbison.dev/json-beautify-validate-query",
+    "mcp": {
+      "name": "json_tree",
+      "input": "text"
+    },
+    "keywords": "json formatter validator prettify minify parse stringify beautifier query jsonpath format validate and documents"
+  },
+  {
     "id": "json-validate",
     "title": "Validate JSON",
     "summary": "Check the selected JSON and report the first fault.",
@@ -243,6 +273,18 @@ export const TOOLS: CliTool[] = [
       "input": "value"
     },
     "keywords": "number base converter binary to hex decimal octal radix 36 twos complement signed unsigned bigint fraction convert and any 2 with two s"
+  },
+  {
+    "id": "parquet-inspect",
+    "title": "Inspect a Parquet file",
+    "summary": "Schema, row count and row groups from a Parquet footer.",
+    "kind": "inspect",
+    "group": "Data and JSON",
+    "offline": true,
+    "native": true,
+    "url": "https://redbison.dev/parquet-viewer",
+    "mcp": null,
+    "keywords": "parquet viewer file reader apache columnar data format analytics read a s schema row count and codecs"
   },
   {
     "id": "query-to-json",
@@ -994,6 +1036,21 @@ export const TOOLS: CliTool[] = [
     "mcp": {
       "name": "xml_beautify",
       "input": "xml"
+    },
+    "keywords": "xml formatter beautifier markup pretty print validate schema format and beautify documents"
+  },
+  {
+    "id": "xml-tree",
+    "title": "XML outline",
+    "summary": "Outline the element tree of the selected XML.",
+    "kind": "inspect",
+    "group": "Formatters",
+    "offline": true,
+    "native": false,
+    "url": "https://redbison.dev/xml-beautify",
+    "mcp": {
+      "name": "xml_tree",
+      "input": "text"
     },
     "keywords": "xml formatter beautifier markup pretty print validate schema format and beautify documents"
   },

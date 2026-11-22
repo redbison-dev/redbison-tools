@@ -1,6 +1,6 @@
 # redbison
 
-The [redbison.dev](https://redbison.dev) tools in your terminal. 100 developer utilities, 89 of
+The [redbison.dev](https://redbison.dev) tools in your terminal. 104 developer utilities, 93 of
 them never touching the network.
 
 ```console
@@ -55,11 +55,11 @@ Run `redbison` with nothing after it and you get a full-screen picker:
 
 ```
  Catalogue: redbison.dev           <0> all tools                  ███  ████ ███  ███  ███   ███ ███  █  █
- Tools:     100 + 9 extras         <1> Data and JSON              █  █ █    █  █ █  █  █   █    █  █ ██ █
+ Tools:     104 + 9 extras         <1> Data and JSON              █  █ █    █  █ █  █  █   █    █  █ ██ █
  Showing:   all tools [2]          <2> Text                       ███  ███  █  █ ███   █   ███  █  █ █ ██
  Filter:    /b64                   <3> Encoding and hashing       █ █  █    █  █ █  █  █      █ █  █ █  █     █
  Offline:   off                    <4> Formatters                 █  █ █    █  █ █  █  █      █ █  █ █  █   █▀█ █▀█ █ █
- Version:   0.3.5                  <f> categories & extras        █  █ ████ ███  ███  ███  ███  ███  █  █ ▄ █▄█ ▀█▄ ▀▄▀
+ Version:   0.4.0                  <f> categories & extras        █  █ ████ ███  ███  ███  ███  ███  █  █ ▄ █▄█ ▀█▄ ▀▄▀
 
 ┌─ Tools(all)[2] /b64 ─────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ NAME                   CATEGORY              WHAT IT DOES                                                            │
@@ -187,10 +187,41 @@ redbison hash --algorithm sha256 --file build.tar.gz | pbcopy
 curl -s https://api.example.com/thing | redbison json-format > thing.json
 ```
 
+### File viewers
+
+Four of the tools look at a format rather than transform it. `json-tree` and
+`xml-tree` draw the structure of what you pipe in; `parquet-inspect` and
+`avro-check` read the file itself, because Parquet and Avro container files
+are binary:
+
+```console
+$ redbison parquet-inspect --file events.parquet
+Parquet v2  ·  1,204,511 rows  ·  2 row groups
+written by parquet-cpp-arrow version 15.0.0
+compression SNAPPY
+...
+
+$ redbison avro-check --file users.avro
+Avro object container  ·  5 rows  ·  2 blocks  ·  codec null
+schema: record User
+...
+
+$ echo '{"a":[1,2]}' | redbison json-tree
+{} 1 key
+└─ a: [] 2 items
+   ├─ [0]: 1
+   └─ [1]: 2
+```
+
+`parquet-inspect` reads only the footer — schema, row count, row groups,
+codecs — without decoding data pages, and `avro-check` counts rows from the
+block headers whatever the codec. Both also take the bytes on a pipe. Given
+text instead of a file, `avro-check` validates it as an Avro schema.
+
 ### Finding a tool
 
 ```sh
-redbison --help            # all 100, grouped
+redbison --help            # all 104, grouped
 redbison --list            # one per line, for grep
 redbison --list | grep -i base64
 redbison base64-decode --help
@@ -252,7 +283,7 @@ redbison number-to-words -- -42
 
 ## What runs where
 
-89 of the 100 run entirely on your machine: JSON, base64, hashes, JWT decoding, case
+93 of the 104 run entirely on your machine: JSON, base64, hashes, JWT decoding, case
 conversion, sorting, hex, URLs, UUIDs, subnets, chmod, IEEE 754, YAML, SQL, HTML and XML
 formatting, colours, cron checking, diffs, timezones and the rest. They are arithmetic and
 string work, and your input never leaves the process.
@@ -283,7 +314,7 @@ Tools that work without a network: redbison --list | grep local
 ```
 
 ```sh
-redbison --list | grep local | wc -l   # 89
+redbison --list | grep local | wc -l   # 93
 ```
 
 ## Exit codes

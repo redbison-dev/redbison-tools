@@ -2,6 +2,11 @@
 // Every example is a real answer from the tool, not an invented one.
 export const EXAMPLES: Record<string, { input: string; output: string; args: Record<string, unknown> }> =
 {
+  "avro-check": {
+    "input": "{\"type\":\"record\",\"name\":\"User\",\"fields\":[{\"name\":\"id\",\"type\":\"long\"}]}",
+    "output": "Valid Avro schema: record User",
+    "args": {}
+  },
   "binary-text": {
     "input": "Hi",
     "output": "01001000 01101001",
@@ -59,6 +64,11 @@ export const EXAMPLES: Record<string, { input: string; output: string; args: Rec
     "output": "service: api\nports:\n  - 80\n  - 443",
     "args": {}
   },
+  "json-tree": {
+    "input": "{\"name\":\"Ada\",\"tags\":[\"math\",\"code\"]}",
+    "output": "{} 2 keys\n├─ name: \"Ada\"\n└─ tags: [] 2 items\n   ├─ [0]: \"math\"\n   └─ [1]: \"code\"",
+    "args": {}
+  },
   "json-validate": {
     "input": "{\"name\":\"RedBison\",\"tools\":35}",
     "output": "{\"valid\":true}",
@@ -77,6 +87,11 @@ export const EXAMPLES: Record<string, { input: string; output: string; args: Rec
   "number-base": {
     "input": "255",
     "output": "{\n  \"fromBase\": 10,\n  \"fraction\": \"255\",\n  \"binary\": \"11111111\",\n  \"octal\": \"377\",\n  \"decimal\": \"255\",\n  \"hex\": \"FF\",\n  \"target\": null,\n  \"bitLength\": 8,\n  \"twosComplement\": null,\n  \"warnings\": []\n}",
+    "args": {}
+  },
+  "parquet-inspect": {
+    "input": "--file data.parquet",
+    "output": "Parquet v2  ·  1,000,000,123 rows  ·  1 row group\nwritten by parquet-cpp-arrow version 15.0.0\ncompression SNAPPY\n\ncolumns (2)\n  id    INT64  NOT NULL\n  name  BYTE_ARRAY (STRING)\n\nrow groups\n  1. 1,000,000,123 rows, 4.0 KiB",
     "args": {}
   },
   "query-to-json": {
@@ -364,6 +379,11 @@ export const EXAMPLES: Record<string, { input: string; output: string; args: Rec
   "xml-beautify": {
     "input": "<config><item id=\"1\"/><item id=\"2\"/></config>",
     "output": "<config>\n  <item id=\"1\"/>\n  <item id=\"2\"/>\n</config>",
+    "args": {}
+  },
+  "xml-tree": {
+    "input": "<order id=\"7\"><item sku=\"a-1\">Widget</item><note/></order>",
+    "output": "<order>  1 attribute  2 children\n├─ <item>  1 attribute  \"Widget\"\n└─ <note>",
     "args": {}
   },
   "yaml-beautify": {

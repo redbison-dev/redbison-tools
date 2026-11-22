@@ -1,8 +1,8 @@
 {
   "name": "redbison-tools",
   "displayName": "RedBison Dev Tools",
-  "description": "Format JSON, decode a JWT, hash a string, convert a timestamp and 96 more developer tools, on the selection, without leaving the editor. 89 run offline.",
-  "version": "0.2.0",
+  "description": "Format JSON, decode a JWT, hash a string, convert a timestamp and 99 more developer tools, on the selection, without leaving the editor. 92 run offline.",
+  "version": "0.3.0",
   "publisher": "redbison",
   "license": "MIT",
   "icon": "media/icon.png",
@@ -44,7 +44,7 @@
     "package": "bunx @vscode/vsce package --no-dependencies",
     "publish": "bunx @vscode/vsce publish --no-dependencies",
     "compile-tests": "tsc -p tsconfig.test.json",
-    "test": "bun run compile-tests && node out/ide/vscode/src/test/runTest.js"
+    "test": "bun run build && bun run compile-tests && node out/ide/vscode/src/test/runTest.js"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
@@ -559,6 +559,21 @@
         "category": "RedBison"
       },
       {
+        "command": "redbison.json-tree",
+        "title": "JSON tree",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.xml-tree",
+        "title": "XML outline",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.avro-check",
+        "title": "Check an Avro schema",
+        "category": "RedBison"
+      },
+      {
         "command": "redbison.run",
         "title": "Run a tool\u2026",
         "category": "RedBison"
@@ -945,6 +960,18 @@
         },
         {
           "command": "redbison.char-frequency",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.json-tree",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.xml-tree",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.avro-check",
           "group": "2_inspect"
         }
       ]

@@ -1590,5 +1590,53 @@ export const TOOLS: CatalogTool[] = [
     "offline": true,
     "localOnly": false,
     "docs": "Counts every character, most frequent first, with whitespace and control characters named rather than printed. Runs in the editor."
+  },
+  {
+    "id": "json-tree",
+    "title": "JSON tree",
+    "summary": "Outline the selected JSON as a tree.",
+    "kind": "inspect",
+    "mcp": {
+      "name": "json_tree",
+      "input": "text"
+    },
+    "native": false,
+    "slug": "json-beautify-validate-query",
+    "url": "https://redbison.dev/json-beautify-validate-query",
+    "offline": true,
+    "localOnly": false,
+    "docs": "Draws the selection as a box-drawing tree: one line per key or array index, with value previews and item counts, so the shape of a payload is readable without counting brackets. Long strings are cut in the preview; the counts stay exact. Works offline."
+  },
+  {
+    "id": "xml-tree",
+    "title": "XML outline",
+    "summary": "Outline the element tree of the selected XML.",
+    "kind": "inspect",
+    "mcp": {
+      "name": "xml_tree",
+      "input": "text"
+    },
+    "native": false,
+    "slug": "xml-beautify",
+    "url": "https://redbison.dev/xml-beautify",
+    "offline": true,
+    "localOnly": false,
+    "docs": "Shows the element hierarchy of the selection with attribute counts, child counts and text previews, leaving out the closing-tag noise. Mismatched or unclosed tags are reported by name. Works offline."
+  },
+  {
+    "id": "avro-check",
+    "title": "Check an Avro schema",
+    "summary": "Validate the selected Avro schema against the 1.11 spec.",
+    "kind": "inspect",
+    "mcp": {
+      "name": "avro_check",
+      "input": "text"
+    },
+    "native": false,
+    "slug": "avro-tools",
+    "url": "https://redbison.dev/avro-tools",
+    "offline": true,
+    "localOnly": false,
+    "docs": "Checks the selected JSON against the Apache Avro 1.11 schema rules: names, unions, defaults, enums and fixed sizes, with each fault reported at its path. A valid schema is summarised in one line. Works offline."
   }
 ];

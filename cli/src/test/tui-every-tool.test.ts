@@ -35,7 +35,9 @@ import { EXTRA_ROWS } from '../tui/extras';
 import { oneLine, render, type Size } from '../tui/render';
 import { makeTheme, plain } from '../tui/theme';
 
-const LOCAL = TOOLS.filter((t) => t.offline);
+// parquet-inspect is file-based: in the picker it can only explain how to
+// run itself on a file, which is the refusal the command line prints too.
+const LOCAL = TOOLS.filter((t) => t.offline && t.id !== 'parquet-inspect');
 const SERVER = TOOLS.filter((t) => !t.offline);
 const GROUPS_IN_USE = GROUP_ORDER.filter((g) => TOOLS.some((t) => t.group === g));
 
