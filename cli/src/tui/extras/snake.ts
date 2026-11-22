@@ -148,13 +148,15 @@ const snake: Extra<SnakeState> = {
   },
 
   render(es: SnakeState, theme: Theme, width: number, rows: number): Seg[][] {
-    const needW = COLS * 2 + 6;
     // 12 board lines plus the two wall lines is exactly what an 80x24
-    // terminal's body has room for.
+    // terminal's body has room for; one character per cell is the floor.
+    const needW = COLS + 6;
     if (width < needW || rows < ROWS / 2 + 2) return tooSmall(theme, needW, ROWS / 2 + 5);
-    // A bigger terminal gets a bigger court, same shape: every cell scales
-    // by the same integer in both directions.
-    const k = fitScale(width - 6, rows - 2, COLS * 2, ROWS);
+    // A bigger terminal gets a bigger court, same shape: a cell is k chars
+    // wide and k half-block pixels tall, which is visually square — a pixel
+    // stands about as tall as a character is wide. Doubling the width
+    // instead stretched every segment into a 2:1 bar.
+    const k = fitScale(width - 6, rows - 2, COLS, ROWS);
 
     const grid: number[][] = Array.from({ length: ROWS }, () => Array<number>(COLS).fill(0));
     es.snake.forEach((p, i) => {
@@ -165,13 +167,13 @@ const snake: Extra<SnakeState> = {
 
     // The walls are fatal, so they are drawn: a court with invisible edges
     // reads as an endless field right up to the collision that says otherwise.
-    const board = halfBlocks(grid, palette, 2 * k, k).map((segs) =>
+    const board = halfBlocks(grid, palette, k, k).map((segs) =>
       centre([{ text: '▐', paint: theme.border }, ...segs, { text: '▌', paint: theme.border }], width - 2),
     );
     const lines: Seg[][] = [
-      centre([{ text: `▗${'▄'.repeat(COLS * 2 * k)}▖`, paint: theme.border }], width - 2),
+      centre([{ text: `▗${'▄'.repeat(COLS * k)}▖`, paint: theme.border }], width - 2),
       ...board,
-      centre([{ text: `▝${'▀'.repeat(COLS * 2 * k)}▘`, paint: theme.border }], width - 2),
+      centre([{ text: `▝${'▀'.repeat(COLS * k)}▘`, paint: theme.border }], width - 2),
     ];
     if (!es.alive) {
       lines[Math.floor((ROWS * k) / 4) + 1] = centre(

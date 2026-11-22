@@ -215,11 +215,13 @@ const tetris: Extra<TetrisState> = {
   },
 
   render(es: TetrisState, theme: Theme, width: number, rows: number): Seg[][] {
-    const needW = WELL_W * 2 + 2 + 14;
+    const needW = WELL_W + 2 + 14;
     if (width < needW + 4 || rows < WELL_H / 2 + 1) return tooSmall(theme, needW + 4, WELL_H / 2 + 5);
     // Scale the well to the terminal; the side panel keeps its type size.
-    const k = fitScale(width - 4 - 16, rows - 1, WELL_W * 2, WELL_H);
-    const wellW = WELL_W * 2 * k;
+    // Cells are k chars wide and k pixels tall — square, so the well keeps
+    // its upright 1:2 shape and a rotation visibly changes the silhouette.
+    const k = fitScale(width - 4 - 16, rows - 1, WELL_W, WELL_H);
+    const wellW = WELL_W * k;
 
     const grid = es.well.map((row) => [...row]);
     if (es.falling) {
@@ -239,11 +241,11 @@ const tetris: Extra<TetrisState> = {
       theme.titleHi, // the falling piece
     ];
 
-    const board = halfBlocks(grid, palette, 2 * k, k);
-    // The next piece in a 4x2 box beside the well, same half-block hand.
+    const board = halfBlocks(grid, palette, k, k);
+    // The next piece beside the well, same square cells at type size.
     const preview: number[][] = Array.from({ length: 4 }, () => Array<number>(4).fill(0));
     for (const [x, y] of SHAPES[es.next][0]) preview[y][x] = COLOUR[es.next];
-    const previewLines = halfBlocks(preview, palette);
+    const previewLines = halfBlocks(preview, palette, 2, 2);
 
     const side: Seg[][] = [
       [{ text: padText('next', 10), paint: theme.docKey }],

@@ -128,9 +128,10 @@ export function fitScale(availW: number, availRows: number, baseW: number, baseP
  * and it reads correctly with no colour at all, which the plain theme and the
  * tests both are.
  *
- * `cellW` repeats each cell horizontally; at 2 a cell is close to square.
- * `cellH` repeats each grid row, which with a matching cellW is how a board
- * scales up without changing its shape. A char can only take one paint, so
+ * `cellW` repeats each cell horizontally in characters, `cellH` vertically
+ * in pixel rows. A pixel stands about as tall as a character is wide, so a
+ * cell looks square when the two are equal — unequal and every piece
+ * stretches into a bar. A char can only take one paint, so
  * where the top and bottom halves belong to different things the top wins: a
  * one-character colour approximation, never a wrong shape.
  */

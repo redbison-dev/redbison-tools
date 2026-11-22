@@ -59,7 +59,7 @@ Run `redbison` with nothing after it and you get a full-screen picker:
  Showing:   all tools [2]          <2> Text                       ███  ███  █  █ ███   █   ███  █  █ █ ██
  Filter:    /b64                   <3> Encoding and hashing       █ █  █    █  █ █  █  █      █ █  █ █  █     █
  Offline:   off                    <4> Formatters                 █  █ █    █  █ █  █  █      █ █  █ █  █   █▀█ █▀█ █ █
- Version:   0.3.2                  <f> categories & extras        █  █ ████ ███  ███  ███  ███  ███  █  █ ▄ █▄█ ▀█▄ ▀▄▀
+ Version:   0.3.3                  <f> categories & extras        █  █ ████ ███  ███  ███  ███  ███  █  █ ▄ █▄█ ▀█▄ ▀▄▀
 
 ┌─ Tools(all)[2] /b64 ─────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ NAME                   CATEGORY              WHAT IT DOES                                                            │
