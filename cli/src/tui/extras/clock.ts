@@ -4,7 +4,7 @@
  * test can show any moment it likes.
  */
 import type { Theme } from '../theme';
-import { bigText, centre, centreBlock, scaleArt, tooSmall, type Extra, type ExtraKey, type ExtraStep, type Seg } from './core';
+import { bigText, centre, digitScale, scaleArt, tooSmall, type Extra, type ExtraKey, type ExtraStep, type Seg } from './core';
 
 export type ClockState = {
   now: number;
@@ -63,7 +63,7 @@ const clock: Extra<ClockState> = {
     if (width - 4 < need || rows < 8) return tooSmall(theme, need + 4, 10);
 
     // Digits a room can read: blown up to whatever the terminal gives.
-    const k = Math.max(1, Math.min(Math.floor((width - 6) / need), Math.floor((rows - 4) / 6)));
+    const k = digitScale(width, rows, need, 4);
     const art = scaleArt(big, k);
     const lines: Seg[][] = art.map((row, i) =>
       centre(
@@ -76,7 +76,9 @@ const clock: Extra<ClockState> = {
     );
     lines.push([{ text: '' }]);
     lines.push(centre([{ text: dateLine(es.now), paint: theme.body }], width - 2));
-    return centreBlock(lines, rows);
+    // The frame centres every extra vertically; padding here as well parked
+    // the clock at three-quarters height.
+    return lines;
   },
 
   info: (es) => [

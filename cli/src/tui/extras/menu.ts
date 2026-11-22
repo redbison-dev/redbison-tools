@@ -1,7 +1,9 @@
 /**
- * `:games` (also `:extras`, `:fun`) — the list of everything in this folder,
+ * `:games` (also `:fun`, `:arcade`) — the list of everything in this folder,
  * so nobody has to remember nine command names. Enter switches straight into
- * the one under the bar.
+ * the one under the bar. `extras` is deliberately not an alias: that word is
+ * the category's name, and :extras opening a different screen from the
+ * category it names read as a bug.
  */
 import type { Theme } from '../theme';
 import { padText, type Extra, type ExtraKey, type ExtraStep, type Seg } from './core';
@@ -20,7 +22,7 @@ const menu: Extra<MenuState> = {
   id: 'games',
   title: 'Extras',
   summary: 'Everything that is not a tool.',
-  aliases: ['extras', 'fun', 'toys', 'arcade'],
+  aliases: ['fun', 'toys', 'arcade'],
 
   init: () => ({ rows: MENU_ROWS, cursor: 0 }),
 

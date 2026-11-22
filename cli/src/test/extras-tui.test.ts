@@ -214,6 +214,27 @@ describe('what the screen shows', () => {
     const out = text(open('snake'), 60, 18);
     expect(out).toContain('columns');
   });
+
+  it('centres the clock once, not one and a half times', () => {
+    // The clock used to centre itself and then be centred again by the
+    // frame, which parked it at three-quarters height.
+    let s = open('clock');
+    s = tickExtra(s, 1_700_000_000_000);
+    const lines = render(s, theme, { width: 100, height: 50 }, '0.0.0').map(plain);
+    const body = lines.slice(8, 48).map((l) => l.slice(1, -1));
+    const filled = body.map((l, i) => (l.trim() ? i : -1)).filter((i) => i >= 0);
+    const above = filled[0];
+    const below = body.length - 1 - filled[filled.length - 1];
+    expect(Math.abs(above - below), `above ${above}, below ${below}`).toBeLessThanOrEqual(2);
+  });
+
+  it('keeps the blocks game-over banner on screen at small heights', () => {
+    // Appended below the board it fell past the frame on 9-11 body rows,
+    // and a lost game looked like a hang.
+    let s = open('blocks');
+    s = { ...s, extra: { id: 'blocks', es: { ...(s.extra!.es as object), alive: false } } };
+    expect(text(s, 100, 20)).toContain('no piece fits');
+  });
 });
 
 describe('the app shell', () => {

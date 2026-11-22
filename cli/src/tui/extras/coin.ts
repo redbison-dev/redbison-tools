@@ -8,7 +8,7 @@
  * outcome in the tests".
  */
 import type { Theme } from '../theme';
-import { centre, centreBlock, next, type Extra, type ExtraKey, type ExtraStep, type Seg } from './core';
+import { centre, next, type Extra, type ExtraKey, type ExtraStep, type Seg } from './core';
 
 export type Face = 'heads' | 'tails';
 
@@ -134,7 +134,8 @@ const coin: Extra<CoinState> = {
         centre([{ text: es.history.map((f) => (f === 'heads' ? 'H' : 'T')).join(' '), paint: theme.dim }], width - 2),
       );
     }
-    return centreBlock(lines, rows);
+    // The frame centres every extra vertically; no padding of our own.
+    return lines;
   },
 
   info: (es) => [

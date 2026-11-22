@@ -257,8 +257,13 @@ const blocks: Extra<BlocksState> = {
       lines.push([{ text: ' '.repeat(leftPad + boardW + 2) }, ...tray[d]]);
     }
     if (!es.alive) {
-      lines.push([{ text: '' }]);
-      lines.push(centre([{ text: `  no piece fits — ${es.score} points · r plays again  `, paint: theme.cursor }], width - 2));
+      // Over a middle board row, like the other games: appended below the
+      // board it fell past the frame on short terminals and the loss looked
+      // like a hang.
+      lines[Math.floor((SIZE * k) / 2)] = centre(
+        [{ text: `  no piece fits — ${es.score} points · r plays again  `, paint: theme.cursor }],
+        width - 2,
+      );
     }
     return lines;
   },

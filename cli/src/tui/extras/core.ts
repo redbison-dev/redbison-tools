@@ -102,10 +102,13 @@ export function centre(segs: Seg[], width: number): Seg[] {
   return [{ text: ' '.repeat(left) }, ...segs];
 }
 
-/** Centre a block of rows vertically in `rows` by padding with blanks. */
-export function centreBlock(lines: Seg[][], rows: number): Seg[][] {
-  const pad = Math.max(0, Math.floor((rows - lines.length) / 2));
-  return [...Array.from({ length: pad }, () => [{ text: '' }] as Seg[]), ...lines];
+/**
+ * The scale for six-row block digits: width-bound by the art, height-bound
+ * by what the screen keeps back for its caption rows. One formula, because
+ * three hand-rolled copies of it had already started to drift.
+ */
+export function digitScale(width: number, rows: number, artW: number, reserveRows: number): number {
+  return Math.max(1, Math.min(Math.floor((width - 6) / artW), Math.floor((rows - reserveRows) / 6)));
 }
 
 /**

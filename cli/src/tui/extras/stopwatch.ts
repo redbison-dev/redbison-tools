@@ -7,7 +7,7 @@
  * credit the whole pause to the run.
  */
 import type { Theme } from '../theme';
-import { bigText, centre, centreBlock, padText, scaleArt, tooSmall, type Extra, type ExtraKey, type ExtraStep, type Seg } from './core';
+import { bigText, centre, digitScale, padText, scaleArt, tooSmall, type Extra, type ExtraKey, type ExtraStep, type Seg } from './core';
 
 export type StopwatchState = {
   running: boolean;
@@ -61,7 +61,7 @@ const stopwatch: Extra<StopwatchState> = {
 
     // Big enough to glance at from across the room, with space kept back for
     // the status line and a few laps.
-    const k = Math.max(1, Math.min(Math.floor((width - 6) / big[0].length), Math.floor((rows - (es.laps.length ? 8 : 4)) / 6)));
+    const k = digitScale(width, rows, big[0].length, es.laps.length ? 8 : 4);
     const lines: Seg[][] = scaleArt(big, k).map((row) => centre([{ text: row, paint: es.running ? theme.logo : theme.dim }], width - 2));
     lines.push([{ text: '' }]);
     lines.push(
@@ -90,7 +90,9 @@ const stopwatch: Extra<StopwatchState> = {
         );
       });
     }
-    return centreBlock(lines, rows);
+    // The frame centres every extra vertically; padding here as well parked
+    // the watch below centre.
+    return lines;
   },
 
   info: (es) => [

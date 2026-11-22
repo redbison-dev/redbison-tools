@@ -215,12 +215,16 @@ const tetris: Extra<TetrisState> = {
   },
 
   render(es: TetrisState, theme: Theme, width: number, rows: number): Seg[][] {
-    const needW = WELL_W + 2 + 14;
+    // The side panel's columns: the two-space gap plus 'score 99999'. One
+    // constant, because a 16 in the scale maths and a 14 in the width guard
+    // cost the well a whole scale step at some widths.
+    const SIDE_W = 14;
+    const needW = WELL_W + 2 + SIDE_W;
     if (width < needW + 4 || rows < WELL_H / 2 + 1) return tooSmall(theme, needW + 4, WELL_H / 2 + 5);
     // Scale the well to the terminal; the side panel keeps its type size.
     // Cells are k chars wide and k pixels tall — square, so the well keeps
     // its upright 1:2 shape and a rotation visibly changes the silhouette.
-    const k = fitScale(width - 4 - 16, rows - 1, WELL_W, WELL_H);
+    const k = fitScale(width - 4 - SIDE_W, rows - 1, WELL_W, WELL_H);
     const wellW = WELL_W * k;
 
     const grid = es.well.map((row) => [...row]);
@@ -260,7 +264,7 @@ const tetris: Extra<TetrisState> = {
     ];
 
     const lines: Seg[][] = [];
-    const leftPad = Math.max(1, Math.floor((width - 2 - (wellW + 2 + 14)) / 2));
+    const leftPad = Math.max(1, Math.floor((width - 2 - (wellW + 2 + SIDE_W)) / 2));
     for (let r = 0; r < board.length; r += 1) {
       const segs: Seg[] = [{ text: ' '.repeat(leftPad) }];
       segs.push({ text: '▕', paint: theme.border });

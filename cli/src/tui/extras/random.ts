@@ -6,7 +6,7 @@
  * because the alternative is an infinite refusal.
  */
 import type { Theme } from '../theme';
-import { bigText, centre, centreBlock, nextInt, scaleArt, type Extra, type ExtraKey, type ExtraStep, type Seg } from './core';
+import { bigText, centre, digitScale, nextInt, scaleArt, type Extra, type ExtraKey, type ExtraStep, type Seg } from './core';
 
 export type RandomState = {
   min: number;
@@ -69,7 +69,7 @@ const random: Extra<RandomState> = {
     if (es.count === 1) {
       const big = bigText(String(es.values[0]));
       if (width - 4 >= big[0].length && rows >= 9) {
-        const k = Math.max(1, Math.min(Math.floor((width - 6) / big[0].length), Math.floor((rows - 5) / 6)));
+        const k = digitScale(width, rows, big[0].length, 5);
         for (const row of scaleArt(big, k)) lines.push(centre([{ text: row, paint: theme.logo }], width - 2));
       } else {
         lines.push(centre([{ text: String(es.values[0]), paint: theme.titleHi }], width - 2));
@@ -89,7 +89,8 @@ const random: Extra<RandomState> = {
       ),
     );
     lines.push(centre([{ text: 'r draws again · + and - change how many', paint: theme.dim }], width - 2));
-    return centreBlock(lines, rows);
+    // The frame centres every extra vertically; no padding of our own.
+    return lines;
   },
 
   info: (es) => [

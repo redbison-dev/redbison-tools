@@ -790,6 +790,11 @@ function keyStrip(state: State): [string, string][] {
   // Named for what it copies right now, because "copy" alone left people
   // guessing whether it meant the answer or the row.
   const copy: [string, string] = ['y', state.mode === 'output' && state.output ? 'copy answer' : 'copy cmd'];
+  // On an extra's row both enter and d open it, so promising 'run' and
+  // 'docs' there labels two keys with things they will not do.
+  if (state.mode === 'list' && visibleTools(state)[state.cursor]?.group === 'Extras') {
+    return [['↵', 'open'], copy, ['/', 'search'], ['?', 'keys']];
+  }
   return [['↵', 'run'], ['d', 'docs'], copy, ['/', 'search'], ['?', 'keys']];
 }
 

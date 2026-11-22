@@ -123,8 +123,8 @@ function extraUnderCursor(s: State): AnyExtra | undefined {
 /** How many rows the current list view has, whatever it is listing. */
 export function rowCount(state: State): number {
   // The categories view carries one synthetic row after the real groups:
-  // Extras, which opens the games menu. That is where someone who has not
-  // read the help finds the clock and the games.
+  // Extras, which selects the Extras category like any other row. That is
+  // where someone who has not read the help finds the clock and the games.
   return state.mode === 'groups' ? GROUPS.length + 1 : visibleTools(state).length;
 }
 
