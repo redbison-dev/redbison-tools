@@ -9,7 +9,7 @@
  * every level and every fourth paddle touch adds pace.
  */
 import type { Theme } from '../theme';
-import { centre, halfBlocks, next, tooSmall, type Extra, type ExtraKey, type ExtraStep, type Paint, type Seg } from './core';
+import { centre, fitScale, halfBlocks, next, tooSmall, type Extra, type ExtraKey, type ExtraStep, type Paint, type Seg } from './core';
 
 export const COLS = 72;
 export const ROWS = 24;
@@ -203,6 +203,8 @@ const breakout: Extra<BreakoutState> = {
 
   render(es: BreakoutState, theme: Theme, width: number, rows: number): Seg[][] {
     if (width < COLS + 4 || rows < ROWS / 2) return tooSmall(theme, COLS + 4, ROWS / 2 + 4);
+    // The court grows with the terminal, cell for cell in both directions.
+    const k = fitScale(width - 4, rows, COLS, ROWS);
 
     const grid: number[][] = Array.from({ length: ROWS }, () => Array<number>(COLS).fill(0));
     // Bricks: palette index by row, a slot of BRICK_W cells with a one-cell gap.
@@ -230,16 +232,17 @@ const breakout: Extra<BreakoutState> = {
       theme.logo, // ball
     ];
 
-    const lines = halfBlocks(grid, palette, 1).map((segs) => centre(segs, width - 2));
+    const lines = halfBlocks(grid, palette, k, k).map((segs) => centre(segs, width - 2));
+    const banner = Math.floor((ROWS * k) / 4);
     if (!es.alive) {
-      lines[Math.floor(ROWS / 4)] = centre(
+      lines[banner] = centre(
         [{ text: `  game over — ${es.score} points · r plays again  `, paint: theme.cursor }],
         width - 2,
       );
     } else if (es.paused) {
-      lines[Math.floor(ROWS / 4)] = centre([{ text: '  paused — p resumes  ', paint: theme.cursor }], width - 2);
+      lines[banner] = centre([{ text: '  paused — p resumes  ', paint: theme.cursor }], width - 2);
     } else if (!es.ball) {
-      lines[Math.floor(ROWS / 4)] = centre([{ text: '  space serves  ', paint: theme.cursor }], width - 2);
+      lines[banner] = centre([{ text: '  space serves  ', paint: theme.cursor }], width - 2);
     }
     return lines;
   },

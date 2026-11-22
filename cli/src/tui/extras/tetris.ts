@@ -10,7 +10,7 @@
  * every ten lines and gravity going from 500ms a row down to an 80ms floor.
  */
 import type { Theme } from '../theme';
-import { centre, halfBlocks, padText, shuffle, tooSmall, type Extra, type ExtraKey, type ExtraStep, type Paint, type Seg } from './core';
+import { centre, fitScale, halfBlocks, padText, shuffle, tooSmall, type Extra, type ExtraKey, type ExtraStep, type Paint, type Seg } from './core';
 
 export const WELL_W = 10;
 export const WELL_H = 20;
@@ -217,6 +217,9 @@ const tetris: Extra<TetrisState> = {
   render(es: TetrisState, theme: Theme, width: number, rows: number): Seg[][] {
     const needW = WELL_W * 2 + 2 + 14;
     if (width < needW + 4 || rows < WELL_H / 2 + 1) return tooSmall(theme, needW + 4, WELL_H / 2 + 5);
+    // Scale the well to the terminal; the side panel keeps its type size.
+    const k = fitScale(width - 4 - 16, rows - 1, WELL_W * 2, WELL_H);
+    const wellW = WELL_W * 2 * k;
 
     const grid = es.well.map((row) => [...row]);
     if (es.falling) {
@@ -236,7 +239,7 @@ const tetris: Extra<TetrisState> = {
       theme.titleHi, // the falling piece
     ];
 
-    const board = halfBlocks(grid, palette);
+    const board = halfBlocks(grid, palette, 2 * k, k);
     // The next piece in a 4x2 box beside the well, same half-block hand.
     const preview: number[][] = Array.from({ length: 4 }, () => Array<number>(4).fill(0));
     for (const [x, y] of SHAPES[es.next][0]) preview[y][x] = COLOUR[es.next];
@@ -253,7 +256,7 @@ const tetris: Extra<TetrisState> = {
     ];
 
     const lines: Seg[][] = [];
-    const leftPad = Math.max(1, Math.floor((width - 2 - needW) / 2));
+    const leftPad = Math.max(1, Math.floor((width - 2 - (wellW + 2 + 14)) / 2));
     for (let r = 0; r < board.length; r += 1) {
       const segs: Seg[] = [{ text: ' '.repeat(leftPad) }];
       segs.push({ text: '▕', paint: theme.border });
@@ -264,11 +267,11 @@ const tetris: Extra<TetrisState> = {
       lines.push(segs);
     }
     // The floor, drawn: a well whose bottom is implied reads as a hole.
-    lines.push([{ text: ' '.repeat(leftPad) }, { text: `▝${'▀'.repeat(WELL_W * 2)}▘`, paint: theme.border }]);
+    lines.push([{ text: ' '.repeat(leftPad) }, { text: `▝${'▀'.repeat(wellW)}▘`, paint: theme.border }]);
     if (!es.alive) {
-      lines[4] = centre([{ text: `  game over — ${es.score} points · r plays again  `, paint: theme.cursor }], width - 2);
+      lines[4 * k] = centre([{ text: `  game over — ${es.score} points · r plays again  `, paint: theme.cursor }], width - 2);
     } else if (es.paused) {
-      lines[4] = centre([{ text: '  paused — p resumes  ', paint: theme.cursor }], width - 2);
+      lines[4 * k] = centre([{ text: '  paused — p resumes  ', paint: theme.cursor }], width - 2);
     }
     return lines;
   },

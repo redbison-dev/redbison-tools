@@ -187,11 +187,14 @@ const blocks: Extra<BlocksState> = {
   },
 
   render(es: BlocksState, theme: Theme, width: number, rows: number): Seg[][] {
-    const boardW = SIZE * 2 + 2;
     const trayW = 24;
-    if (width < boardW + trayW + 6 || rows < SIZE + 1) {
-      return [[{ text: '' }], [{ text: `  This needs about ${boardW + trayW + 6} columns and ${SIZE + 4} rows.`, paint: theme.warn }]];
+    if (width < SIZE * 2 + 2 + trayW + 6 || rows < SIZE + 1) {
+      return [[{ text: '' }], [{ text: `  This needs about ${SIZE * 2 + 2 + trayW + 6} columns and ${SIZE + 4} rows.`, paint: theme.warn }]];
     }
+    // Cells are drawn in whole characters here, so the scale works in whole
+    // rows: a cell is 2k characters wide and k rows tall.
+    const k = Math.max(1, Math.min(Math.floor((width - trayW - 10) / (SIZE * 2)), Math.floor((rows - 2) / SIZE)));
+    const boardW = SIZE * 2 * k + 2;
 
     const palette: (Paint | undefined)[] = [undefined, theme.row, theme.ok, theme.warn, theme.filter, theme.counter, theme.error];
     const pieceIndex = es.offer[es.chosen];
@@ -226,21 +229,27 @@ const blocks: Extra<BlocksState> = {
     });
 
     for (let y = 0; y < SIZE; y += 1) {
-      const segs: Seg[] = [{ text: ' '.repeat(leftPad) }, { text: '▕', paint: theme.border }];
-      for (let x = 0; x < SIZE; x += 1) {
-        const inGhost = ghost.has(`${x},${y}`);
-        const cell = es.board[y][x];
-        if (inGhost) segs.push({ text: legal ? '▒▒' : '░░', paint: legal ? theme.titleHi : theme.error });
-        else if (cell) segs.push({ text: '██', paint: palette[cell] });
-        else segs.push({ text: '· ', paint: theme.dim });
+      for (let r = 0; r < k; r += 1) {
+        const d = y * k + r; // the display row, which is what the tray rides beside
+        const segs: Seg[] = [{ text: ' '.repeat(leftPad) }, { text: '▕', paint: theme.border }];
+        // One dot per cell whatever the scale, on the cell's middle row: a
+        // dot on every row reads as a column of debris, not an empty cell.
+        const dotRow = r === Math.floor((k - 1) / 2);
+        for (let x = 0; x < SIZE; x += 1) {
+          const inGhost = ghost.has(`${x},${y}`);
+          const cell = es.board[y][x];
+          if (inGhost) segs.push({ text: (legal ? '▒' : '░').repeat(2 * k), paint: legal ? theme.titleHi : theme.error });
+          else if (cell) segs.push({ text: '█'.repeat(2 * k), paint: palette[cell] });
+          else segs.push({ text: dotRow ? `${' '.repeat(k - 1)}·${' '.repeat(k)}` : ' '.repeat(2 * k), paint: theme.dim });
+        }
+        segs.push({ text: '▏', paint: theme.border });
+        segs.push({ text: '  ' });
+        segs.push(...(tray[d] ?? [{ text: '' }]));
+        lines.push(segs);
       }
-      segs.push({ text: '▏', paint: theme.border });
-      segs.push({ text: '  ' });
-      segs.push(...(tray[y] ?? [{ text: '' }]));
-      lines.push(segs);
     }
-    for (let y = SIZE; y < tray.length; y += 1) {
-      lines.push([{ text: ' '.repeat(leftPad + boardW + 2) }, ...tray[y]]);
+    for (let d = SIZE * k; d < tray.length; d += 1) {
+      lines.push([{ text: ' '.repeat(leftPad + boardW + 2) }, ...tray[d]]);
     }
     if (!es.alive) {
       lines.push([{ text: '' }]);

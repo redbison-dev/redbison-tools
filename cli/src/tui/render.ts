@@ -761,9 +761,12 @@ function extraBody(state: State, theme: Theme, width: number, rows: number): str
   const here = currentExtra(state);
   if (!here) return Array.from({ length: rows }, () => framed([{ text: '' }], theme, width));
   const content = here.extra.render(here.es, theme, width, rows);
+  // Centred in the frame's height: a board that hugs the top row of a tall
+  // terminal reads as a mistake, and no extra positions itself vertically.
+  const lead = Math.max(0, Math.floor((rows - content.length) / 2));
   const out: string[] = [];
   for (let i = 0; i < rows; i += 1) {
-    out.push(framed(content[i] ?? [{ text: '' }], theme, width));
+    out.push(framed(content[i - lead] ?? [{ text: '' }], theme, width));
   }
   return out;
 }

@@ -109,26 +109,42 @@ export function centreBlock(lines: Seg[][], rows: number): Seg[][] {
 }
 
 /**
+ * The largest integer scale a frame can hold: the board is `baseW` characters
+ * wide and `basePix` half-block pixels tall at scale 1, and every scale
+ * multiplies both. Games render tiny and lost on a big terminal otherwise —
+ * a 36x24 snake court is twelve rows in the corner of a 55-row window. One
+ * terminal row holds two pixels, hence the 2.
+ */
+export function fitScale(availW: number, availRows: number, baseW: number, basePix: number): number {
+  const byW = Math.floor(availW / baseW);
+  const byH = Math.floor((availRows * 2) / basePix);
+  return Math.max(1, Math.min(byW, byH));
+}
+
+/**
  * A grid of cells drawn at half-block resolution: every terminal row carries
  * two grid rows, '▀' when only the top is filled, '▄' only the bottom, '█'
  * both. That is what lets tetris's 20 rows stand inside a 24-row terminal,
  * and it reads correctly with no colour at all, which the plain theme and the
  * tests both are.
  *
- * `cellW` repeats each cell horizontally; at 2 a cell is close to square. A
- * char can only take one paint, so where the top and bottom halves belong to
- * different things the top wins: a one-character colour approximation, never
- * a wrong shape.
+ * `cellW` repeats each cell horizontally; at 2 a cell is close to square.
+ * `cellH` repeats each grid row, which with a matching cellW is how a board
+ * scales up without changing its shape. A char can only take one paint, so
+ * where the top and bottom halves belong to different things the top wins: a
+ * one-character colour approximation, never a wrong shape.
  */
 export function halfBlocks(
   grid: number[][],
   palette: (Paint | undefined)[],
   cellW = 2,
+  cellH = 1,
 ): Seg[][] {
+  const rows = cellH === 1 ? grid : grid.flatMap((row) => Array.from({ length: cellH }, () => row));
   const out: Seg[][] = [];
-  for (let y = 0; y < grid.length; y += 2) {
-    const top = grid[y];
-    const bottom = grid[y + 1] ?? top.map(() => 0);
+  for (let y = 0; y < rows.length; y += 2) {
+    const top = rows[y];
+    const bottom = rows[y + 1] ?? top.map(() => 0);
     const segs: Seg[] = [];
     for (let x = 0; x < top.length; x += 1) {
       const t = top[x];
@@ -177,6 +193,15 @@ const DIGITS: Record<string, string[]> = {
   '-': ['    ', '    ', '████', '    ', '    ', '    '],
   ' ': ['  ', '  ', '  ', '  ', '  ', '  '],
 };
+
+/** Block art blown up k times: each character k wide, each row k tall. */
+export function scaleArt(rows: string[], k: number): string[] {
+  if (k <= 1) return rows;
+  return rows.flatMap((row) => {
+    const wide = [...row].map((ch) => ch.repeat(k)).join('');
+    return Array.from({ length: k }, () => wide);
+  });
+}
 
 /** The string as six rows of blocks. Unknown characters are skipped. */
 export function bigText(text: string): string[] {

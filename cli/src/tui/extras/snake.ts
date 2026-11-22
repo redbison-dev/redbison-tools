@@ -8,7 +8,7 @@
  * because on a keyboard that is always a slip, never a decision.
  */
 import type { Theme } from '../theme';
-import { centre, halfBlocks, nextInt, tooSmall, type Extra, type ExtraKey, type ExtraStep, type Paint, type Seg } from './core';
+import { centre, fitScale, halfBlocks, nextInt, tooSmall, type Extra, type ExtraKey, type ExtraStep, type Paint, type Seg } from './core';
 
 export const COLS = 36;
 export const ROWS = 24;
@@ -152,6 +152,9 @@ const snake: Extra<SnakeState> = {
     // 12 board lines plus the two wall lines is exactly what an 80x24
     // terminal's body has room for.
     if (width < needW || rows < ROWS / 2 + 2) return tooSmall(theme, needW, ROWS / 2 + 5);
+    // A bigger terminal gets a bigger court, same shape: every cell scales
+    // by the same integer in both directions.
+    const k = fitScale(width - 6, rows - 2, COLS * 2, ROWS);
 
     const grid: number[][] = Array.from({ length: ROWS }, () => Array<number>(COLS).fill(0));
     es.snake.forEach((p, i) => {
@@ -162,21 +165,21 @@ const snake: Extra<SnakeState> = {
 
     // The walls are fatal, so they are drawn: a court with invisible edges
     // reads as an endless field right up to the collision that says otherwise.
-    const board = halfBlocks(grid, palette).map((segs) =>
+    const board = halfBlocks(grid, palette, 2 * k, k).map((segs) =>
       centre([{ text: '▐', paint: theme.border }, ...segs, { text: '▌', paint: theme.border }], width - 2),
     );
     const lines: Seg[][] = [
-      centre([{ text: `▗${'▄'.repeat(COLS * 2)}▖`, paint: theme.border }], width - 2),
+      centre([{ text: `▗${'▄'.repeat(COLS * 2 * k)}▖`, paint: theme.border }], width - 2),
       ...board,
-      centre([{ text: `▝${'▀'.repeat(COLS * 2)}▘`, paint: theme.border }], width - 2),
+      centre([{ text: `▝${'▀'.repeat(COLS * 2 * k)}▘`, paint: theme.border }], width - 2),
     ];
     if (!es.alive) {
-      lines[Math.floor(ROWS / 4) + 1] = centre(
+      lines[Math.floor((ROWS * k) / 4) + 1] = centre(
         [{ text: `  game over — ${es.score} apple${es.score === 1 ? '' : 's'} · r plays again  `, paint: theme.cursor }],
         width - 2,
       );
     } else if (es.paused) {
-      lines[Math.floor(ROWS / 4) + 1] = centre([{ text: '  paused — space resumes  ', paint: theme.cursor }], width - 2);
+      lines[Math.floor((ROWS * k) / 4) + 1] = centre([{ text: '  paused — space resumes  ', paint: theme.cursor }], width - 2);
     }
     return lines;
   },
