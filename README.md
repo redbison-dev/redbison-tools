@@ -104,7 +104,7 @@ endpoint and say so in their `--help`.
 Run it with no arguments and you get a full-screen picker: type to search, `↵` to run,
 `d` for the docs, `y` to copy the answer (or the command when there is no answer yet).
 
-![The RedBison picker filling a 213-column terminal: a header counting 100 tools and 9 extras, category shortcuts and key hints beside the block logo, above the tool list](docs/cli-picker.webp)
+![The RedBison picker in a 213-column macOS terminal window: a header counting 100 tools and 9 extras, category shortcuts and key hints beside the block logo, above the tool list](docs/cli-picker.webp)
 
 ```sh
 cd cli && bun install && bun run build
