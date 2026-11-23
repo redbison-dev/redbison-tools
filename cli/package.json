@@ -1,7 +1,7 @@
 {
   "name": "@redbison/cli",
   "version": "0.4.0",
-  "description": "The redbison.dev tools in your terminal: 104 developer utilities with a full-screen picker, 93 of which never touch the network.",
+  "description": "The redbison.dev tools in your terminal: 120 developer utilities with a full-screen picker, 109 of which never touch the network.",
   "keywords": [
     "cli",
     "json",

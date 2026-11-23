@@ -1,0 +1,161 @@
+22930:
+2026-11-22 14:56:33
+Full thread dump OpenJDK 64-Bit Server VM (17.0.21.1+0 mixed mode, sharing):
+
+Threads class SMR info:
+_java_thread_list=0x0000000ac111b0e0, length=18, elements={
+0x0000000104e9e160, 0x0000000ac10cc600, 0x0000000ac10ccc00, 0x0000000ac10cd800,
+0x0000000ac10cde00, 0x0000000ac10ce400, 0x0000000ac10cea00, 0x0000000ac10cf000,
+0x0000000ac10cf600, 0x0000000ac1110000, 0x0000000ac1110600, 0x0000000ac1111200,
+0x0000000ac1111800, 0x0000000ac1111e00, 0x0000000ac1112400, 0x0000000ac1112a00,
+0x0000000ac1113000, 0x0000000ac1113600
+}
+
+"main" #1 prio=5 os_prio=31 cpu=29.70ms elapsed=3.18s tid=0x0000000104e9e160 nid=0x2703 waiting on condition  [0x000000016ba62000]
+   java.lang.Thread.State: TIMED_WAITING (sleeping)
+	at java.lang.Thread.sleep(java.base@17.0.21.1/Native Method)
+	at Leaky.main(Leaky.java:19)
+
+"Reference Handler" #2 daemon prio=10 os_prio=31 cpu=0.06ms elapsed=3.17s tid=0x0000000ac10cc600 nid=0x7c03 waiting on condition  [0x000000016c8b6000]
+   java.lang.Thread.State: RUNNABLE
+	at java.lang.ref.Reference.waitForReferencePendingList(java.base@17.0.21.1/Native Method)
+	at java.lang.ref.Reference.processPendingReferences(java.base@17.0.21.1/Reference.java:253)
+	at java.lang.ref.Reference$ReferenceHandler.run(java.base@17.0.21.1/Reference.java:215)
+
+"Finalizer" #3 daemon prio=8 os_prio=31 cpu=0.11ms elapsed=3.17s tid=0x0000000ac10ccc00 nid=0x5e03 in Object.wait()  [0x000000016cac2000]
+   java.lang.Thread.State: WAITING (on object monitor)
+	at java.lang.Object.wait(java.base@17.0.21.1/Native Method)
+	- waiting on <0x0000000318402f40> (a java.lang.ref.ReferenceQueue$Lock)
+	at java.lang.ref.ReferenceQueue.remove(java.base@17.0.21.1/ReferenceQueue.java:155)
+	- locked <0x0000000318402f40> (a java.lang.ref.ReferenceQueue$Lock)
+	at java.lang.ref.ReferenceQueue.remove(java.base@17.0.21.1/ReferenceQueue.java:176)
+	at java.lang.ref.Finalizer$FinalizerThread.run(java.base@17.0.21.1/Finalizer.java:172)
+
+"Signal Dispatcher" #4 daemon prio=9 os_prio=31 cpu=0.14ms elapsed=3.17s tid=0x0000000ac10cd800 nid=0x6403 waiting on condition  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"Service Thread" #5 daemon prio=9 os_prio=31 cpu=0.04ms elapsed=3.17s tid=0x0000000ac10cde00 nid=0x7303 runnable  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"Monitor Deflation Thread" #6 daemon prio=9 os_prio=31 cpu=0.21ms elapsed=3.17s tid=0x0000000ac10ce400 nid=0x6503 runnable  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"C2 CompilerThread0" #7 daemon prio=9 os_prio=31 cpu=18.28ms elapsed=3.17s tid=0x0000000ac10cea00 nid=0x6603 waiting on condition  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+   No compile task
+
+"C1 CompilerThread0" #10 daemon prio=9 os_prio=31 cpu=5.54ms elapsed=3.17s tid=0x0000000ac10cf000 nid=0x6703 waiting on condition  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+   No compile task
+
+"Sweeper thread" #11 daemon prio=9 os_prio=31 cpu=0.01ms elapsed=3.17s tid=0x0000000ac10cf600 nid=0x6e03 runnable  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"Notification Thread" #12 daemon prio=9 os_prio=31 cpu=0.02ms elapsed=3.17s tid=0x0000000ac1110000 nid=0x6c03 runnable  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"Common-Cleaner" #13 daemon prio=8 os_prio=31 cpu=0.04ms elapsed=3.17s tid=0x0000000ac1110600 nid=0x6803 in Object.wait()  [0x000000016de46000]
+   java.lang.Thread.State: TIMED_WAITING (on object monitor)
+	at java.lang.Object.wait(java.base@17.0.21.1/Native Method)
+	- waiting on <0x0000000318418e58> (a java.lang.ref.ReferenceQueue$Lock)
+	at java.lang.ref.ReferenceQueue.remove(java.base@17.0.21.1/ReferenceQueue.java:155)
+	- locked <0x0000000318418e58> (a java.lang.ref.ReferenceQueue$Lock)
+	at jdk.internal.ref.CleanerImpl.run(java.base@17.0.21.1/CleanerImpl.java:140)
+	at java.lang.Thread.run(java.base@17.0.21.1/Thread.java:840)
+	at jdk.internal.misc.InnocuousThread.run(java.base@17.0.21.1/InnocuousThread.java:162)
+
+"deadlock-a" #14 prio=5 os_prio=31 cpu=0.30ms elapsed=3.15s tid=0x0000000ac1111200 nid=0x8103 waiting for monitor entry  [0x000000016e052000]
+   java.lang.Thread.State: BLOCKED (on object monitor)
+	at Leaky.lambda$main$0(Leaky.java:16)
+	- waiting to lock <0x000000031841b588> (a java.lang.Object)
+	- locked <0x000000031841b578> (a java.lang.Object)
+	at Leaky$$Lambda$1/0x0000007001000a08.run(Unknown Source)
+	at java.lang.Thread.run(java.base@17.0.21.1/Thread.java:840)
+
+"deadlock-b" #15 prio=5 os_prio=31 cpu=0.26ms elapsed=3.15s tid=0x0000000ac1111800 nid=0xa903 waiting for monitor entry  [0x000000016e25e000]
+   java.lang.Thread.State: BLOCKED (on object monitor)
+	at Leaky.lambda$main$1(Leaky.java:17)
+	- waiting to lock <0x000000031841b578> (a java.lang.Object)
+	- locked <0x000000031841b588> (a java.lang.Object)
+	at Leaky$$Lambda$2/0x0000007001000c28.run(Unknown Source)
+	at java.lang.Thread.run(java.base@17.0.21.1/Thread.java:840)
+
+"pool-worker-0" #16 prio=5 os_prio=31 cpu=1.15ms elapsed=3.15s tid=0x0000000ac1111e00 nid=0xa703 waiting on condition  [0x000000016e46a000]
+   java.lang.Thread.State: TIMED_WAITING (sleeping)
+	at java.lang.Thread.sleep(java.base@17.0.21.1/Native Method)
+	at Leaky.sleep(Leaky.java:22)
+	at Leaky.spin(Leaky.java:21)
+	at Leaky$$Lambda$3/0x0000007001002800.run(Unknown Source)
+	at java.lang.Thread.run(java.base@17.0.21.1/Thread.java:840)
+
+"pool-worker-1" #17 prio=5 os_prio=31 cpu=1.09ms elapsed=3.15s tid=0x0000000ac1112400 nid=0xa503 waiting on condition  [0x000000016e676000]
+   java.lang.Thread.State: TIMED_WAITING (sleeping)
+	at java.lang.Thread.sleep(java.base@17.0.21.1/Native Method)
+	at Leaky.sleep(Leaky.java:22)
+	at Leaky.spin(Leaky.java:21)
+	at Leaky$$Lambda$3/0x0000007001002800.run(Unknown Source)
+	at java.lang.Thread.run(java.base@17.0.21.1/Thread.java:840)
+
+"pool-worker-2" #18 prio=5 os_prio=31 cpu=1.18ms elapsed=3.15s tid=0x0000000ac1112a00 nid=0xa403 waiting on condition  [0x000000016e882000]
+   java.lang.Thread.State: TIMED_WAITING (sleeping)
+	at java.lang.Thread.sleep(java.base@17.0.21.1/Native Method)
+	at Leaky.sleep(Leaky.java:22)
+	at Leaky.spin(Leaky.java:21)
+	at Leaky$$Lambda$3/0x0000007001002800.run(Unknown Source)
+	at java.lang.Thread.run(java.base@17.0.21.1/Thread.java:840)
+
+"pool-worker-3" #19 prio=5 os_prio=31 cpu=1.32ms elapsed=3.15s tid=0x0000000ac1113000 nid=0xa203 waiting on condition  [0x000000016ea8e000]
+   java.lang.Thread.State: TIMED_WAITING (sleeping)
+	at java.lang.Thread.sleep(java.base@17.0.21.1/Native Method)
+	at Leaky.sleep(Leaky.java:22)
+	at Leaky.spin(Leaky.java:21)
+	at Leaky$$Lambda$3/0x0000007001002800.run(Unknown Source)
+	at java.lang.Thread.run(java.base@17.0.21.1/Thread.java:840)
+
+"Attach Listener" #20 daemon prio=9 os_prio=31 cpu=0.31ms elapsed=0.10s tid=0x0000000ac1113600 nid=0xa003 waiting on condition  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"VM Periodic Task Thread" os_prio=31 cpu=1.07ms elapsed=3.17s tid=0x0000000ac0ccc300 nid=0x6a03 waiting on condition  
+
+"VM Thread" os_prio=31 cpu=0.38ms elapsed=3.17s tid=0x0000000104ead850 nid=0x4c03 runnable  
+
+"G1 Service" os_prio=31 cpu=0.28ms elapsed=3.18s tid=0x0000000104eaa490 nid=0x5303 runnable  
+
+"G1 Refine#0" os_prio=31 cpu=0.04ms elapsed=3.18s tid=0x0000000104ea9b90 nid=0x4203 runnable  
+
+"G1 Conc#0" os_prio=31 cpu=0.03ms elapsed=3.18s tid=0x0000000104ea7d70 nid=0x3403 runnable  
+
+"G1 Main Marker" os_prio=31 cpu=0.04ms elapsed=3.18s tid=0x0000000104ea7470 nid=0x3603 runnable  
+
+"GC Thread#0" os_prio=31 cpu=0.07ms elapsed=3.18s tid=0x0000000104ea6cf0 nid=0x3703 runnable  
+
+JNI global refs: 6, weak refs: 0
+
+
+Found one Java-level deadlock:
+=============================
+"deadlock-a":
+  waiting to lock monitor 0x0000000ac0c7a840 (object 0x000000031841b588, a java.lang.Object),
+  which is held by "deadlock-b"
+
+"deadlock-b":
+  waiting to lock monitor 0x0000000ac0c7a920 (object 0x000000031841b578, a java.lang.Object),
+  which is held by "deadlock-a"
+
+Java stack information for the threads listed above:
+===================================================
+"deadlock-a":
+	at Leaky.lambda$main$0(Leaky.java:16)
+	- waiting to lock <0x000000031841b588> (a java.lang.Object)
+	- locked <0x000000031841b578> (a java.lang.Object)
+	at Leaky$$Lambda$1/0x0000007001000a08.run(Unknown Source)
+	at java.lang.Thread.run(java.base@17.0.21.1/Thread.java:840)
+"deadlock-b":
+	at Leaky.lambda$main$1(Leaky.java:17)
+	- waiting to lock <0x000000031841b578> (a java.lang.Object)
+	- locked <0x000000031841b588> (a java.lang.Object)
+	at Leaky$$Lambda$2/0x0000007001000c28.run(Unknown Source)
+	at java.lang.Thread.run(java.base@17.0.21.1/Thread.java:840)
+
+Found 1 deadlock.
+

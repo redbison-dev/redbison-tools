@@ -39,7 +39,7 @@ describe('shared behaviour cases', () => {
   it('covers the local catalog', () => {
     // parquet-inspect reads bytes, so the text case table cannot hold it;
     // its end-to-end coverage is src/test/format-viewers.test.ts.
-    const local = TOOLS.filter((t) => t.offline && t.id !== 'parquet-inspect').map((t) => t.id);
+    const local = TOOLS.filter((t) => t.offline && !['parquet-inspect', 'hprof-inspect', 'heap-snapshot-inspect', 'sqlite-inspect', 'zip-inspect', 'wasm-inspect', 'pprof-inspect', 'binary-inspect', 'font-inspect', 'pcap-inspect', 'arrow-inspect'].includes(t.id)).map((t) => t.id);
     const missing = local.filter((id) => !cases[id]?.length);
     expect(missing, 'local tools with no cases').toEqual([]);
   });

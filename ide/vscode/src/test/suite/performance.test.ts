@@ -39,16 +39,18 @@ suite('Performance', () => {
 
   test('the bundle carries nothing a reader does not use', () => {
     const bytes = statSync(root('dist/extension.js')).size;
-    // This number has moved three times, every time to buy offline
+    // This number has moved four times, every time to buy offline
     // commands: the HTTP status and MIME tables; the implementations that
-    // took the catalog from 7 local tools to 65; then the wave to 89 locals
-    // plus the format viewers (92 of 103). The 89-local move actually blew
-    // the old 120KB budget unnoticed, because the suite graded whatever
-    // dist/ was last built — the test script now builds first, so this
-    // number is honest again. What it guards is weight with no payoff,
-    // which is what the 43KB of documentation parsed at activation was.
-    // For scale, a typical published extension is measured in megabytes.
-    assert.ok(bytes < 220_000, `dist/extension.js is ${bytes} bytes`);
+    // took the catalog from 7 local tools to 65; the wave to 89 locals
+    // plus the format viewers; then the analyzer family (HAR, GC logs,
+    // protobuf wire, MessagePack, CBOR and the thread-dump analyzer — 98
+    // offline of 109). The 89-local move once blew the budget unnoticed
+    // because the suite graded a stale dist/; the test script now builds
+    // first, so this number is honest. What it guards is weight with no
+    // payoff, which is what the 43KB of documentation parsed at activation
+    // was. For scale, a typical published extension is measured in
+    // megabytes.
+    assert.ok(bytes < 260_000, `dist/extension.js is ${bytes} bytes`);
   });
 
   test('the documentation is not in the bundle', () => {

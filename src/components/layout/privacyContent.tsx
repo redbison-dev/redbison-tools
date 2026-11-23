@@ -13,6 +13,18 @@ import { bundledLibraries } from '@/thirdParty';
  */
 export const NETWORK_TOOLS: { id: string; name: string; calls: string; when: string }[] = [
   {
+    id: 'font-file-inspector',
+    name: 'Font File Inspector',
+    calls: "This site's own /fonts/DejaVuSans-Bold.ttf, to load the built-in sample font.",
+    when: 'Only when you press "Load a sample". Fonts you drop in are parsed locally and never uploaded.',
+  },
+  {
+    id: 'arrow-file-inspector',
+    name: 'Arrow File Inspector',
+    calls: "This site's own /samples/sample.arrow, to load the built-in sample file.",
+    when: 'Only when you press "Load a sample". Files you drop in are parsed locally and never uploaded.',
+  },
+  {
     id: 'api-tester',
     name: 'API Tester',
     calls: "The URL you enter (that is the tool's job). The example placeholder points at jsonplaceholder.typicode.com.",
@@ -105,7 +117,7 @@ export const ThirdPartySection = () => (
     <div className="space-y-3">
       <h3 className="text-sm font-semibold text-foreground">Services tools can contact</h3>
       <P>
-        {NETWORK_TOOLS.length} of the 100 tools make network requests, because their job inherently
+        {NETWORK_TOOLS.length} of the 116 tools make network requests, because their job inherently
         needs one. Each names the service in its own interface, and nothing is sent until you act.{' '}
         <strong className="text-foreground">No other tool makes any network request.</strong>
       </P>

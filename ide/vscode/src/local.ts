@@ -62,6 +62,11 @@ import { colorForms, contrastReport, gradientCss } from '../../../src/lib/tools/
 import { renderJsonTree } from '../../../src/lib/tools/json-tree';
 import { renderXmlTree } from '../../../src/lib/tools/xml-tree';
 import { checkAvroSchema, describeType } from '../../../src/lib/tools/avro-tools';
+import { parseThreadDump, renderThreadDumpSummary } from '../../../src/lib/tools/jvm-thread-dump';
+import { parseHar, renderHarSummary } from '../../../src/lib/tools/har-analyzer';
+import { parseGcLog, renderGcLogSummary } from '../../../src/lib/tools/gc-log-analyzer';
+import { decodeProtoWire, renderProtoWire } from '../../../src/lib/tools/proto-wire';
+import { decodeMessagePack, decodeCbor } from '../../../src/lib/tools/binary-json-formats';
 import { randomEmails, randomNames, randomNumbers } from '../../../src/lib/tools/random-testdata';
 import { tidyYaml, toYaml, yamlToValue } from '../../../src/lib/tools/w500/data-yaml-lite';
 import { beautifyHtml, beautifySql, beautifyXml } from '../../../src/lib/tools/w500/markup-beautify';
@@ -91,6 +96,21 @@ export class LocalToolError extends Error {}
  * with an `Error:` prefix, while the same refusal from a hand-written case
  * read cleanly. The caller cannot tell the difference and should not have to.
  */
+
+/** A hex or base64 selection as bytes; whichever parses cleanly wins. */
+function bytesFromText(input: string): Uint8Array {
+  const clean = input.replace(/\s+/g, '');
+  if (/^[0-9a-fA-F]+$/.test(clean) && clean.length % 2 === 0) {
+    return new Uint8Array(clean.match(/../g)!.map((x) => parseInt(x, 16)));
+  }
+  try {
+    const bin = atob(clean.replace(/-/g, '+').replace(/_/g, '/'));
+    return Uint8Array.from(bin, (c) => c.charCodeAt(0));
+  } catch {
+    throw new LocalToolError('Give the bytes as hex (089601) or base64; the selection is neither.');
+  }
+}
+
 function refuse<T>(fn: () => T): T {
   try {
     return fn();
@@ -1056,6 +1076,42 @@ export function runLocal(id: string, input: string, options: LocalOptions = {}):
       if (errors.length) throw new LocalToolError(`Not a valid Avro schema:\n${errors.map((e) => `  ${e}`).join('\n')}`);
       return `Valid Avro schema: ${describeType(schema)}`;
     }
+    case 'thread-dump':
+      return refuse(() => renderThreadDumpSummary(parseThreadDump(input)));
+    case 'hprof-inspect':
+      throw new LocalToolError('Heap dumps are binary files: run redbison hprof-inspect --file heap.hprof.');
+    case 'heap-snapshot-inspect':
+      throw new LocalToolError('Heap snapshots are large files: run redbison heap-snapshot-inspect --file app.heapsnapshot.');
+    case 'har-analyze':
+      return refuse(() => renderHarSummary(parseHar(input)));
+    case 'gc-log':
+      return refuse(() => renderGcLogSummary(parseGcLog(input)));
+    case 'proto-decode':
+      return refuse(() => renderProtoWire(decodeProtoWire(bytesFromText(input))));
+    case 'msgpack-decode': {
+      const r = refuse(() => decodeMessagePack(bytesFromText(input)));
+      return JSON.stringify(r.trailingBytes ? r : r.value, null, 2);
+    }
+    case 'cbor-decode': {
+      const r = refuse(() => decodeCbor(bytesFromText(input)));
+      return JSON.stringify(r.trailingBytes ? r : r.value, null, 2);
+    }
+    case 'sqlite-inspect':
+      throw new LocalToolError('SQLite databases are binary files: run redbison sqlite-inspect --file app.db.');
+    case 'zip-inspect':
+      throw new LocalToolError('Archives are binary files: run redbison zip-inspect --file app.jar.');
+    case 'wasm-inspect':
+      throw new LocalToolError('WebAssembly modules are binary files: run redbison wasm-inspect --file app.wasm.');
+    case 'pprof-inspect':
+      throw new LocalToolError('pprof profiles are gzipped binary files: run redbison pprof-inspect --file cpu.pprof.');
+    case 'binary-inspect':
+      throw new LocalToolError('Executables are binary files: run redbison binary-inspect --file ./app.');
+    case 'font-inspect':
+      throw new LocalToolError('Fonts are binary files: run redbison font-inspect --file font.ttf.');
+    case 'pcap-inspect':
+      throw new LocalToolError('Captures are binary files: run redbison pcap-inspect --file trace.pcap.');
+    case 'arrow-inspect':
+      throw new LocalToolError('Arrow IPC files are binary: run redbison arrow-inspect --file data.arrow.');
     case 'parquet-inspect':
       // A Parquet file is binary; a selection cannot carry it. The CLI reads
       // the file itself and never reaches this branch.
@@ -1086,6 +1142,12 @@ export const LOCAL_IDS = [
   'military-time', 'binary-text', 'date-diff', 'list-compare', 'utm-build',
   // The format viewers.
   'json-tree', 'xml-tree', 'avro-check', 'parquet-inspect',
+  // The dump analyzers.
+  'thread-dump', 'hprof-inspect', 'heap-snapshot-inspect',
+  // The tier analyzers: text-friendly here, file-based ones in the CLI.
+  'har-analyze', 'gc-log', 'proto-decode', 'msgpack-decode', 'cbor-decode',
+  'sqlite-inspect', 'zip-inspect', 'wasm-inspect', 'pprof-inspect', 'binary-inspect', 'font-inspect',
+  'pcap-inspect', 'arrow-inspect',
 ] as const;
 
 export const isLocal = (id: string): boolean => (LOCAL_IDS as readonly string[]).includes(id);

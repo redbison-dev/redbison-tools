@@ -1,7 +1,7 @@
 # RedBison Dev Tools
 
-A hundred and three everyday developer tools on the current selection,
-without leaving the editor. Ninety-two of them never touch the network.
+A hundred and nine everyday developer tools on the current selection,
+without leaving the editor. Ninety-eight of them never touch the network.
 
 ![RedBison Dev Tools formatting JSON, decoding a JWT and converting JSON to YAML, all on the current selection](media/demo.gif)
 
@@ -37,7 +37,7 @@ Run **RedBison: Browse the tools** for the full list with descriptions, or
 
 ## Offline
 
-**Ninety-two of the hundred and three need no network.** Anything built on Node's own
+**Ninety-eight of the hundred and nine need no network.** Anything built on Node's own
 crypto, a JSON parser or string handling runs in the editor: hashing, HMAC,
 Base64, URL and HTML encoding, JWT decode, UUIDs, passwords, case conversion,
 line operations, number bases, epoch conversion, regex testing, HTTP status
@@ -53,7 +53,7 @@ the site reaches you without an update.
 
 A command sends only the text you selected, and only when you run it. Nothing
 is sent in the background, nothing is stored, there is no telemetry and no
-account. The ninety-two offline commands send nothing at all.
+account. The ninety-eight offline commands send nothing at all.
 
 ## Also available
 

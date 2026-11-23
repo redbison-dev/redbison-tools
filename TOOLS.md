@@ -1,6 +1,6 @@
 # Tool list
 
-All 100 tools in this repo, grouped as on the home page. Each row links the
+All 116 tools in this repo, grouped as on the home page. Each row links the
 tool's React component; the pure logic it calls lives in [src/lib/tools/](src/lib/tools/)
 (see [ARCHITECTURE.md](ARCHITECTURE.md)). "Try it" opens the hosted version at redbison.dev.
 
@@ -96,6 +96,7 @@ This file is generated from the catalog — do not edit by hand.
 | **Database Backup Generator** | Generate database backup scripts and strategies | [`DatabaseBackupGenerator.tsx`](src/components/tools/DatabaseBackupGenerator.tsx) | [Try it](https://redbison.dev/database-backup-generator) |
 | **SQL Data Type Converter** | Convert data types between different database systems | [`SqlDataTypeConverter.tsx`](src/components/tools/SqlDataTypeConverter.tsx) | [Try it](https://redbison.dev/sql-data-type-converter) |
 | **Database Seed Generator** | Generate test data and seed scripts for databases | [`DatabaseSeedGenerator.tsx`](src/components/tools/DatabaseSeedGenerator.tsx) | [Try it](https://redbison.dev/database-seed-generator) |
+| **SQLite File Inspector** | Header facts, schema and exact row counts from a .sqlite or .db file | [`SqliteFileInspector.tsx`](src/components/tools/database/SqliteFileInspector.tsx) | [Try it](https://redbison.dev/sqlite-file-inspector) |
 
 ## API Tools
 
@@ -135,6 +136,9 @@ This file is generated from the catalog — do not edit by hand.
 | **Data Format Comparison** | Compare different data formats and their characteristics | [`DataFormatComparison.tsx`](src/components/tools/DataFormatComparison.tsx) | [Try it](https://redbison.dev/data-format-comparison) |
 | **Parquet Viewer** | Read a Parquet file's schema, row count and codecs | [`ParquetViewer.tsx`](src/components/tools/ParquetViewer.tsx) | [Try it](https://redbison.dev/parquet-viewer) |
 | **TSV Parser** | Parse and convert Tab-Separated Values files | [`TsvParser.tsx`](src/components/tools/TsvParser.tsx) | [Try it](https://redbison.dev/tsv-parser) |
+| **Protobuf Wire Decoder** | Decode protobuf bytes without a schema, every plausible reading shown | [`ProtobufWireDecoder.tsx`](src/components/tools/dataformats/ProtobufWireDecoder.tsx) | [Try it](https://redbison.dev/protobuf-wire-decoder) |
+| **MessagePack Decoder** | Turn MessagePack bytes into JSON with int64, binary and extensions visible | [`MessagePackDecoder.tsx`](src/components/tools/dataformats/MessagePackDecoder.tsx) | [Try it](https://redbison.dev/messagepack-decoder) |
+| **CBOR Decoder** | Decode CBOR hex or base64 to JSON, tags and half-floats included | [`CborDecoder.tsx`](src/components/tools/dataformats/CborDecoder.tsx) | [Try it](https://redbison.dev/cbor-decoder) |
 
 ## Blockchain Tools
 
@@ -170,3 +174,25 @@ This file is generated from the catalog — do not edit by hand.
 | **Docker Run to Compose Converter** | Convert docker run commands to docker-compose.yml and back | [`DockerRunToCompose.tsx`](src/components/tools/webops/DockerRunToCompose.tsx) | [Try it](https://redbison.dev/docker-run-to-compose) |
 | **.gitignore Generator** | Combine .gitignore templates for languages, IDEs and OSes | [`GitignoreGenerator.tsx`](src/components/tools/webops/GitignoreGenerator.tsx) | [Try it](https://redbison.dev/gitignore-generator) |
 | **Chmod Calculator** | Unix permissions between octal, symbolic and checkboxes | [`ChmodCalculator.tsx`](src/components/tools/webops/ChmodCalculator.tsx) | [Try it](https://redbison.dev/chmod-calculator) |
+
+## Debugging
+
+| Tool | What it does | Source | Try |
+|---|---|---|---|
+| **Java Thread Dump Analyzer** | Deadlocks, lock contention, pools and CPU from jstack or jcmd output | [`JavaThreadDumpAnalyzer.tsx`](src/components/tools/debugging/JavaThreadDumpAnalyzer.tsx) | [Try it](https://redbison.dev/java-thread-dump-analyzer) |
+| **Java Heap Dump Analyzer** | Class histogram, biggest objects and duplicate arrays from an .hprof file | [`JavaHeapDumpAnalyzer.tsx`](src/components/tools/debugging/JavaHeapDumpAnalyzer.tsx) | [Try it](https://redbison.dev/java-heap-dump-analyzer) |
+| **Heap Snapshot Analyzer** | Constructors, duplicate strings and detached DOM nodes from a .heapsnapshot | [`NodeHeapSnapshotAnalyzer.tsx`](src/components/tools/debugging/NodeHeapSnapshotAnalyzer.tsx) | [Try it](https://redbison.dev/node-heap-snapshot-analyzer) |
+| **HAR File Analyzer** | Totals, third-party share and slow requests from a HAR export | [`HarAnalyzer.tsx`](src/components/tools/debugging/HarAnalyzer.tsx) | [Try it](https://redbison.dev/har-analyzer) |
+| **Java GC Log Analyzer** | Pause percentiles, throughput and heap trend from a JVM GC log | [`GcLogAnalyzer.tsx`](src/components/tools/debugging/GcLogAnalyzer.tsx) | [Try it](https://redbison.dev/gc-log-analyzer) |
+| **ZIP File Inspector** | List a ZIP, JAR, APK or DOCX from its index, nothing extracted | [`ZipFileInspector.tsx`](src/components/tools/debugging/ZipFileInspector.tsx) | [Try it](https://redbison.dev/zip-file-inspector) |
+| **WASM Module Inspector** | Sections, imports, exports and memory pages from a .wasm file | [`WasmModuleInspector.tsx`](src/components/tools/debugging/WasmModuleInspector.tsx) | [Try it](https://redbison.dev/wasm-module-inspector) |
+| **pprof Profile Analyzer** | Sample types, duration and top functions from a pprof file | [`PprofProfileAnalyzer.tsx`](src/components/tools/debugging/PprofProfileAnalyzer.tsx) | [Try it](https://redbison.dev/pprof-profile-analyzer) |
+| **Executable File Inspector** | Architecture, libraries and segments of ELF, Mach-O and PE binaries | [`ExecutableFileInspector.tsx`](src/components/tools/debugging/ExecutableFileInspector.tsx) | [Try it](https://redbison.dev/executable-file-inspector) |
+| **PCAP File Inspector** | Protocols, talkers, DNS and unanswered SYNs from a .pcap or .pcapng | [`PcapFileInspector.tsx`](src/components/tools/debugging/PcapFileInspector.tsx) | [Try it](https://redbison.dev/pcap-file-inspector) |
+| **Arrow File Inspector** | Schema, record batches, exact row counts and compression from an Arrow IPC file | [`ArrowFileInspector.tsx`](src/components/tools/debugging/ArrowFileInspector.tsx) | [Try it](https://redbison.dev/arrow-file-inspector) |
+
+## Design Tools
+
+| Tool | What it does | Source | Try |
+|---|---|---|---|
+| **Font File Inspector** | Glyphs, tables and embedding permissions from a TTF, OTF or TTC | [`FontFileInspector.tsx`](src/components/tools/design/FontFileInspector.tsx) | [Try it](https://redbison.dev/font-file-inspector) |

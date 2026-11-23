@@ -1,6 +1,6 @@
 # redbison
 
-The [redbison.dev](https://redbison.dev) tools in your terminal. 104 developer utilities, 93 of
+The [redbison.dev](https://redbison.dev) tools in your terminal. 120 developer utilities, 109 of
 them never touching the network.
 
 ```console
@@ -55,7 +55,7 @@ Run `redbison` with nothing after it and you get a full-screen picker:
 
 ```
  Catalogue: redbison.dev           <0> all tools                  ███  ████ ███  ███  ███   ███ ███  █  █
- Tools:     104 + 9 extras         <1> Data and JSON              █  █ █    █  █ █  █  █   █    █  █ ██ █
+ Tools:     120 + 9 extras         <1> Data and JSON              █  █ █    █  █ █  █  █   █    █  █ ██ █
  Showing:   all tools [2]          <2> Text                       ███  ███  █  █ ███   █   ███  █  █ █ ██
  Filter:    /b64                   <3> Encoding and hashing       █ █  █    █  █ █  █  █      █ █  █ █  █     █
  Offline:   off                    <4> Formatters                 █  █ █    █  █ █  █  █      █ █  █ █  █   █▀█ █▀█ █ █
@@ -221,7 +221,7 @@ text instead of a file, `avro-check` validates it as an Avro schema.
 ### Finding a tool
 
 ```sh
-redbison --help            # all 104, grouped
+redbison --help            # all 120, grouped
 redbison --list            # one per line, for grep
 redbison --list | grep -i base64
 redbison base64-decode --help
@@ -283,7 +283,7 @@ redbison number-to-words -- -42
 
 ## What runs where
 
-93 of the 104 run entirely on your machine: JSON, base64, hashes, JWT decoding, case
+109 of the 120 run entirely on your machine: JSON, base64, hashes, JWT decoding, case
 conversion, sorting, hex, URLs, UUIDs, subnets, chmod, IEEE 754, YAML, SQL, HTML and XML
 formatting, colours, cron checking, diffs, timezones and the rest. They are arithmetic and
 string work, and your input never leaves the process.
@@ -314,7 +314,7 @@ Tools that work without a network: redbison --list | grep local
 ```
 
 ```sh
-redbison --list | grep local | wc -l   # 93
+redbison --list | grep local | wc -l   # 109
 ```
 
 ## Exit codes

@@ -2362,5 +2362,97 @@
       "input": "not json",
       "throws": "JSON"
     }
+  ],
+  "thread-dump": [
+    {
+      "name": "finds contention with the holder named",
+      "input": "\"worker-1\" #12 prio=5 os_prio=31 cpu=410.20ms elapsed=62.10s tid=0x0001 nid=0x5603 waiting for monitor entry  [0x0001]\n   java.lang.Thread.State: BLOCKED (on object monitor)\n\tat app.Cache.put(Cache.java:42)\n\t- waiting to lock <0x000000071a2b3c40> (a java.util.HashMap)\n\n\"worker-2\" #13 prio=5 os_prio=31 cpu=398.70ms elapsed=62.10s tid=0x0002 nid=0x5703 runnable  [0x0002]\n   java.lang.Thread.State: RUNNABLE\n\tat app.Cache.rehash(Cache.java:88)\n\t- locked <0x000000071a2b3c40> (a java.util.HashMap)\n",
+      "contains": "held by \"worker-2\""
+    },
+    {
+      "name": "leads with the state histogram",
+      "input": "\"worker-1\" #12 prio=5 os_prio=31 cpu=410.20ms elapsed=62.10s tid=0x0001 nid=0x5603 waiting for monitor entry  [0x0001]\n   java.lang.Thread.State: BLOCKED (on object monitor)\n\tat app.Cache.put(Cache.java:42)\n\t- waiting to lock <0x000000071a2b3c40> (a java.util.HashMap)\n\n\"worker-2\" #13 prio=5 os_prio=31 cpu=398.70ms elapsed=62.10s tid=0x0002 nid=0x5703 runnable  [0x0002]\n   java.lang.Thread.State: RUNNABLE\n\tat app.Cache.rehash(Cache.java:88)\n\t- locked <0x000000071a2b3c40> (a java.util.HashMap)\n",
+      "contains": "1 BLOCKED"
+    },
+    {
+      "name": "refuses non-dumps",
+      "input": "just some text",
+      "throws": "does not look like a JVM thread dump"
+    }
+  ],
+  "har-analyze": [
+    {
+      "name": "totals and third-party split",
+      "input": "{\"log\":{\"pages\":[{\"id\":\"p\",\"title\":\"shop\",\"pageTimings\":{\"onLoad\":1800}}],\"entries\":[{\"startedDateTime\":\"2026-11-22T10:00:00.000Z\",\"time\":120,\"request\":{\"method\":\"GET\",\"url\":\"https://shop.example.com/\"},\"response\":{\"status\":200,\"bodySize\":12000,\"headersSize\":200,\"content\":{\"size\":30000,\"mimeType\":\"text/html\"},\"headers\":[]},\"timings\":{\"blocked\":5,\"dns\":-1,\"connect\":-1,\"ssl\":-1,\"send\":1,\"wait\":94,\"receive\":20}},{\"startedDateTime\":\"2026-11-22T10:00:01.000Z\",\"time\":650,\"request\":{\"method\":\"GET\",\"url\":\"https://tracker.ads-net.example/pixel.js\"},\"response\":{\"status\":200,\"bodySize\":48000,\"headersSize\":300,\"content\":{\"size\":48200,\"mimeType\":\"application/javascript\"},\"headers\":[]},\"timings\":{\"blocked\":2,\"dns\":30,\"connect\":40,\"ssl\":35,\"send\":1,\"wait\":400,\"receive\":142}}]}}",
+      "contains": "2 requests"
+    },
+    {
+      "name": "the tracker is third-party by base domain",
+      "input": "{\"log\":{\"pages\":[{\"id\":\"p\",\"title\":\"shop\",\"pageTimings\":{\"onLoad\":1800}}],\"entries\":[{\"startedDateTime\":\"2026-11-22T10:00:00.000Z\",\"time\":120,\"request\":{\"method\":\"GET\",\"url\":\"https://shop.example.com/\"},\"response\":{\"status\":200,\"bodySize\":12000,\"headersSize\":200,\"content\":{\"size\":30000,\"mimeType\":\"text/html\"},\"headers\":[]},\"timings\":{\"blocked\":5,\"dns\":-1,\"connect\":-1,\"ssl\":-1,\"send\":1,\"wait\":94,\"receive\":20}},{\"startedDateTime\":\"2026-11-22T10:00:01.000Z\",\"time\":650,\"request\":{\"method\":\"GET\",\"url\":\"https://tracker.ads-net.example/pixel.js\"},\"response\":{\"status\":200,\"bodySize\":48000,\"headersSize\":300,\"content\":{\"size\":48200,\"mimeType\":\"application/javascript\"},\"headers\":[]},\"timings\":{\"blocked\":2,\"dns\":30,\"connect\":40,\"ssl\":35,\"send\":1,\"wait\":400,\"receive\":142}}]}}",
+      "contains": "third-party: 1 requests"
+    },
+    {
+      "name": "refuses non-HAR JSON by naming the field",
+      "input": "{\"notHar\":true}",
+      "throws": "log.entries"
+    }
+  ],
+  "gc-log": [
+    {
+      "name": "counts collections and fulls",
+      "input": "[0.017s][info][gc] GC(0) Pause Young (Normal) (G1 Evacuation Pause) 23M->3M(64M) 0.720ms\n[5.478s][info][gc] GC(16) Pause Full (System.gc()) 35M->8M(34M) 4.797ms\n[9.031s][info][gc] GC(17) Pause Young (Normal) (G1 Evacuation Pause) 31M->9M(34M) 1.102ms",
+      "contains": "3 collections (1 full)"
+    },
+    {
+      "name": "nested-paren causes parse",
+      "input": "[0.017s][info][gc] GC(0) Pause Young (Normal) (G1 Evacuation Pause) 23M->3M(64M) 0.720ms\n[5.478s][info][gc] GC(16) Pause Full (System.gc()) 35M->8M(34M) 4.797ms\n[9.031s][info][gc] GC(17) Pause Young (Normal) (G1 Evacuation Pause) 31M->9M(34M) 1.102ms",
+      "contains": "Pause Full (System.gc())"
+    },
+    {
+      "name": "refuses non-GC text by naming both shapes",
+      "input": "hello",
+      "throws": "unified logs"
+    }
+  ],
+  "proto-decode": [
+    {
+      "name": "the encoding-guide example",
+      "input": "089601120774657374696e67",
+      "contains": "1: varint 150"
+    },
+    {
+      "name": "base64 works too",
+      "input": "CJYB",
+      "contains": "varint 150"
+    },
+    {
+      "name": "neither hex nor base64 is refused",
+      "input": "zz!!",
+      "throws": "hex"
+    }
+  ],
+  "msgpack-decode": [
+    {
+      "name": "the msgpack.org example",
+      "input": "82a7636f6d70616374c3a6736368656d6100",
+      "contains": "\"compact\": true"
+    },
+    {
+      "name": "0xc1 is never used",
+      "input": "c1",
+      "throws": "0xc1"
+    }
+  ],
+  "cbor-decode": [
+    {
+      "name": "an RFC 8949 appendix vector",
+      "input": "a26161016162820203",
+      "contains": "\"b\": ["
+    },
+    {
+      "name": "indefinite byte chunks join",
+      "input": "5f42010243030405ff",
+      "contains": "\"$bytes\": 5"
+    }
   ]
 }

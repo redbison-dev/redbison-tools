@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-ffdd00?logo=buymeacoffee&logoColor=000)](https://buymeacoffee.com/redbison.dev)
 
-**100 free developer tools that run entirely in your browser** — JSON, regex, hashing,
+**116 free developer tools that run entirely in your browser** — JSON, regex, hashing,
 encoders, SQL, GraphQL, network utilities and more. This is the open-source core of
 [redbison.dev](https://redbison.dev).
 
@@ -13,7 +13,7 @@ encoders, SQL, GraphQL, network utilities and more. This is the open-source core
 
 ## What this repo is
 
-The top 100 developer tools from redbison.dev as a standalone React app: the tool
+The top 100 developer tools from redbison.dev, plus the debugging and file-analysis family (heap, thread and GC analyzers, HAR, SQLite, pcap, Arrow, executables, fonts and the binary decoders), as a standalone React app: the tool
 components, their logic and their tests, with a minimal home page that lists everything.
 No analytics, no accounts, no ads — every tool does its work client-side, so nothing you
 type ever leaves your machine. The running site documents the full privacy model,

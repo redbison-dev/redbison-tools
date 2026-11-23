@@ -707,5 +707,117 @@ export const catalog: CatalogTool[] = [
     "desc": "Unix permissions between octal, symbolic and checkboxes",
     "category": "Tech Tools",
     "subcategory": "Web & DevOps"
+  },
+  {
+    "id": "java-thread-dump-analyzer",
+    "name": "Java Thread Dump Analyzer",
+    "desc": "Deadlocks, lock contention, pools and CPU from jstack or jcmd output",
+    "category": "Tech Tools",
+    "subcategory": "Debugging"
+  },
+  {
+    "id": "java-heap-dump-analyzer",
+    "name": "Java Heap Dump Analyzer",
+    "desc": "Class histogram, biggest objects and duplicate arrays from an .hprof file",
+    "category": "Tech Tools",
+    "subcategory": "Debugging"
+  },
+  {
+    "id": "node-heap-snapshot-analyzer",
+    "name": "Heap Snapshot Analyzer",
+    "desc": "Constructors, duplicate strings and detached DOM nodes from a .heapsnapshot",
+    "category": "Tech Tools",
+    "subcategory": "Debugging"
+  },
+  {
+    "id": "har-analyzer",
+    "name": "HAR File Analyzer",
+    "desc": "Totals, third-party share and slow requests from a HAR export",
+    "category": "Tech Tools",
+    "subcategory": "Debugging"
+  },
+  {
+    "id": "gc-log-analyzer",
+    "name": "Java GC Log Analyzer",
+    "desc": "Pause percentiles, throughput and heap trend from a JVM GC log",
+    "category": "Tech Tools",
+    "subcategory": "Debugging"
+  },
+  {
+    "id": "sqlite-file-inspector",
+    "name": "SQLite File Inspector",
+    "desc": "Header facts, schema and exact row counts from a .sqlite or .db file",
+    "category": "Tech Tools",
+    "subcategory": "Database Tools"
+  },
+  {
+    "id": "protobuf-wire-decoder",
+    "name": "Protobuf Wire Decoder",
+    "desc": "Decode protobuf bytes without a schema, every plausible reading shown",
+    "category": "Tech Tools",
+    "subcategory": "Data Formats"
+  },
+  {
+    "id": "messagepack-decoder",
+    "name": "MessagePack Decoder",
+    "desc": "Turn MessagePack bytes into JSON with int64, binary and extensions visible",
+    "category": "Tech Tools",
+    "subcategory": "Data Formats"
+  },
+  {
+    "id": "cbor-decoder",
+    "name": "CBOR Decoder",
+    "desc": "Decode CBOR hex or base64 to JSON, tags and half-floats included",
+    "category": "Tech Tools",
+    "subcategory": "Data Formats"
+  },
+  {
+    "id": "zip-file-inspector",
+    "name": "ZIP File Inspector",
+    "desc": "List a ZIP, JAR, APK or DOCX from its index, nothing extracted",
+    "category": "Tech Tools",
+    "subcategory": "Debugging"
+  },
+  {
+    "id": "wasm-module-inspector",
+    "name": "WASM Module Inspector",
+    "desc": "Sections, imports, exports and memory pages from a .wasm file",
+    "category": "Tech Tools",
+    "subcategory": "Debugging"
+  },
+  {
+    "id": "pprof-profile-analyzer",
+    "name": "pprof Profile Analyzer",
+    "desc": "Sample types, duration and top functions from a pprof file",
+    "category": "Tech Tools",
+    "subcategory": "Debugging"
+  },
+  {
+    "id": "executable-file-inspector",
+    "name": "Executable File Inspector",
+    "desc": "Architecture, libraries and segments of ELF, Mach-O and PE binaries",
+    "category": "Tech Tools",
+    "subcategory": "Debugging"
+  },
+  {
+    "id": "font-file-inspector",
+    "name": "Font File Inspector",
+    "desc": "Glyphs, tables and embedding permissions from a TTF, OTF or TTC",
+    "category": "Creative & Design",
+    "subcategory": "Design Tools"
+  },
+  {
+    "id": "pcap-file-inspector",
+    "name": "PCAP File Inspector",
+    "desc": "Protocols, talkers, DNS and unanswered SYNs from a .pcap or .pcapng",
+    "category": "Tech Tools",
+    "subcategory": "Debugging"
+  },
+  {
+    "id": "arrow-file-inspector",
+    "name": "Arrow File Inspector",
+    "desc": "Schema, record batches, exact row counts and compression from an Arrow IPC file",
+    "category": "Tech Tools",
+    "subcategory": "Debugging"
   }
 ];

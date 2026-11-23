@@ -6,8 +6,8 @@ import { subcategoryIcons, toolIcons } from '@/catalogIcons';
 import { toolRoutes } from '@/toolRoutes';
 
 describe('catalog', () => {
-  it('ships exactly 100 tools', () => {
-    expect(catalog.length).toBe(100);
+  it('ships exactly 116 tools: the top 100 plus the debugging and file-analysis family', () => {
+    expect(catalog.length).toBe(116);
   });
 
   it('has unique ids, each with a name and description', () => {

@@ -13,7 +13,7 @@ export type CliTool = {
   keywords: string;
 };
 
-export const GROUP_ORDER = ["Data and JSON","Text","Encoding and hashing","Formatters","Web and network","Generators","Time and numbers","Comparing","Colour and design","Other"] as const;
+export const GROUP_ORDER = ["Data and JSON","Text","Encoding and hashing","Formatters","Web and network","Generators","Time and numbers","Debugging","Colour and design","Other"] as const;
 
 export const TOOLS: CliTool[] = [
   {
@@ -45,6 +45,21 @@ export const TOOLS: CliTool[] = [
       "input": "input"
     },
     "keywords": "binary to text converter utf 8 bytes hex decode or and back with real handling"
+  },
+  {
+    "id": "cbor-decode",
+    "title": "Decode CBOR",
+    "summary": "CBOR bytes (hex or base64) to JSON per RFC 8949.",
+    "kind": "inspect",
+    "group": "Data and JSON",
+    "offline": true,
+    "native": false,
+    "url": "https://redbison.dev/cbor-decoder",
+    "mcp": {
+      "name": "cbor_decode",
+      "input": "data"
+    },
+    "keywords": "cbor decoder to json rfc 8949 hex base64 webauthn cose cwt coap tags half precision float indefinite length binary decode or and floats included"
   },
   {
     "id": "csv-to-json",
@@ -260,6 +275,21 @@ export const TOOLS: CliTool[] = [
     "keywords": "military time converter 24 hour clock to 12 am pm 1430 conversion and back with spoken readings"
   },
   {
+    "id": "msgpack-decode",
+    "title": "Decode MessagePack",
+    "summary": "MessagePack bytes (hex or base64) to JSON.",
+    "kind": "inspect",
+    "group": "Data and JSON",
+    "offline": true,
+    "native": false,
+    "url": "https://redbison.dev/messagepack-decoder",
+    "mcp": {
+      "name": "msgpack_decode",
+      "input": "data"
+    },
+    "keywords": "messagepack decoder msgpack to json online hex base64 viewer timestamp extension bin redis fluentd binary serialization turn bytes into with int64 and extensions visible"
+  },
+  {
     "id": "number-base",
     "title": "Convert number base",
     "summary": "Read the selected number in binary, octal, decimal and hex.",
@@ -287,6 +317,21 @@ export const TOOLS: CliTool[] = [
     "keywords": "parquet viewer file reader apache columnar data format analytics read a s schema row count and codecs"
   },
   {
+    "id": "proto-decode",
+    "title": "Decode protobuf wire format",
+    "summary": "Field numbers, wire types and every plausible reading.",
+    "kind": "inspect",
+    "group": "Data and JSON",
+    "offline": true,
+    "native": false,
+    "url": "https://redbison.dev/protobuf-wire-decoder",
+    "mcp": {
+      "name": "proto_decode",
+      "input": "data"
+    },
+    "keywords": "protobuf wire format decoder no schema raw bytes hex base64 field numbers types varint zigzag nested message protoscope grpc payload decode without a every plausible reading shown"
+  },
+  {
     "id": "query-to-json",
     "title": "Query string to JSON",
     "summary": "Turn a query string into an object.",
@@ -309,6 +354,18 @@ export const TOOLS: CliTool[] = [
     "url": "https://redbison.dev/json-beautify-validate-query",
     "mcp": null,
     "keywords": "json formatter validator prettify minify parse stringify beautifier query jsonpath format validate and documents"
+  },
+  {
+    "id": "sqlite-inspect",
+    "title": "Inspect an SQLite file",
+    "summary": "Schema and exact row counts from a .sqlite/.db file.",
+    "kind": "inspect",
+    "group": "Data and JSON",
+    "offline": true,
+    "native": true,
+    "url": "https://redbison.dev/sqlite-file-inspector",
+    "mcp": null,
+    "keywords": "sqlite file inspector viewer open db browser row count per table schema wal mode page size freelist vacuum no upload header facts and exact counts from a or"
   },
   {
     "id": "strip-html",
@@ -567,6 +624,21 @@ export const TOOLS: CliTool[] = [
     "keywords": "lines to comma line converter separated csv convert"
   },
   {
+    "id": "list-compare",
+    "title": "Compare two lists",
+    "summary": "What is in one list and not the other.",
+    "kind": "inspect",
+    "group": "Text",
+    "offline": true,
+    "native": false,
+    "url": "https://redbison.dev/list-comparison",
+    "mcp": {
+      "name": "list_compare",
+      "input": "a"
+    },
+    "keywords": "list comparison diff tool text analyzer find differences compare lists data matching duplicate finder set difference unique items common two to and similarities"
+  },
+  {
     "id": "morse",
     "title": "Morse code",
     "summary": "Convert the selection to or from Morse.",
@@ -727,6 +799,21 @@ export const TOOLS: CliTool[] = [
     "url": "https://redbison.dev/online-text-processor",
     "mcp": null,
     "keywords": "text processor formatter cleaner case converter duplicate remover line sorter remove lines extra spaces empty escape characters add upper lower camel title to comma newline manipulation cleaning formatting clean format and manipulate"
+  },
+  {
+    "id": "text-diff",
+    "title": "Diff against the clipboard",
+    "summary": "Compare the selection with your clipboard.",
+    "kind": "inspect",
+    "group": "Text",
+    "offline": true,
+    "native": false,
+    "url": "https://redbison.dev/online-diff-tool",
+    "mcp": {
+      "name": "text_diff",
+      "input": "a"
+    },
+    "keywords": "diff tool text comparison file code beyond compare side by document change detection checker analyzer two texts with highlighted differences just like"
   },
   {
     "id": "trim-lines",
@@ -1447,34 +1534,142 @@ export const TOOLS: CliTool[] = [
     "keywords": "timezone converter world time zone conversion utc gmt convert between different timezones"
   },
   {
-    "id": "list-compare",
-    "title": "Compare two lists",
-    "summary": "What is in one list and not the other.",
+    "id": "arrow-inspect",
+    "title": "Inspect an Arrow file",
+    "summary": "Schema, batches and exact row counts from Arrow IPC.",
     "kind": "inspect",
-    "group": "Comparing",
+    "group": "Debugging",
     "offline": true,
-    "native": false,
-    "url": "https://redbison.dev/list-comparison",
-    "mcp": {
-      "name": "list_compare",
-      "input": "a"
-    },
-    "keywords": "list comparison diff tool text analyzer find differences compare lists data matching duplicate finder set difference unique items common two to and similarities"
+    "native": true,
+    "url": "https://redbison.dev/arrow-file-inspector",
+    "mcp": null,
+    "keywords": "arrow file inspector viewer online apache ipc feather v2 schema record batches row count dictionary compression lz4 zstd pyarrow polars columnar exact counts and from an"
   },
   {
-    "id": "text-diff",
-    "title": "Diff against the clipboard",
-    "summary": "Compare the selection with your clipboard.",
+    "id": "binary-inspect",
+    "title": "Inspect an executable",
+    "summary": "ELF, Mach-O or PE headers: arch, libraries, segments.",
     "kind": "inspect",
-    "group": "Comparing",
+    "group": "Debugging",
+    "offline": true,
+    "native": true,
+    "url": "https://redbison.dev/executable-file-inspector",
+    "mcp": null,
+    "keywords": "executable file inspector elf mach o pe header viewer architecture 32 64 bit linked libraries dll imports stripped universal binary command online and segments of binaries"
+  },
+  {
+    "id": "gc-log",
+    "title": "Analyze a JVM GC log",
+    "summary": "Pause percentiles, throughput and warnings from a GC log.",
+    "kind": "inspect",
+    "group": "Debugging",
     "offline": true,
     "native": false,
-    "url": "https://redbison.dev/online-diff-tool",
+    "url": "https://redbison.dev/gc-log-analyzer",
     "mcp": {
-      "name": "text_diff",
-      "input": "a"
+      "name": "gc_log_analyze",
+      "input": "text"
     },
-    "keywords": "diff tool text comparison file code beyond compare side by document change detection checker analyzer two texts with highlighted differences just like"
+    "keywords": "gc log analyzer java jvm garbage collection g1 zgc xlog printgcdetails pause time throughput allocation rate full heap usage chart percentiles and trend from a"
+  },
+  {
+    "id": "har-analyze",
+    "title": "Analyze a HAR capture",
+    "summary": "Totals, third-party share and slowest requests from a HAR.",
+    "kind": "inspect",
+    "group": "Debugging",
+    "offline": true,
+    "native": true,
+    "url": "https://redbison.dev/har-analyzer",
+    "mcp": null,
+    "keywords": "har file analyzer viewer online http archive devtools network export waterfall slow requests third party transfer size compression redirects errors totals share and from a"
+  },
+  {
+    "id": "heap-snapshot-inspect",
+    "title": "Inspect a V8 heap snapshot",
+    "summary": "Constructor histogram, duplicate strings, detached DOM nodes.",
+    "kind": "inspect",
+    "group": "Debugging",
+    "offline": true,
+    "native": true,
+    "url": "https://redbison.dev/node-heap-snapshot-analyzer",
+    "mcp": null,
+    "keywords": "node heap snapshot analyzer v8 heapsnapshot viewer chrome devtools memory leak detached dom nodes duplicate strings constructor histogram javascript constructors and from a"
+  },
+  {
+    "id": "hprof-inspect",
+    "title": "Inspect a Java heap dump",
+    "summary": "Class histogram and duplicate-array waste from an .hprof file.",
+    "kind": "inspect",
+    "group": "Debugging",
+    "offline": true,
+    "native": true,
+    "url": "https://redbison.dev/java-heap-dump-analyzer",
+    "mcp": null,
+    "keywords": "java heap dump analyzer hprof viewer jmap jcmd gc outofmemoryerror memory leak class histogram shallow size duplicate arrays online biggest objects and from an file"
+  },
+  {
+    "id": "pcap-inspect",
+    "title": "Inspect a packet capture",
+    "summary": "Protocols, conversations and DNS from a .pcap/.pcapng.",
+    "kind": "inspect",
+    "group": "Debugging",
+    "offline": true,
+    "native": true,
+    "url": "https://redbison.dev/pcap-file-inspector",
+    "mcp": null,
+    "keywords": "pcap file inspector viewer online pcapng capture tcpdump wireshark packets protocol breakdown conversations top talkers dns queries tcp syn scan triage browser protocols and unanswered syns from a or"
+  },
+  {
+    "id": "pprof-inspect",
+    "title": "Analyze a pprof profile",
+    "summary": "The pprof top view: flat and cumulative by function.",
+    "kind": "inspect",
+    "group": "Debugging",
+    "offline": true,
+    "native": true,
+    "url": "https://redbison.dev/pprof-profile-analyzer",
+    "mcp": null,
+    "keywords": "pprof profile analyzer viewer go tool top flat cum pb gz cpu heap protobuf gzip online browser sample types duration and functions from a file"
+  },
+  {
+    "id": "thread-dump",
+    "title": "Analyze a JVM thread dump",
+    "summary": "States, pools, lock contention and deadlocks from a jstack dump.",
+    "kind": "inspect",
+    "group": "Debugging",
+    "offline": true,
+    "native": false,
+    "url": "https://redbison.dev/java-thread-dump-analyzer",
+    "mcp": {
+      "name": "jvm_thread_dump",
+      "input": "text"
+    },
+    "keywords": "java thread dump analyzer jstack jcmd print deadlock detector blocked waiting runnable lock contention pool analysis kill 3 hotspot deadlocks pools and cpu from or output"
+  },
+  {
+    "id": "wasm-inspect",
+    "title": "Inspect a WebAssembly module",
+    "summary": "Sections, imports, exports and memory from a .wasm file.",
+    "kind": "inspect",
+    "group": "Debugging",
+    "offline": true,
+    "native": true,
+    "url": "https://redbison.dev/wasm-module-inspector",
+    "mcp": null,
+    "keywords": "wasm module inspector webassembly binary sections imports exports memory pages name objdump online component model viewer and from a file"
+  },
+  {
+    "id": "zip-inspect",
+    "title": "Inspect a ZIP or JAR",
+    "summary": "Central directory, manifest and warnings, no extraction.",
+    "kind": "inspect",
+    "group": "Debugging",
+    "offline": true,
+    "native": true,
+    "url": "https://redbison.dev/zip-file-inspector",
+    "mcp": null,
+    "keywords": "zip file inspector view contents without extracting jar manifest main class apk docx xlsx central directory bomb path traversal slip warnings online list a or from its index nothing extracted"
   },
   {
     "id": "color-convert",
@@ -1539,6 +1734,18 @@ export const TOOLS: CliTool[] = [
       "name": "css_gradient"
     },
     "keywords": "css gradient generator linear radial background colors generate gradients visually"
+  },
+  {
+    "id": "font-inspect",
+    "title": "Inspect a font file",
+    "summary": "Names, glyphs, embedding bits from a TTF/OTF/TTC.",
+    "kind": "inspect",
+    "group": "Colour and design",
+    "offline": true,
+    "native": true,
+    "url": "https://redbison.dev/font-file-inspector",
+    "mcp": null,
+    "keywords": "font file inspector ttf otf ttc metadata viewer glyph count fstype embedding permissions weight class opentype name table units per em online glyphs tables and from a or"
   }
 ];
 

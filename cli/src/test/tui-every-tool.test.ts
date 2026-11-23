@@ -37,7 +37,7 @@ import { makeTheme, plain } from '../tui/theme';
 
 // parquet-inspect is file-based: in the picker it can only explain how to
 // run itself on a file, which is the refusal the command line prints too.
-const LOCAL = TOOLS.filter((t) => t.offline && t.id !== 'parquet-inspect');
+const LOCAL = TOOLS.filter((t) => t.offline && !['parquet-inspect', 'hprof-inspect', 'heap-snapshot-inspect', 'sqlite-inspect', 'zip-inspect', 'wasm-inspect', 'pprof-inspect', 'binary-inspect', 'font-inspect', 'pcap-inspect', 'arrow-inspect'].includes(t.id));
 const SERVER = TOOLS.filter((t) => !t.offline);
 const GROUPS_IN_USE = GROUP_ORDER.filter((g) => TOOLS.some((t) => t.group === g));
 

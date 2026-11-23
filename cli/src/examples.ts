@@ -12,6 +12,11 @@ export const EXAMPLES: Record<string, { input: string; output: string; args: Rec
     "output": "01001000 01101001",
     "args": {}
   },
+  "cbor-decode": {
+    "input": "a26161016162820203",
+    "output": "{\n  \"a\": 1,\n  \"b\": [\n    2,\n    3\n  ]\n}",
+    "args": {}
+  },
   "csv-to-json": {
     "input": "name,role\nJane,dev\nSam,ops",
     "output": "[\n  {\n    \"name\": \"Jane\",\n    \"role\": \"dev\"\n  },\n  {\n    \"name\": \"Sam\",\n    \"role\": \"ops\"\n  }\n]",
@@ -84,6 +89,11 @@ export const EXAMPLES: Record<string, { input: string; output: string; args: Rec
     "output": "1430 = 2:30 PM (\"fourteen thirty\")",
     "args": {}
   },
+  "msgpack-decode": {
+    "input": "82a7636f6d70616374c3a6736368656d6100",
+    "output": "{\n  \"compact\": true,\n  \"schema\": 0\n}",
+    "args": {}
+  },
   "number-base": {
     "input": "255",
     "output": "{\n  \"fromBase\": 10,\n  \"fraction\": \"255\",\n  \"binary\": \"11111111\",\n  \"octal\": \"377\",\n  \"decimal\": \"255\",\n  \"hex\": \"FF\",\n  \"target\": null,\n  \"bitLength\": 8,\n  \"twosComplement\": null,\n  \"warnings\": []\n}",
@@ -94,6 +104,11 @@ export const EXAMPLES: Record<string, { input: string; output: string; args: Rec
     "output": "Parquet v2  ·  1,000,000,123 rows  ·  1 row group\nwritten by parquet-cpp-arrow version 15.0.0\ncompression SNAPPY\n\ncolumns (2)\n  id    INT64  NOT NULL\n  name  BYTE_ARRAY (STRING)\n\nrow groups\n  1. 1,000,000,123 rows, 4.0 KiB",
     "args": {}
   },
+  "proto-decode": {
+    "input": "089601120774657374696e67",
+    "output": "1: varint 150  (as sint: 75)\n2: string (7 bytes) \"testing\"",
+    "args": {}
+  },
   "query-to-json": {
     "input": "?page=2&q=red+bison&tag=a&tag=b",
     "output": "{\n  \"page\": \"2\",\n  \"q\": \"red bison\",\n  \"tag\": [\n    \"a\",\n    \"b\"\n  ]\n}",
@@ -102,6 +117,11 @@ export const EXAMPLES: Record<string, { input: string; output: string; args: Rec
   "sort-json-keys": {
     "input": "{\"name\":\"RedBison\",\"id\":1,\"active\":true}",
     "output": "{\n  \"active\": true,\n  \"id\": 1,\n  \"name\": \"RedBison\"\n}",
+    "args": {}
+  },
+  "sqlite-inspect": {
+    "input": "--file app.db",
+    "output": "SQLite 3.51.0  ·  72.0 KiB  ·  18 pages of 4.0 KiB  ·  UTF-8\n\ntables (2)  ·  2,000 rows in all\n  orders  1,500 rows, 7 pages\n  users   500 rows, 5 pages\n\nindexes (1)\n  idx_orders_user  on orders\n\nviews (1)\n  big_orders",
     "args": {}
   },
   "strip-html": {
@@ -199,6 +219,13 @@ export const EXAMPLES: Record<string, { input: string; output: string; args: Rec
     "output": "alpha, beta, gamma",
     "args": {}
   },
+  "list-compare": {
+    "input": "a\nb\nc",
+    "output": "{\n  \"union\": [\n    \"a\",\n    \"b\",\n    \"c\",\n    \"d\"\n  ],\n  \"intersection\": [\n    \"b\",\n    \"c\"\n  ],\n  \"onlyInA\": [\n    \"a\"\n  ],\n  \"onlyInB\": [\n    \"d\"\n  ],\n  \"counts\": {\n    \"a\": 3,\n    \"b\": 3,\n    \"union\": 4,\n    \"intersection\": 2\n  }\n}",
+    "args": {
+      "b": "b\nc\nd"
+    }
+  },
   "morse": {
     "input": "SOS",
     "output": "... --- ...",
@@ -261,6 +288,13 @@ export const EXAMPLES: Record<string, { input: string; output: string; args: Rec
     "output": "apple\nbanana\ncherry",
     "args": {
       "order": "asc"
+    }
+  },
+  "text-diff": {
+    "input": "one\ntwo",
+    "output": "  one\n- two\n+ three",
+    "args": {
+      "b": "one\nthree"
     }
   },
   "trim-lines": {
@@ -551,19 +585,60 @@ export const EXAMPLES: Record<string, { input: string; output: string; args: Rec
       "to": "America/New_York"
     }
   },
-  "list-compare": {
-    "input": "a\nb\nc",
-    "output": "{\n  \"union\": [\n    \"a\",\n    \"b\",\n    \"c\",\n    \"d\"\n  ],\n  \"intersection\": [\n    \"b\",\n    \"c\"\n  ],\n  \"onlyInA\": [\n    \"a\"\n  ],\n  \"onlyInB\": [\n    \"d\"\n  ],\n  \"counts\": {\n    \"a\": 3,\n    \"b\": 3,\n    \"union\": 4,\n    \"intersection\": 2\n  }\n}",
-    "args": {
-      "b": "b\nc\nd"
-    }
+  "arrow-inspect": {
+    "input": "--file data.arrow",
+    "output": "Arrow IPC file  ·  1,200 rows in 3 batches  ·  31.7 KiB of data\n\nschema (4 fields)\n  id  Int64\n  name  Utf8\n  score  Float64\n  active  Bool",
+    "args": {}
   },
-  "text-diff": {
-    "input": "one\ntwo",
-    "output": "  one\n- two\n+ three",
-    "args": {
-      "b": "one\nthree"
-    }
+  "binary-inspect": {
+    "input": "--file /bin/ls",
+    "output": "Mach-O universal  ·  151 KiB  ·  2 architectures\n\nx86_64  ·  64-bit little-endian  ·  executable  ·  min OS 10.14.0\n  entry: 0x978\n  links 3 libraries:\n    /usr/lib/libutil.dylib\n    /usr/lib/libncurses.5.4.dylib\n    /usr/lib/libSystem.B.dylib\n  segments:\n     23.0 KiB  __LINKEDIT\n     20.0 KiB  __TEXT\n      4.0 KiB  __DATA\n\narm64e  ·  64-bit little-endian  ·  executable  ·  min OS 11.0.0",
+    "args": {}
+  },
+  "gc-log": {
+    "input": "[0.017s][info][gc] GC(0) Pause Young (Normal) (G1 Evacuation Pause) 23M->3M(64M) 0.720ms\n[5.478s][info][gc] GC(16) Pause Full (System.gc()) 35M->8M(34M) 4.797ms\n[9.031s][info][gc] GC(17) Pause Young (Normal) (G1 Evacuation Pause) 31M->9M(34M) 1.102ms",
+    "output": "3 collections (1 full) over 9.0s  ·  throughput 99.93%\npauses: p50 1.1 ms, p90 4.8 ms, p99 4.8 ms, max 4.8 ms  ·  total 0.01s\nallocation ≈ 6.2 MiB/s  ·  reclaimed 69.0 MiB in all  ·  peak heap 35.0 MiB\n\nby pause type\n      1 ×        5 ms total       4.8 ms max  Pause Full (System.gc())\n      2 ×        2 ms total       1.1 ms max  Pause Young (Normal) (G1 Evacuation Pause)",
+    "args": {}
+  },
+  "har-analyze": {
+    "input": "{\"log\":{\"pages\":[{\"id\":\"p\",\"title\":\"shop\",\"pageTimings\":{\"onLoad\":1800}}],\"entries\":[{\"startedDateTime\":\"2026-11-22T10:00:00.000Z\",\"time\":120,\"request\":{\"method\":\"GET\",\"url\":\"https://shop.example.com/\"},\"response\":{\"status\":200,\"bodySize\":12000,\"headersSize\":200,\"content\":{\"size\":30000,\"mimeType\":\"text/html\"},\"headers\":[]},\"timings\":{\"blocked\":5,\"dns\":-1,\"connect\":-1,\"ssl\":-1,\"send\":1,\"wait\":94,\"receive\":20}},{\"startedDateTime\":\"2026-11-22T10:00:01.000Z\",\"time\":650,\"request\":{\"method\":\"GET\",\"url\":\"https://tracker.ads-net.example/pixel.js\"},\"response\":{\"status\":200,\"bodySize\":48000,\"headersSize\":300,\"content\":{\"size\":48200,\"mimeType\":\"application/javascript\"},\"headers\":[]},\"timings\":{\"blocked\":2,\"dns\":30,\"connect\":40,\"ssl\":35,\"send\":1,\"wait\":400,\"receive\":142}}]}}",
+    "output": "2 requests  ·  59.1 KiB transferred (76.4 KiB decoded)  ·  1.6s span\npage load 1.80s\nstatus: 2 2xx\nthird-party: 1 requests, 47.2 KiB (80% of transfer)\n\nby type\n   47.2 KiB     1 ×  script\n   11.9 KiB     1 ×  document\n\nwhere the time went (sum over requests)\n      0.49s  wait\n      0.16s  receive\n      0.04s  connect\n      0.04s  ssl\n      0.03s  dns\n      0.01s  blocked\n      0.00s  send\n\nslowest\n     650 ms  200  tracker.ads-net.example/pixel.js\n     120 ms  200  shop.example.com/\n\nheaviest\n   47.2 KiB  tracker.ads-net.example/pixel.js\n   11.9 KiB  shop.example.com/\n\ntext served without compression\n   47.1 KiB  tracker.ads-net.example/pixel.js",
+    "args": {}
+  },
+  "heap-snapshot-inspect": {
+    "input": "--file app.heapsnapshot",
+    "output": "97,940 nodes  ·  363,898 edges  ·  6.1 MiB shallow\n\nby node type\n    2.0 MiB      21,028 ×  string\n    1.3 MiB      23,964 ×  code\n    956 KiB      30,585 ×  concatenated string\n    615 KiB         938 ×  array\n    397 KiB       4,233 ×  object shape\n    394 KiB       7,503 ×  object\n    326 KiB       5,656 ×  closure",
+    "args": {}
+  },
+  "hprof-inspect": {
+    "input": "--file heap.hprof",
+    "output": "JAVA PROFILE 1.0.2  ·  143,325 objects  ·  5.0 MiB shallow  ·  607 classes  ·  578 GC roots\ndumped 2026-11-22T22:56:33.452Z\n\ntop classes by shallow bytes\n   2.9 MiB      67,043 ×  byte[]\n   642 KiB      46,958 ×  java.lang.String\n   574 KiB      21,004 ×  java.util.HashMap$Node\n   309 KiB         987 ×  java.lang.Object[]\n   295 KiB         259 ×  java.util.HashMap$Node[]\n  45.1 KiB          22 ×  java.util.concurrent.ConcurrentHashMap$Node[]\n  32.1 KiB           7 ×  char[]\n  28.8 KiB       1,055 ×  java.util.concurrent.ConcurrentHashMap$Node",
+    "args": {}
+  },
+  "pcap-inspect": {
+    "input": "--file trace.pcap",
+    "output": "pcap  ·  13 packets  ·  4.0 KiB  ·  4.0s  ·  Ethernet\n3 IPv4 hosts, 0 IPv6 hosts  ·  1 DNS queries  ·  1 SYNs never answered\n\nby protocol\n    3.7 KiB         8 pkts  TCP\n      180 B         2 pkts  ICMP\n      166 B         2 pkts  UDP\n       42 B         1 pkts  ARP\n\nservices (well-known ports)\n         7 pkts  https\n         2 pkts  dns\n         1 pkts  http-alt\n\ntop conversations\n    3.7 KiB  192.0.2.10 <-> 198.51.100.7  (TCP, 8 pkts)\n      180 B  192.0.2.10 <-> 198.51.100.7  (ICMP, 2 pkts)\n      166 B  192.0.2.1 <-> 192.0.2.10  (UDP, 2 pkts)",
+    "args": {}
+  },
+  "pprof-inspect": {
+    "input": "--file cpu.pprof",
+    "output": "pprof  ·  2 samples  ·  cpu/nanoseconds  ·  10.0s\ntotal cpu: 10.0ms  ·  2 functions, 2 locations\n\ntop by flat cpu\n      10.0ms flat      10.0ms cum  main.hot",
+    "args": {}
+  },
+  "thread-dump": {
+    "input": "\"worker-1\" #12 prio=5 os_prio=31 cpu=410.20ms elapsed=62.10s tid=0x0001 nid=0x5603 waiting for monitor entry  [0x0001]\n   java.lang.Thread.State: BLOCKED (on object monitor)\n\tat app.Cache.put(Cache.java:42)\n\t- waiting to lock <0x000000071a2b3c40> (a java.util.HashMap)\n\n\"worker-2\" #13 prio=5 os_prio=31 cpu=398.70ms elapsed=62.10s tid=0x0002 nid=0x5703 runnable  [0x0002]\n   java.lang.Thread.State: RUNNABLE\n\tat app.Cache.rehash(Cache.java:88)\n\t- locked <0x000000071a2b3c40> (a java.util.HashMap)\n",
+    "output": "2 Java threads (0 daemon) + 0 VM threads\nstates: 1 BLOCKED, 1 RUNNABLE\n\nlock contention\n  <0x000000071a2b3c40> (java.util.HashMap): 1 waiting, held by \"worker-2\"\n\nthread pools\n  worker* ×2  (1 BLOCKED, 1 RUNNABLE)\n\ncpu since start\n       410.2 ms  worker-1\n       398.7 ms  worker-2",
+    "args": {}
+  },
+  "wasm-inspect": {
+    "input": "--file add.wasm",
+    "output": "WebAssembly v1  ·  63 B\n2 functions (1 imported)  ·  1 exports  ·  0 tables  ·  0 globals\nmemory: 1 pages (64.0 KiB) up to 4 pages (256 KiB)\n\nsections\n       11 B  import\n       10 B  type\n        9 B  code\n        7 B  export\n        4 B  memory\n        2 B  function\n\nimports (1)\n  env: 1\n    function  env.log\n\nexports (1)\n  function  add",
+    "args": {}
+  },
+  "zip-inspect": {
+    "input": "--file sample.jar",
+    "output": "JAR  ·  6 entries  ·  247 B packed, 268 B unpacked (1.1:1)\n\nmanifest\n  Manifest-Version: 1.0\n  Main-Class: A\n  Created-By: 17.0.21.1 (Homebrew)\n\nby top-level folder\n      194 B      2 files  (root)\n       74 B      1 files  META-INF/\n\nlargest entries\n      176 B  deflate   A.class\n       74 B  deflate   META-INF/MANIFEST.MF\n       18 B  deflate   A.java",
+    "args": {}
   },
   "color-convert": {
     "input": "#b32020",
@@ -593,5 +668,10 @@ export const EXAMPLES: Record<string, { input: string; output: string; args: Rec
         "#d4af37"
       ]
     }
+  },
+  "font-inspect": {
+    "input": "--file DejaVuSans-Bold.ttf",
+    "output": "DejaVu Sans Bold  ·  TrueType glyphs  ·  6,196 glyphs  ·  2048 units/em\n  Version 2.37\n  weight 700 (Bold), bold\n  maps 5,367 characters\n  embedding: installable (no restrictions)\n  modified 2016-07-30 (created 2016-07-30)\n  by DejaVu fonts team\n  biggest tables: glyf 508 KiB, post 59.8 KiB, GPOS 34.1 KiB, loca 24.2 KiB, hmtx 24.2 KiB",
+    "args": {}
   }
 };

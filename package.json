@@ -89,6 +89,6 @@
     "vite": "^5.4.1",
     "vitest": "^4.1.10"
   },
-  "description": "100 free developer tools that run entirely in your browser — JSON, regex, hashing, encoders, SQL, network and more. The open-source core of redbison.dev.",
+  "description": "116 free developer tools that run entirely in your browser — JSON, regex, hashing, encoders, SQL, network and more. The open-source core of redbison.dev.",
   "homepage": "https://redbison.dev"
 }

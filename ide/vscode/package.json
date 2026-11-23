@@ -1,7 +1,7 @@
 {
   "name": "redbison-tools",
   "displayName": "RedBison Dev Tools",
-  "description": "Format JSON, decode a JWT, hash a string, convert a timestamp and 99 more developer tools, on the selection, without leaving the editor. 92 run offline.",
+  "description": "Format JSON, decode a JWT, analyze a thread dump or a GC log, decode protobuf and 105 more developer tools, on the selection, without leaving the editor. 98 run offline.",
   "version": "0.3.0",
   "publisher": "redbison",
   "license": "MIT",
@@ -574,13 +574,43 @@
         "category": "RedBison"
       },
       {
+        "command": "redbison.har-analyze",
+        "title": "Analyze a HAR capture",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.gc-log",
+        "title": "Analyze a JVM GC log",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.proto-decode",
+        "title": "Decode protobuf wire format",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.msgpack-decode",
+        "title": "Decode MessagePack",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.cbor-decode",
+        "title": "Decode CBOR",
+        "category": "RedBison"
+      },
+      {
+        "command": "redbison.thread-dump",
+        "title": "Analyze a JVM thread dump",
+        "category": "RedBison"
+      },
+      {
         "command": "redbison.run",
-        "title": "Run a tool\u2026",
+        "title": "Run a tool…",
         "category": "RedBison"
       },
       {
         "command": "redbison.options",
-        "title": "Run a tool with options\u2026",
+        "title": "Run a tool with options…",
         "category": "RedBison"
       },
       {
@@ -972,6 +1002,30 @@
         },
         {
           "command": "redbison.avro-check",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.har-analyze",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.gc-log",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.proto-decode",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.msgpack-decode",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.cbor-decode",
+          "group": "2_inspect"
+        },
+        {
+          "command": "redbison.thread-dump",
           "group": "2_inspect"
         }
       ]

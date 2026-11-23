@@ -1638,5 +1638,98 @@ export const TOOLS: CatalogTool[] = [
     "offline": true,
     "localOnly": false,
     "docs": "Checks the selected JSON against the Apache Avro 1.11 schema rules: names, unions, defaults, enums and fixed sizes, with each fault reported at its path. A valid schema is summarised in one line. Works offline."
+  },
+  {
+    "id": "har-analyze",
+    "title": "Analyze a HAR capture",
+    "summary": "Totals, third-party share and slowest requests from a HAR.",
+    "kind": "inspect",
+    "mcp": null,
+    "native": true,
+    "slug": "har-analyzer",
+    "url": "https://redbison.dev/har-analyzer",
+    "offline": true,
+    "localOnly": true,
+    "docs": "Reads a DevTools HAR export from the selection: request totals, third-party share by base domain, per-type and per-host weight, where the time went phase by phase, the slowest and heaviest requests, errors and redirects. A HAR carries cookies and tokens, so nothing leaves the editor. Timings of -1 mean does-not-apply per the spec and are excluded, not zeroed."
+  },
+  {
+    "id": "gc-log",
+    "title": "Analyze a JVM GC log",
+    "summary": "Pause percentiles, throughput and warnings from a GC log.",
+    "kind": "inspect",
+    "mcp": {
+      "name": "gc_log_analyze",
+      "input": "text"
+    },
+    "native": false,
+    "slug": "gc-log-analyzer",
+    "url": "https://redbison.dev/gc-log-analyzer",
+    "offline": true,
+    "localOnly": false,
+    "docs": "Reads JDK 9+ unified logs (-Xlog:gc*) and JDK 8 PrintGCDetails: pause count and percentiles by type, Full GC count, throughput over the log span (withheld under five seconds rather than printed as noise), an allocation-rate estimate and the warning signs — to-space exhausted, Metadata GC Threshold, promotion failure. Works offline."
+  },
+  {
+    "id": "proto-decode",
+    "title": "Decode protobuf wire format",
+    "summary": "Field numbers, wire types and every plausible reading.",
+    "kind": "inspect",
+    "mcp": {
+      "name": "proto_decode",
+      "input": "data"
+    },
+    "native": false,
+    "slug": "protobuf-wire-decoder",
+    "url": "https://redbison.dev/protobuf-wire-decoder",
+    "offline": true,
+    "localOnly": false,
+    "docs": "Decodes protobuf bytes (hex or base64 selection) without a schema: field numbers, wire types, varints as unsigned and zigzag, fixed fields with their sfixed and float readings, nested messages detected by trial decode and marked as candidates. Without the .proto the wire format is ambiguous, so every reading that fits is shown rather than one guess. Works offline."
+  },
+  {
+    "id": "msgpack-decode",
+    "title": "Decode MessagePack",
+    "summary": "MessagePack bytes (hex or base64) to JSON.",
+    "kind": "inspect",
+    "mcp": {
+      "name": "msgpack_decode",
+      "input": "data"
+    },
+    "native": false,
+    "slug": "messagepack-decoder",
+    "url": "https://redbison.dev/messagepack-decoder",
+    "offline": true,
+    "localOnly": false,
+    "docs": "Decodes a MessagePack selection (hex or base64) to JSON with the lossy edges tagged instead of silently coerced: 64-bit integers past 2^53 as $int64, binary as $bytes previews, extensions as $ext, the timestamp extension as ISO-8601, non-string map keys preserved. Works offline."
+  },
+  {
+    "id": "cbor-decode",
+    "title": "Decode CBOR",
+    "summary": "CBOR bytes (hex or base64) to JSON per RFC 8949.",
+    "kind": "inspect",
+    "mcp": {
+      "name": "cbor_decode",
+      "input": "data"
+    },
+    "native": false,
+    "slug": "cbor-decoder",
+    "url": "https://redbison.dev/cbor-decoder",
+    "offline": true,
+    "localOnly": false,
+    "docs": "Decodes a CBOR selection (hex or base64) to JSON: definite and indefinite lengths with chunk content joined, half-floats per the RFC algorithm, tags with the date-time ones rendered, simple values and undefined kept visible. The decoder pins RFC 8949 appendix-A vectors in its tests. Works offline."
+  },
+  {
+    "id": "thread-dump",
+    "title": "Analyze a JVM thread dump",
+    "summary": "States, pools, lock contention and deadlocks from a jstack dump.",
+    "kind": "inspect",
+    "mcp": {
+      "name": "jvm_thread_dump",
+      "input": "text"
+    },
+    "native": false,
+    "slug": "java-thread-dump-analyzer",
+    "url": "https://redbison.dev/java-thread-dump-analyzer",
+    "offline": true,
+    "localOnly": false,
+    "docs": "Reads a jstack / jcmd Thread.print dump from the selection: thread states, pools grouped by name, lock contention with holders, identical stacks, CPU time, and deadlocks found from the lock graph itself — knowing that Object.wait() releases its monitor. The verdict comes first. Works offline."
   }
 ];
