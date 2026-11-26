@@ -234,7 +234,7 @@ ${Array.from({ length: 30 }, (_, i) => `
           />
           
           <div className="tool-header mt-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h1 className="tool-title text-black text-2xl sm:text-3xl lg:text-4xl font-bold flex items-center">
                   <Archive className="h-8 w-8 sm:h-10 sm:w-10 mr-3 text-green-600" />
@@ -242,7 +242,7 @@ ${Array.from({ length: 30 }, (_, i) => `
                 </h1>
                 <p className="tool-description text-gray-600 text-sm sm:text-base ml-11 sm:ml-13">{t('Compare compression algorithms performance and analyze speed vs size trade-offs')}</p>
               </div>
-              <div className="flex items-center space-x-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <Badge variant="outline" className="border-green-500 text-green-600 px-4 py-2 bg-green-50">{t('Compression')}</Badge>
                 <Badge variant="outline" className="border-blue-500 text-blue-600 px-4 py-2 bg-blue-50">{t('Performance')}</Badge>
               </div>

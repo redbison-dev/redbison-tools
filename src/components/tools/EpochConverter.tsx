@@ -509,8 +509,8 @@ const EpochConverter = () => {
 
         <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg mt-2">
           <div className="p-6 space-y-4">
-            <div className="flex items-start justify-between mb-4">
-              <div>
+            <div className="flex items-start justify-between gap-2 mb-4">
+              <div className="min-w-0">
                 <h2 className="text-black dark:text-white flex items-center text-xl font-semibold">
                   <Clock className="h-6 w-6 mr-3 text-blue-600 dark:text-blue-400" />
                   {t('Unix Epoch Converter')}
@@ -519,7 +519,7 @@ const EpochConverter = () => {
                   {t('Automatically detects timestamp format (seconds/milliseconds/nanoseconds)')}
                 </p>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex shrink-0 items-center space-x-2">
                 <Button onClick={shareCurrentState} variant="ghost" size="icon" className="h-8 w-8">
                   <Share2 className="h-4 w-4" />
                 </Button>

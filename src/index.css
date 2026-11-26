@@ -506,6 +506,15 @@ img[loading="lazy"].loaded {
   .ms-modern-cell:hover { transform: none !important; }
 }
 
+/* While a lazily loaded tool is still arriving (LazyToolRenderer sets the
+   attribute until the tool mounts), the page is only as tall as the loading
+   skeleton, so the site footer sits inside the first screen and is pushed
+   down when the tool lands: a visible layout shift on every tool page.
+   Hidden, not removed, it still moves but cannot count as a shift. */
+html[data-tool-loading] body > #root footer {
+  visibility: hidden;
+}
+
 /* Embedded tool pages (?embed=1, src/lib/embed.ts): just the tool and its
    attribution bar; the host page's snippet sizes the iframe to the content. */
 html[data-embed] header,

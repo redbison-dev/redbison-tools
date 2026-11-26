@@ -1,5 +1,5 @@
 /**
- * Pure logic for the finance2 calculators: paycheck (US 2026), HELOC,
+ * Pure logic for the finance2 calculators: paycheck (US, tax years 2026 and 2027), HELOC,
  * net worth, emergency fund, dividends and DRIP, stock average cost and
  * required minimum distributions. No React, so the regression tests and the
  * MCP specs run exactly what the pages show.
@@ -29,7 +29,7 @@ export function amortizedPayment(principal: number, annualRatePct: number, month
 }
 
 // ===========================================================================
-// Paycheck calculator (US federal, tax year 2026)
+// Paycheck calculator (US federal, tax years 2026 and 2027)
 // ===========================================================================
 
 export type FilingStatus = 'single' | 'mfj' | 'mfs' | 'hoh';
@@ -108,13 +108,116 @@ export const FED_2026 = {
   hsaSelfOnly: 4400,
   hsaFamily: 8750,
   hsaCatchUp55: 1000,
+  /** Refundable part of the child tax credit (Rev. Proc. 2025-32 sec. 4.05); was inline in the note until 2026-11-25. */
+  childTaxCreditRefundable: 1700,
+  /** The revenue procedure the brackets and standard deductions come from, named on the page. */
+  revProc: '2025-32',
 } as const;
+
+/** The shape every tax year's federal figures share (FED_2026 with its literals widened). */
+export type FederalYear = {
+  readonly taxYear: number;
+  readonly brackets: Record<FilingStatus, Bracket[]>;
+  readonly standardDeduction: Record<FilingStatus, number>;
+  readonly additionalStdMarried: number;
+  readonly additionalStdUnmarried: number;
+  readonly ssRate: number;
+  readonly ssWageBase: number;
+  readonly medicareRate: number;
+  readonly addlMedicareRate: number;
+  readonly addlMedicareThreshold: Record<FilingStatus, number>;
+  readonly childTaxCredit: number;
+  readonly otherDependentCredit: number;
+  readonly creditPhaseoutStart: Record<FilingStatus, number>;
+  readonly seniorDeduction: number;
+  readonly seniorPhaseoutStart: Record<FilingStatus, number>;
+  readonly seniorPhaseoutRate: number;
+  readonly k401Limit: number;
+  readonly k401CatchUp50: number;
+  readonly k401CatchUp60to63: number;
+  readonly hsaSelfOnly: number;
+  readonly hsaFamily: number;
+  readonly hsaCatchUp55: number;
+  readonly childTaxCreditRefundable: number;
+  readonly revProc: string;
+};
+
+/**
+ * Federal figures for tax year 2027, a new set beside 2026 (never an edit of it).
+ * Read in the documents themselves on 2026-11-25:
+ * - IRS Rev. Proc. 2026-35 (https://www.irs.gov/pub/irs-drop/rp-26-35.pdf):
+ *   sec. 3.01 tax rate tables 1 to 4, sec. 3.05 child tax credit $2,300
+ *   (refundable $1,800), sec. 3.15 standard deduction and the $1,700 / $2,100
+ *   additional amounts for the aged.
+ * - SSA 2027 COLA fact sheet (https://www.ssa.gov/news/en/cola/factsheets/2027.html):
+ *   contribution and benefit base $192,300.
+ * - IRS Notice 2026-66 (https://www.irs.gov/pub/irs-drop/n-26-66.pdf): 402(g)
+ *   $25,500, catch-up $8,500, ages 60 to 63 $11,750.
+ * - IRS Rev. Proc. 2026-24 (https://www.irs.gov/pub/irs-drop/rp-26-24.pdf):
+ *   HSA $4,500 self-only, $9,000 family. The $1,000 catch-up at 55 is
+ *   statutory (IRC 223(b)(3)) and not indexed.
+ * Not indexed, so the same as 2026: the 0.9% additional Medicare thresholds
+ * (IRC 3101(b)(2)), the $500 other-dependent credit and the credit phase-out
+ * starts (IRC 24(h)), and the $6,000 senior deduction with its $75,000 /
+ * $150,000 phase-out (IRC 151(d)(5)(C), 2025 to 2028).
+ */
+export const FED_2027: FederalYear = {
+  taxYear: 2027,
+  brackets: {
+    single: [
+      { upTo: 12800, rate: 0.10 }, { upTo: 52025, rate: 0.12 }, { upTo: 109125, rate: 0.22 },
+      { upTo: 208325, rate: 0.24 }, { upTo: 264550, rate: 0.32 }, { upTo: 661375, rate: 0.35 }, { upTo: Infinity, rate: 0.37 },
+    ],
+    mfj: [
+      { upTo: 25600, rate: 0.10 }, { upTo: 104050, rate: 0.12 }, { upTo: 218250, rate: 0.22 },
+      { upTo: 416650, rate: 0.24 }, { upTo: 529100, rate: 0.32 }, { upTo: 793650, rate: 0.35 }, { upTo: Infinity, rate: 0.37 },
+    ],
+    mfs: [
+      { upTo: 12800, rate: 0.10 }, { upTo: 52025, rate: 0.12 }, { upTo: 109125, rate: 0.22 },
+      { upTo: 208325, rate: 0.24 }, { upTo: 264550, rate: 0.32 }, { upTo: 396825, rate: 0.35 }, { upTo: Infinity, rate: 0.37 },
+    ],
+    hoh: [
+      { upTo: 18250, rate: 0.10 }, { upTo: 69650, rate: 0.12 }, { upTo: 109100, rate: 0.22 },
+      { upTo: 208300, rate: 0.24 }, { upTo: 264550, rate: 0.32 }, { upTo: 661350, rate: 0.35 }, { upTo: Infinity, rate: 0.37 },
+    ],
+  },
+  standardDeduction: { single: 16600, mfj: 33200, mfs: 16600, hoh: 24925 },
+  additionalStdMarried: 1700,
+  additionalStdUnmarried: 2100,
+  ssRate: 0.062,
+  ssWageBase: 192300,
+  medicareRate: 0.0145,
+  addlMedicareRate: 0.009,
+  addlMedicareThreshold: { single: 200000, mfj: 250000, mfs: 125000, hoh: 200000 },
+  childTaxCredit: 2300,
+  otherDependentCredit: 500,
+  creditPhaseoutStart: { single: 200000, mfj: 400000, mfs: 200000, hoh: 200000 },
+  seniorDeduction: 6000,
+  seniorPhaseoutStart: { single: 75000, mfj: 150000, mfs: 0, hoh: 75000 },
+  seniorPhaseoutRate: 0.06,
+  k401Limit: 25500,
+  k401CatchUp50: 8500,
+  k401CatchUp60to63: 11750,
+  hsaSelfOnly: 4500,
+  hsaFamily: 9000,
+  hsaCatchUp55: 1000,
+  childTaxCreditRefundable: 1800,
+  revProc: '2026-35',
+};
+
+/** Every tax year the paycheck maths has figures for. A new year is a new entry, never an edit. */
+export const FED_BY_YEAR: Readonly<Record<number, FederalYear>> = { 2026: FED_2026, 2027: FED_2027 };
+
+/** The federal figures for a tax year: 2026 when none is given, undefined for a year without figures. */
+export function federalYear(taxYear = 2026): FederalYear | undefined {
+  return FED_BY_YEAR[taxYear];
+}
 
 export type TaxBracketLine = { rate: number; from: number; to: number; taxed: number; tax: number };
 
 /** Federal income tax on taxable income, with the per-bracket breakdown and marginal rate. */
-export function federalIncomeTax(taxableIncome: number, status: FilingStatus): { tax: number; marginalRate: number; lines: TaxBracketLine[] } {
-  const brackets = FED_2026.brackets[status];
+export function federalIncomeTax(taxableIncome: number, status: FilingStatus, taxYear = 2026): { tax: number; marginalRate: number; lines: TaxBracketLine[] } {
+  const brackets = (federalYear(taxYear) ?? FED_2026).brackets[status];
   const income = Math.max(0, taxableIncome);
   let lower = 0;
   let tax = 0;
@@ -133,11 +236,12 @@ export function federalIncomeTax(taxableIncome: number, status: FilingStatus): {
   return { tax, marginalRate, lines };
 }
 
-/** Elective deferral cap for an employee of a given age at year end. */
-export function k401Limit(age: number): number {
-  let limit = FED_2026.k401Limit;
-  if (age >= 60 && age <= 63) limit += FED_2026.k401CatchUp60to63;
-  else if (age >= 50) limit += FED_2026.k401CatchUp50;
+/** Elective deferral cap for an employee of a given age at year end, in a tax year (2026 by default). */
+export function k401Limit(age: number, taxYear = 2026): number {
+  const F = federalYear(taxYear) ?? FED_2026;
+  let limit = F.k401Limit;
+  if (age >= 60 && age <= 63) limit += F.k401CatchUp60to63;
+  else if (age >= 50) limit += F.k401CatchUp50;
   return limit;
 }
 
@@ -145,7 +249,9 @@ export type PaycheckInput = {
   annualGross: number;
   frequency: PayFrequency;
   status: FilingStatus;
-  /** Age at the end of 2026. */
+  /** Tax year whose federal figures apply (2026 or 2027); 2026 when omitted. */
+  taxYear?: number;
+  /** Age at the end of the tax year. */
   age: number;
   /** Married filing jointly only: spouse is 65 or older at year end. */
   spouse65?: boolean;
@@ -176,6 +282,12 @@ export type PaycheckInput = {
 export type PaycheckLine = { id: string; label: string; annual: number; perPeriod: number };
 
 export type PaycheckResult = {
+  /** Tax year whose federal figures were used. */
+  taxYear: number;
+  /** Social Security wage base for that year. */
+  ssWageBase: number;
+  /** Revenue procedure the year's brackets and standard deductions come from. */
+  revProc: string;
   periods: number;
   grossAnnual: number;
   grossPerPeriod: number;
@@ -213,11 +325,13 @@ export type PaycheckResult = {
 };
 
 export function calculatePaycheck(input: PaycheckInput, t: FinanceT = enT): Result<PaycheckResult> {
-  const F = FED_2026;
+  const F = federalYear(input.taxYear ?? 2026);
+  if (!F) return fail(t('Choose tax year 2026 or 2027.'));
+  const year = F.taxYear;
   const gross = input.annualGross;
   if (!isNum(gross) || gross <= 0) return fail(t('Enter a gross pay above zero.'));
   if (gross > 1e9) return fail(t('Gross pay is too large for this estimate.'));
-  if (!FED_2026.brackets[input.status]) return fail(t('Choose a filing status.'));
+  if (!F.brackets[input.status]) return fail(t('Choose a filing status.'));
   const age = isNum(input.age) ? input.age : 35;
   if (age < 14 || age > 120) return fail(t('Enter an age between 14 and 120.'));
   const periods = periodsPerYear(input.frequency);
@@ -250,7 +364,7 @@ export function calculatePaycheck(input: PaycheckInput, t: FinanceT = enT): Resu
   const notes: string[] = [];
 
   // 401(k): traditional and Roth deferrals share one limit.
-  const cap = k401Limit(age);
+  const cap = k401Limit(age, year);
   let trad = gross * c.k401;
   let roth = gross * c.roth;
   let capped = false;
@@ -258,13 +372,13 @@ export function calculatePaycheck(input: PaycheckInput, t: FinanceT = enT): Resu
     capped = true;
     trad = Math.min(trad, cap);
     roth = Math.min(roth, cap - trad);
-    notes.push(t('401(k) deferrals were capped at the 2026 limit of {cap} for age {age}.', { cap: `$${cap.toLocaleString('en-US')}`, age }));
+    notes.push(t('401(k) deferrals were capped at the {year} limit of {cap} for age {age}.', { year, cap: `$${cap.toLocaleString('en-US')}`, age }));
   }
   const hsa = c.hsa * periods;
   const s125 = c.s125 * periods;
   const postTax = c.post * periods;
   const hsaMax = F.hsaFamily + (age >= 55 ? F.hsaCatchUp55 : 0);
-  if (hsa > hsaMax) notes.push(t('HSA contributions of {hsa} a year exceed the 2026 family limit of {family} (self-only coverage: {self}).', { hsa: `$${Math.round(hsa).toLocaleString('en-US')}`, family: `$${hsaMax.toLocaleString('en-US')}`, self: `$${(F.hsaSelfOnly + (age >= 55 ? F.hsaCatchUp55 : 0)).toLocaleString('en-US')}` }));
+  if (hsa > hsaMax) notes.push(t('HSA contributions of {hsa} a year exceed the {year} family limit of {family} (self-only coverage: {self}).', { year, hsa: `$${Math.round(hsa).toLocaleString('en-US')}`, family: `$${hsaMax.toLocaleString('en-US')}`, self: `$${(F.hsaSelfOnly + (age >= 55 ? F.hsaCatchUp55 : 0)).toLocaleString('en-US')}` }));
   if (trad + hsa + s125 > gross) return fail(t('Pre-tax deductions are larger than gross pay.'));
 
   // FICA: Section 125 and payroll HSA contributions are exempt; 401(k) deferrals are not.
@@ -272,7 +386,7 @@ export function calculatePaycheck(input: PaycheckInput, t: FinanceT = enT): Resu
   const socialSecurity = F.ssRate * Math.min(ficaWages, F.ssWageBase);
   const medicare = F.medicareRate * ficaWages;
   const additionalMedicare = F.addlMedicareRate * Math.max(0, ficaWages - F.addlMedicareThreshold[input.status]);
-  if (ficaWages > F.ssWageBase) notes.push(t('Social Security tax stops once 2026 wages reach {base}, so real paychecks rise late in the year; the per-paycheck figure here is the yearly average.', { base: `$${F.ssWageBase.toLocaleString('en-US')}` }));
+  if (ficaWages > F.ssWageBase) notes.push(t('Social Security tax stops once {year} wages reach {base}, so real paychecks rise late in the year; the per-paycheck figure here is the yearly average.', { year, base: `$${F.ssWageBase.toLocaleString('en-US')}` }));
 
   // Federal income tax.
   const federalWages = Math.max(0, gross - trad - hsa - s125);
@@ -288,12 +402,12 @@ export function calculatePaycheck(input: PaycheckInput, t: FinanceT = enT): Resu
     seniorDeduction = each * seniors;
   }
   const taxableIncome = Math.max(0, federalWages - deduction - seniorDeduction);
-  const fed = federalIncomeTax(taxableIncome, input.status);
+  const fed = federalIncomeTax(taxableIncome, input.status, year);
   const creditBase = F.childTaxCredit * Math.floor(c.children) + F.otherDependentCredit * Math.floor(c.others);
   const over = Math.max(0, federalWages - F.creditPhaseoutStart[input.status]);
   const creditAllowed = Math.max(0, creditBase - 50 * Math.ceil(over / 1000));
   const credits = Math.min(fed.tax, creditAllowed);
-  if (creditAllowed > fed.tax) notes.push(t('Some of the child credit exceeds your income tax; the refundable part (up to $1,700 per child) comes back when you file, not through your paycheck.'));
+  if (creditAllowed > fed.tax) notes.push(t('Some of the child credit exceeds your income tax; the refundable part (up to {amount} per child for {year}) comes back when you file, not through your paycheck.', { amount: `$${F.childTaxCreditRefundable.toLocaleString('en-US')}`, year }));
   const federalTax = fed.tax - credits;
 
   const stateTax = federalWages * c.state;
@@ -323,6 +437,9 @@ export function calculatePaycheck(input: PaycheckInput, t: FinanceT = enT): Resu
   ];
 
   return ok({
+    taxYear: year,
+    ssWageBase: F.ssWageBase,
+    revProc: F.revProc,
     periods,
     grossAnnual: gross,
     grossPerPeriod: per(gross),

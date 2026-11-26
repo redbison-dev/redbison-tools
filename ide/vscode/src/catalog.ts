@@ -19,7 +19,7 @@ export const LINKS = {
   "site": "https://redbison.dev",
   "repo": "https://github.com/redbison-dev/redbison-tools",
   "vscodeMarketplace": "https://marketplace.visualstudio.com/items?itemName=redbison.redbison-tools",
-  "jetbrainsMarketplace": "https://plugins.jetbrains.com/plugin/redbison-tools",
+  "jetbrainsMarketplace": "https://plugins.jetbrains.com/plugin/36387-redbison-dev-tools",
   "npmPackage": "@redbison/cli",
   "npmUrl": "https://www.npmjs.com/package/@redbison/cli"
 } as const;

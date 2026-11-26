@@ -267,7 +267,7 @@ const IpConverter = () => {
           />
           
           <div className="tool-header mt-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="space-y-2">
                 <h1 className="text-4xl font-bold text-black dark:text-white flex items-center gap-3">
                   <Globe className="h-10 w-10 text-blue-600" />
@@ -275,7 +275,7 @@ const IpConverter = () => {
                 </h1>
                 <p className="text-gray-600 dark:text-gray-400 text-lg">{t('Convert IPv4 addresses to decimal, hex and binary, and integers back to dotted form')}</p>
               </div>
-              <div className="flex items-center space-x-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <Button onClick={toggleFullscreen} variant="outline" className="border-2 border-gray-300 dark:border-gray-600">
                   <Maximize2 className="h-4 w-4 mr-2" />
                   {t('Fullscreen')}

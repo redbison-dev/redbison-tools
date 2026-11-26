@@ -86,7 +86,7 @@ Run `redbison` with nothing after it and you get a full-screen picker:
 
 ### The extras
 
-Beside the hundred tools there is a drawer of things a terminal is good at: a clock and a
+Beside the 120 tools there is a drawer of things a terminal is good at: a clock and a
 stopwatch in block digits, a coin that actually turns over, a random-number draw, a splitter
 that deals names into even groups, and four games — snake, tetris, breakout and blocks (the
 1010 kind: fit pieces, full rows and columns clear). They are the last rows of the picker's
@@ -302,8 +302,9 @@ The other 11 each need a library too large to bundle, or a data set that changes
 | `docker-to-compose` | the Docker argument surface |
 | `user-agent` | a user-agent table that changes weekly |
 
-Those eleven send the input to `mcp.redbison.dev` and send nothing else: no account, no
-identifier, nothing stored.
+Those 11 send the input to `mcp.redbison.dev`, with no account, key or identifier. The server
+processes it and does not store it; for usage counts it records which tool ran, how long it
+took, whether it worked and the client's user-agent string, never the input or the answer.
 
 To be certain, pass `--offline`. It refuses rather than sending:
 

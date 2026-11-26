@@ -1,0 +1,60 @@
+$ tcpdump -h
+tcpdump version 4.99.1 -- Apple version 156
+libpcap version 1.10.1
+LibreSSL 3.3.6
+
+$ tcpdump -nn -r capture.pcap
+reading from file capture.pcap, link-type EN10MB (Ethernet)
+09:00:00.000100 IP 192.0.2.10.53001 > 192.0.2.53.53: 6699+ A? api.example.com. (33)
+09:00:00.012200 IP 192.0.2.53.53 > 192.0.2.10.53001: 6699 1/0/0 A 198.51.100.20 (49)
+09:00:00.013000 IP 192.0.2.10.50100 > 198.51.100.20.80: Flags [S], seq 1000, win 65535, length 0
+09:00:00.039100 IP 198.51.100.20.80 > 192.0.2.10.50100: Flags [S.], seq 5000, ack 1001, win 65535, length 0
+09:00:00.039300 IP 192.0.2.10.50100 > 198.51.100.20.80: Flags [.], ack 1, win 65535, length 0
+09:00:00.039500 IP 192.0.2.10.50100 > 198.51.100.20.80: Flags [P.], seq 1:118, ack 1, win 65535, length 117: HTTP: GET /orders/42 HTTP/1.1
+09:00:00.070200 IP 198.51.100.20.80 > 192.0.2.10.50100: Flags [P.], seq 1:131, ack 118, win 65535, length 130: HTTP: HTTP/1.1 200 OK
+09:00:00.070400 IP 192.0.2.10.50100 > 198.51.100.20.80: Flags [F.], seq 118, ack 131, win 65535, length 0
+09:00:00.095100 IP 198.51.100.20.80 > 192.0.2.10.50100: Flags [F.], seq 131, ack 119, win 65535, length 0
+09:00:00.200000 IP 192.0.2.10.50200 > 203.0.113.7.8080: Flags [S], seq 9000, win 65535, length 0
+09:00:01.200400 IP 192.0.2.10.50200 > 203.0.113.7.8080: Flags [S], seq 9000, win 65535, length 0
+09:00:01.300000 IP 192.0.2.10.50300 > 198.51.100.20.443: Flags [S], seq 20000, win 65535, length 0
+09:00:01.326000 IP 198.51.100.20.443 > 192.0.2.10.50300: Flags [S.], seq 30000, ack 20001, win 65535, length 0
+09:00:01.326200 IP 192.0.2.10.50300 > 198.51.100.20.443: Flags [.], ack 1, win 65535, length 0
+09:00:01.326400 IP 192.0.2.10.50300 > 198.51.100.20.443: Flags [P.], seq 1:518, ack 1, win 65535, length 517
+
+$ tcpdump -nn -r capture.pcap 'tcp[tcpflags] & (tcp-syn|tcp-ack) == tcp-syn'
+reading from file capture.pcap, link-type EN10MB (Ethernet)
+09:00:00.013000 IP 192.0.2.10.50100 > 198.51.100.20.80: Flags [S], seq 1000, win 65535, length 0
+09:00:00.200000 IP 192.0.2.10.50200 > 203.0.113.7.8080: Flags [S], seq 9000, win 65535, length 0
+09:00:01.200400 IP 192.0.2.10.50200 > 203.0.113.7.8080: Flags [S], seq 9000, win 65535, length 0
+09:00:01.300000 IP 192.0.2.10.50300 > 198.51.100.20.443: Flags [S], seq 20000, win 65535, length 0
+
+$ tcpdump -nn -A -r capture.pcap 'tcp port 80' | grep -aE 'Authorization|Cookie|email'
+Authorization: Basic ZGVtbzpodW50ZXIy
+Cookie: session=7f3c9a1e5b
+{"order":42,"email":"customer@example.com","total":"19.99"}
+
+$ tcpdump -nn -r capture.pcap 'tcp port 80' | wc -l
+7
+$ tcpdump -nn -r capture.pcap 'host 203.0.113.7' | wc -l
+2
+$ tcpdump -nn -r capture.pcap 'udp port 53' | wc -l
+2
+$ tcpdump -nn -r capture.pcap 'net 198.51.100.0/24' | wc -l
+11
+$ tcpdump -nn -r capture.pcap 'not port 443' | wc -l
+11
+
+$ node make-capture.mjs bulk.pcap 2500 && ls -l bulk.pcap
+bulk.pcap: 2515 packets
+3676896 bulk.pcap
+
+$ tcpdump -r bulk.pcap -w part.pcap -C 1
+1000026 part.pcap 694 packets
+1001094 part.pcap1 681 packets
+1001094 part.pcap2 681 packets
+674754 part.pcap3 459 packets
+
+$ tcpdump -r bulk.pcap -w ring.pcap -C 1 -W 3
+674754 ring.pcap0 459 packets, first 09:00:02.420500
+1001094 ring.pcap1 681 packets, first 09:00:01.739500
+1001094 ring.pcap2 681 packets, first 09:00:02.080000

@@ -52,12 +52,14 @@ the site reaches you without an update.
 ## Privacy
 
 A command sends only the text you selected, and only when you run it. Nothing
-is sent in the background, nothing is stored, there is no telemetry and no
-account. The ninety-eight offline commands send nothing at all.
+is sent in the background, the extension has no telemetry of its own and needs
+no account. The server does not store the text; for usage counts it records
+which tool ran, how long it took, whether it worked and the client's user-agent
+string. The ninety-eight offline commands send nothing at all.
 
 ## Also available
 
-- **Terminal** — the same hundred tools as a CLI:
+- **Terminal**: the same tools, 120 of them, as a CLI:
   `npm install -g @redbison/cli`, then `redbison` or `rb`.
   [redbison.dev/cli](https://redbison.dev/cli)
 - **JetBrains** — the same list, generated from the same source, so a tool is

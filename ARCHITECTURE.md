@@ -49,8 +49,8 @@ i18n/                   English-only msg()/t() layer (same API as the hosted sit
 utils/                  no-op analytics stubs (see "Relationship to redbison.dev")
 
 test/
-  catalog.test.ts            catalog integrity (100 tools, unique ids, routes match)
-  tools.integration.test.tsx mounts all 100 tool routes; every page must render an <h1>
+  catalog.test.ts            catalog integrity (116 tools, unique ids, routes match)
+  tools.integration.test.tsx mounts all 116 tool routes; every page must render an <h1>
   tools/                     unit tests for lib/tools logic
   setup.ts                   jsdom polyfills (matchMedia, ResizeObserver, clipboard)
 ```
@@ -58,7 +58,7 @@ test/
 ## Tool categorization
 
 Every tool has one row in `src/catalog.ts` with a `category` and `subcategory`;
-the home page groups by subcategory. The 100 tools span:
+the home page groups by subcategory. The 116 tools span:
 
 | Subcategory | Examples |
 |---|---|

@@ -1,0 +1,344 @@
+{
+ "environment": {
+  "node": "v25.1.0",
+  "v8": "14.1.146.11-node.11",
+  "os": "macOS 26, arm64, 10 cores",
+  "note": "RSS from process.resourceUsage().maxRSS (KiB) and ps; times from performance.now() around v8.writeHeapSnapshot()"
+ },
+ "snapshots": [
+  {
+   "node": "v25.1.0",
+   "sessions": 0,
+   "heapUsedMiB": 3.6,
+   "rssMiB": 43.7,
+   "maxRssBeforeMiB": 43.7,
+   "mode": "write",
+   "bytes": 4960139,
+   "writeMs": 57,
+   "maxRssAfterMiB": 86.8,
+   "file": "Heap.20261123.085516.<pid>.0.001.heapsnapshot"
+  },
+  {
+   "node": "v25.1.0",
+   "sessions": 0,
+   "heapUsedMiB": 3.6,
+   "rssMiB": 43.8,
+   "maxRssBeforeMiB": 43.8,
+   "mode": "write",
+   "bytes": 4959893,
+   "writeMs": 51,
+   "maxRssAfterMiB": 87,
+   "file": "Heap.20261123.085516.<pid>.0.001.heapsnapshot"
+  },
+  {
+   "node": "v25.1.0",
+   "sessions": 0,
+   "heapUsedMiB": 3.6,
+   "rssMiB": 43.8,
+   "maxRssBeforeMiB": 43.8,
+   "mode": "write",
+   "bytes": 4958289,
+   "writeMs": 54,
+   "maxRssAfterMiB": 87.1,
+   "file": "Heap.20261123.085516.<pid>.0.001.heapsnapshot"
+  },
+  {
+   "node": "v25.1.0",
+   "sessions": 50000,
+   "heapUsedMiB": 38.3,
+   "rssMiB": 140.3,
+   "maxRssBeforeMiB": 141.1,
+   "mode": "write",
+   "bytes": 47372781,
+   "writeMs": 391,
+   "maxRssAfterMiB": 328.6,
+   "file": "Heap.20261123.085516.<pid>.0.001.heapsnapshot"
+  },
+  {
+   "node": "v25.1.0",
+   "sessions": 50000,
+   "heapUsedMiB": 38.3,
+   "rssMiB": 140.7,
+   "maxRssBeforeMiB": 141.5,
+   "mode": "write",
+   "bytes": 47363194,
+   "writeMs": 397,
+   "maxRssAfterMiB": 327.6,
+   "file": "Heap.20261123.085517.<pid>.0.001.heapsnapshot"
+  },
+  {
+   "node": "v25.1.0",
+   "sessions": 50000,
+   "heapUsedMiB": 38.3,
+   "rssMiB": 140.8,
+   "maxRssBeforeMiB": 141.7,
+   "mode": "write",
+   "bytes": 47381617,
+   "writeMs": 402,
+   "maxRssAfterMiB": 327.7,
+   "file": "Heap.20261123.085517.<pid>.0.001.heapsnapshot"
+  },
+  {
+   "node": "v25.1.0",
+   "sessions": 200000,
+   "heapUsedMiB": 141.9,
+   "rssMiB": 339.3,
+   "maxRssBeforeMiB": 339.3,
+   "mode": "write",
+   "bytes": 175710457,
+   "writeMs": 1771,
+   "maxRssAfterMiB": 969.2,
+   "file": "Heap.20261123.085518.<pid>.0.001.heapsnapshot"
+  },
+  {
+   "node": "v25.1.0",
+   "sessions": 200000,
+   "heapUsedMiB": 141.9,
+   "rssMiB": 343,
+   "maxRssBeforeMiB": 343,
+   "mode": "write",
+   "bytes": 175707328,
+   "writeMs": 1518,
+   "maxRssAfterMiB": 992.3,
+   "file": "Heap.20261123.085520.<pid>.0.001.heapsnapshot"
+  },
+  {
+   "node": "v25.1.0",
+   "sessions": 200000,
+   "heapUsedMiB": 141.9,
+   "rssMiB": 341.9,
+   "maxRssBeforeMiB": 341.9,
+   "mode": "write",
+   "bytes": 175711909,
+   "writeMs": 1960,
+   "maxRssAfterMiB": 882.6,
+   "file": "Heap.20261123.085522.<pid>.0.001.heapsnapshot"
+  },
+  {
+   "node": "v25.1.0",
+   "sessions": 400000,
+   "heapUsedMiB": 280.2,
+   "rssMiB": 492.4,
+   "maxRssBeforeMiB": 499.5,
+   "mode": "write",
+   "bytes": 348419377,
+   "writeMs": 3788,
+   "maxRssAfterMiB": 1577.8,
+   "file": "Heap.20261123.085525.<pid>.0.001.heapsnapshot"
+  },
+  {
+   "node": "v25.1.0",
+   "sessions": 400000,
+   "heapUsedMiB": 280.2,
+   "rssMiB": 493.4,
+   "maxRssBeforeMiB": 503.9,
+   "mode": "write",
+   "bytes": 348457402,
+   "writeMs": 3449,
+   "maxRssAfterMiB": 1452.5,
+   "file": "Heap.20261123.085530.<pid>.0.001.heapsnapshot"
+  },
+  {
+   "node": "v25.1.0",
+   "sessions": 400000,
+   "heapUsedMiB": 280.2,
+   "rssMiB": 494.7,
+   "maxRssBeforeMiB": 501.8,
+   "mode": "write",
+   "bytes": 348411940,
+   "writeMs": 3379,
+   "maxRssAfterMiB": 1469,
+   "file": "Heap.20261123.085534.<pid>.0.001.heapsnapshot"
+  },
+  {
+   "node": "v25.1.0",
+   "sessions": 50000,
+   "heapUsedMiB": 38.3,
+   "rssMiB": 141.5,
+   "maxRssBeforeMiB": 142.4,
+   "mode": "internals",
+   "bytes": 47362924,
+   "writeMs": 359,
+   "maxRssAfterMiB": 328.8,
+   "file": "Heap.20261123.085537.<pid>.0.001.heapsnapshot"
+  },
+  {
+   "node": "v25.1.0",
+   "sessions": 50000,
+   "heapUsedMiB": 38.3,
+   "rssMiB": 141.8,
+   "maxRssBeforeMiB": 142.6,
+   "mode": "numeric",
+   "bytes": 53109066,
+   "writeMs": 391,
+   "maxRssAfterMiB": 335.8,
+   "file": "Heap.20261123.085538.<pid>.0.001.heapsnapshot"
+  },
+  {
+   "node": "v25.1.0",
+   "sessions": 50000,
+   "heapUsedMiB": 38.3,
+   "rssMiB": 140.8,
+   "maxRssBeforeMiB": 141.7,
+   "mode": "inspector",
+   "bytes": 47466657,
+   "chunks": 46,
+   "writeMs": 555,
+   "maxRssAfterMiB": 342.5,
+   "file": "inspector.heapsnapshot"
+  },
+  {
+   "node": "v25.1.0",
+   "sessions": 200000,
+   "heapUsedMiB": 166.4,
+   "rssMiB": 319.9,
+   "maxRssBeforeMiB": 326,
+   "mode": "signal",
+   "worstLoopGapMs": 1820,
+   "maxRssAfterMiB": 853.2,
+   "psPeakRssMiB": 853.2,
+   "bytes": 175726619,
+   "file": "Heap.20261123.085552.<pid>.0.001.heapsnapshot"
+  },
+  {
+   "node": "v25.1.0",
+   "sessions": 200000,
+   "heapUsedMiB": 168.1,
+   "rssMiB": 317.6,
+   "maxRssBeforeMiB": 323.7,
+   "mode": "signal",
+   "worstLoopGapMs": 2039,
+   "maxRssAfterMiB": 961.5,
+   "psPeakRssMiB": 961.5,
+   "bytes": 175749277,
+   "file": "Heap.20261123.085603.<pid>.0.001.heapsnapshot"
+  },
+  {
+   "node": "v25.1.0",
+   "sessions": 200000,
+   "heapUsedMiB": 167.2,
+   "rssMiB": 318.7,
+   "maxRssBeforeMiB": 324.9,
+   "mode": "signal",
+   "worstLoopGapMs": 1723,
+   "maxRssAfterMiB": 938.6,
+   "psPeakRssMiB": 938.5,
+   "bytes": 175725165,
+   "file": "Heap.20261123.085614.<pid>.0.001.heapsnapshot"
+  }
+ ],
+ "nearHeapLimit": {
+  "command": "node --max-old-space-size=64 --heapsnapshot-near-heap-limit=3 session-store.js 0 leak",
+  "runs": [
+   {
+    "run": 1,
+    "maxRssBytes": 975077376,
+    "seconds": 3.37,
+    "leakPerTick": 2000,
+    "snapshots": [
+     87639908
+    ]
+   },
+   {
+    "run": 2,
+    "maxRssBytes": 2439397376,
+    "seconds": 16.7,
+    "leakPerTick": 2000,
+    "snapshots": [
+     89566016,
+     381781927,
+     623091347
+    ]
+   },
+   {
+    "run": 3,
+    "maxRssBytes": 509034496,
+    "seconds": 1.22,
+    "leakPerTick": 2000,
+    "snapshots": []
+   },
+   {
+    "run": 4,
+    "maxRssBytes": 845479936,
+    "seconds": 38.8,
+    "leakPerTick": 100,
+    "snapshots": [
+     119767877
+    ]
+   },
+   {
+    "run": 5,
+    "maxRssBytes": 2298675200,
+    "seconds": 82.58,
+    "leakPerTick": 100,
+    "snapshots": [
+     119763585,
+     367444902,
+     662103005
+    ]
+   },
+   {
+    "run": 6,
+    "maxRssBytes": 1787478016,
+    "seconds": 75.2,
+    "leakPerTick": 100,
+    "snapshots": [
+     119724104,
+     365875254,
+     628311082
+    ]
+   }
+  ],
+  "heapAfterLastMarkCompactMB": {
+   "1": 436.4,
+   "2": 628.6,
+   "3": 268.8,
+   "4": 466.5,
+   "5": 637.1,
+   "6": 635.1,
+   "7": 84.5
+  }
+ },
+ "control": {
+  "command": "node --max-old-space-size=64 session-store.js 0 leak",
+  "runs": [
+   {
+    "run": 7,
+    "maxRssBytes": 258146304,
+    "seconds": 6.76,
+    "leakPerTick": 100
+   },
+   {
+    "run": 8,
+    "maxRssBytes": 247676928,
+    "seconds": 6.88,
+    "leakPerTick": 100
+   },
+   {
+    "run": 9,
+    "maxRssBytes": 251953152,
+    "seconds": 6.86,
+    "leakPerTick": 100
+   }
+  ]
+ },
+ "heapProf": {
+  "defaultInterval": {
+   "samples": 36,
+   "file": "Heap.<date>.<time>.<pid>.0.001.heapprofile"
+  },
+  "interval1024": {
+   "samples": 17879,
+   "bytes": 770002
+  },
+  "garbageAtExit": {
+   "samples": 0,
+   "bytes": 153
+  }
+ },
+ "secrets": {
+  "snapshot": "50,000 sessions, v8.writeHeapSnapshot()",
+  "distinctEmails": 50000,
+  "distinctTokens": 50000
+ }
+}

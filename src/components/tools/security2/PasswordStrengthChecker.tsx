@@ -3,6 +3,7 @@ import { ShieldAlert, Eye, EyeOff, CheckCircle2, XCircle, Loader2 } from 'lucide
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToolAnalytics } from '@/hooks/useToolAnalytics';
+import { useToolResult } from '@/hooks/useToolResult';
 import type { PasswordAnalysis } from '@/lib/tools/w500/security-password';
 import { SecurityShell, Panel, Field, Notice, inputClass } from './securityShared';
 import { msg, useT } from '@/i18n';
@@ -59,6 +60,8 @@ const PasswordStrengthChecker = () => {
   }, [a, password, trackAction]);
 
   const empty = password.length === 0;
+  // A shown verdict is the result. The key only detects a change; it is never sent.
+  useToolResult('validated', a && !empty ? `${a.score}:${password.length}:${a.guessesLog10}` : '');
 
   return (
     <SecurityShell h1={t('Password Strength Checker')} toolName="Password Strength Checker" icon={ShieldAlert}

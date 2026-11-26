@@ -32,7 +32,7 @@ search, with no way to know what the page actually does with it. A convincing-lo
 converter can exfiltrate what you type, and a malicious one looks identical to an honest
 one.
 
-We open-sourced these 100 tools so organizations and developers don't have to take that
+We open-sourced these 116 tools so organizations and developers don't have to take that
 risk on trust. Here you can **read the code, audit it, and run it yourself** — on
 localhost, on your own infrastructure, or behind your firewall. Every tool works
 client-side with no telemetry, the full test suite ships with it, and the build is a
@@ -55,12 +55,14 @@ file, and a link to try it on the hosted site.
 
 ## About RedBison
 
-[RedBison](https://www.redbison.dev) is a serverless, browser-based ecosystem of over
-600 free developer utility tools, converters and specialized calculators, built for
-professional speed and privacy. Tools execute entirely client-side on your device —
-whether you're generating keys, converting formats, manipulating JSON or using the
-[MCP endpoints for AI assistants](https://redbison.dev/mcp), your data stays local and
-never leaves your screen.
+[RedBison](https://redbison.dev) is a serverless, browser-based collection of over
+700 free developer utility tools, converters and specialized calculators, built for
+speed and privacy. The browser tools execute entirely client-side on your device, so
+generating keys, converting formats or manipulating JSON keeps your data on your screen.
+The [MCP endpoint for AI assistants](https://redbison.dev/mcp) and the CLI's
+server-backed commands process their input on the server without storing it, and record
+only which tool ran, how long it took, whether it worked and the client's user-agent
+string, for usage counts.
 
 **Core principles:**
 
@@ -96,7 +98,7 @@ redirect; GitHub Pages: a `404.html` copy of `index.html`).
 
 ## Command line
 
-The same tools as a terminal program, in [`cli/`](cli). 100 commands, 89 of which run
+The same tools as a terminal program, in [`cli/`](cli). 120 commands, 109 of which run
 entirely on your machine and never open a socket; the other 11 each need a library too
 large to bundle or a data set that changes without us, so they call the hosted MCP
 endpoint and say so in their `--help`.
@@ -104,7 +106,7 @@ endpoint and say so in their `--help`.
 Run it with no arguments and you get a full-screen picker: type to search, `↵` to run,
 `d` for the docs, `y` to copy the answer (or the command when there is no answer yet).
 
-![The RedBison picker in a 213-column macOS terminal window: a header counting 100 tools and 9 extras, category shortcuts and key hints beside the block logo, above the tool list](docs/cli-picker.webp)
+![The RedBison picker in a 213-column macOS terminal window, captured from an earlier release with fewer tools: a header counting tools and extras, category shortcuts and key hints beside the block logo, above the tool list](docs/cli-picker.webp)
 
 ```sh
 cd cli && bun install && bun run build
@@ -126,6 +128,31 @@ rb uuid
 Reads standard input and writes standard output, so it composes with everything else in
 a pipeline. `--offline` makes the network tools refuse rather than send — useful when
 the input is a secret. Tests: `cd cli && bunx vitest run`.
+
+## Raycast
+
+[`raycast/`](raycast) is a [Raycast](https://www.raycast.com) extension with three commands:
+
+- **Search Tools** searches every tool on redbison.dev by name, category and keyword, and
+  opens the one you pick in the browser.
+- **Run Utility** runs one of 97 offline developer utilities (JSON, Base64, URL, hashing,
+  UUID, JWT, case, sort lines, YAML, CSV and more) on the selected text or the clipboard,
+  then copies or pastes the answer.
+- **Format Clipboard JSON** pretty-prints the JSON on the clipboard and copies it back,
+  with no window.
+
+The utilities run on your machine: `raycast/src/vendor/` holds the CLI's own code, copied
+unchanged by `npm run sync`, because the Raycast Store builds each extension on its own.
+A test checks the copies are byte-identical to `cli/` and `ide/`.
+
+Install it from the Raycast Store (link to follow once it is published), or run it from
+source:
+
+```sh
+cd raycast && npm ci && npm run dev
+```
+
+Tests: `cd raycast && npm test`.
 
 ## AI assistants (MCP)
 
@@ -166,7 +193,7 @@ bun run test:coverage  # coverage report (v8), also printed in CI on every PR
 ```
 
 The suite is 2,000+ tests: unit tests covering the tool logic in `src/lib/tools`, and an
-integration suite that mounts all 100 tool routes through the real router and fails if any
+integration suite that mounts all 116 tool routes through the real router and fails if any
 page stops rendering. Coverage currently sits at ~64% lines / ~62% statements, with floors
 enforced in `vitest.config.ts` so it can only go up. CI runs all of this on every push and
 pull request and uploads coverage to Codecov (badge above).

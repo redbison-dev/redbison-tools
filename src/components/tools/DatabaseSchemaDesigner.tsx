@@ -333,7 +333,7 @@ const DatabaseSchemaDesigner = () => {
     <div className={`w-full mx-auto p-4 space-y-6 ${isFullscreen ? 'fixed inset-0 z-50 bg-white dark:bg-gray-900 overflow-auto' : 'max-w-7xl'}`}>
 
       <div className="text-left space-y-2">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center space-x-3">
             <Layers className="h-8 w-8 text-[#ff3131]" />
             <div>
@@ -343,7 +343,7 @@ const DatabaseSchemaDesigner = () => {
               </p>
             </div>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex flex-wrap items-center gap-3">
             <Button
               variant="outline"
               onClick={loadSampleData}

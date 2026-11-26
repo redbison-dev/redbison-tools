@@ -60,6 +60,55 @@ export const ROTH_PHASEOUT_2026 = [
   { filing: msg('Married filing separately (lived with spouse)'), from: 0, to: 10000 },
 ] as const;
 
+/**
+ * 2027 limits, a new set beside 2026 (never an edit of it). Read in IRS Notice
+ * 2026-66 (https://www.irs.gov/pub/irs-drop/n-26-66.pdf, announced in IR-2026-136
+ * on 12 November 2026) on 2026-11-25: 402(g) $24,500 -> $25,500; 414(v)(2)(B)(i)
+ * catch-up $8,000 -> $8,500; 414(v)(2)(E)(i) ages 60-63 $11,250 -> $11,750;
+ * 415(c) $72,000 -> $75,000; 401(a)(17) $360,000 -> $375,000; IRA 219(b)(5)(A)
+ * stays $7,500 and the 50+ IRA catch-up stays $1,100; the Roth catch-up wage
+ * threshold (414(v)(7)(A)), tested on 2026 FICA wages for 2027 catch-ups,
+ * $150,000 -> $155,000.
+ */
+export const LIMITS_2027: RetirementLimits = {
+  year: 2027,
+  deferral: 25500,
+  catchUp50: 8500,
+  catchUp6063: 11750,
+  annualAdditions: 75000,
+  compensation: 375000,
+  ira: 7500,
+  iraCatchUp: 1100,
+  rothCatchUpWageThreshold: 155000,
+};
+
+/** 2027 Roth IRA modified AGI phase-out ranges (Notice 2026-66, 408A(c)(3)). Shown as a note, not computed. */
+export const ROTH_PHASEOUT_2027 = [
+  { filing: msg('Single or head of household'), from: 158000, to: 173000 },
+  { filing: msg('Married filing jointly'), from: 250000, to: 260000 },
+  { filing: msg('Married filing separately (lived with spouse)'), from: 0, to: 10000 },
+] as const;
+
+/** Every year with published limits, oldest first. A new year is a new entry, never an edit. */
+export const LIMITS_BY_YEAR: Readonly<Record<number, RetirementLimits>> = { 2026: LIMITS_2026, 2027: LIMITS_2027 };
+export const ROTH_PHASEOUT_BY_YEAR: Readonly<Record<number, typeof ROTH_PHASEOUT_2026 | typeof ROTH_PHASEOUT_2027>> = {
+  2026: ROTH_PHASEOUT_2026,
+  2027: ROTH_PHASEOUT_2027,
+};
+
+/** The IRS news release that announced each year's limits, for the page's source links. */
+export const LIMITS_NEWS_BY_YEAR: Readonly<Record<number, { id: string; url: string }>> = {
+  2026: { id: 'IR-2025-111', url: 'https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500' },
+  2027: { id: 'IR-2026-136', url: 'https://www.irs.gov/newsroom/401k-limit-increases-to-25500-for-2027-ira-limit-remains-7500' },
+};
+
+/** Limits for a tax year: the year asked for, else the nearest year that has figures (never undefined). */
+export function limitsForYear(year: number): RetirementLimits {
+  if (LIMITS_BY_YEAR[year]) return LIMITS_BY_YEAR[year];
+  const years = Object.keys(LIMITS_BY_YEAR).map(Number).sort((a, b) => a - b);
+  return LIMITS_BY_YEAR[Number.isFinite(year) && year < years[0] ? years[0] : years[years.length - 1]];
+}
+
 /** Catch-up amount available at an age (age reached by 31 December of the plan year). */
 export function catchUpForAge(age: number, limits: Pick<RetirementLimits, 'catchUp50' | 'catchUp6063'>): number {
   if (age >= 60 && age <= 63) return limits.catchUp6063;

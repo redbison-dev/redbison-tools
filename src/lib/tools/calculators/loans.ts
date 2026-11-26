@@ -214,6 +214,149 @@ export function paymentFrequencyPlan(principal: number, ratePct: number, months:
   };
 }
 
+/**
+ * How the lender credits a payment smaller than the monthly payment.
+ * - 'arrival': each part-payment reduces the balance when it arrives and
+ *   interest is charged every period (paymentFrequencyPlan; the Canadian
+ *   model FCAC describes).
+ * - 'held': the US rule, Regulation Z 12 CFR 1026.36(c)(1)(ii): a payment
+ *   less than a periodic payment may be held in suspense, and once suspense
+ *   holds enough for a periodic payment it must be treated as one
+ *   (paragraph (B)). The spare payment an accelerated plan builds up is
+ *   therefore credited as the next periodic payment: the loan is paid ahead,
+ *   no interest is saved, and the last payment is covered earlier only by
+ *   the calendar.
+ * - 'held-principal': held the same way, but the spare is applied to
+ *   principal, which takes a principal-only instruction from the borrower or
+ *   a servicer program (Fannie Mae Servicing Guide C-1.2-01 has servicers
+ *   apply borrower-identified additional principal). The best case.
+ * Share links: `cr` keeps 'arrival'; 'held' changed meaning from "spare to
+ * principal" (batch wk20261123-tool1, first version) to the rule's default
+ * on review, and that model moved to 'held-principal'.
+ */
+export type Crediting = 'arrival' | 'held' | 'held-principal';
+export const CREDITING_VALUES: Crediting[] = ['held', 'held-principal', 'arrival'];
+/** Frequencies whose part-payments do not line up with the monthly due date, so crediting changes the answer. */
+export const PART_PAYMENT_FREQUENCIES: PaymentFrequency[] = ['biweekly', 'accelerated-biweekly', 'weekly', 'accelerated-weekly'];
+/** Days between part-payments. */
+export const PART_PAYMENT_DAYS: Partial<Record<PaymentFrequency, number>> = { biweekly: 14, 'accelerated-biweekly': 14, weekly: 7, 'accelerated-weekly': 7 };
+/** Average days from the start of the loan to monthly payment m is m × DAYS_PER_YEAR / 12. */
+export const DAYS_PER_YEAR = 365;
+
+export interface HeldFrequencyPlan extends FrequencyPlan {
+  crediting: 'held' | 'held-principal';
+  /** Day of the loan (day 0 = start of the first payment period) the first part-payment arrives. */
+  firstPartDay: number;
+  /** Monthly payments credited, the last one trimmed (the full term when spares are credited as next payments). */
+  months: number;
+  /** Calendar month (day × 12 / 365, rounded up) by which the part-payments have covered the last payment. Equals `months` for 'held-principal'. */
+  calendarMonths: number;
+  /** Part-payments sent until the last payment is covered. */
+  lastPart: number;
+  /** Day of the loan that last part-payment arrives. */
+  lastPartDay: number;
+  /** Spare full payments applied to principal ('held-principal'; 0 for 'held'). */
+  extraPayments: number;
+  /** Payment number the first spare payment goes to principal with (0 when none). */
+  firstExtraMonth: number;
+  /** Monthly payments already covered ahead of their due date when the last one is covered ('held'; 0 for 'held-principal'). */
+  paidAheadMonths: number;
+  /** Due dates up to payoff when the part-payments received so far were less than the payments due (a plain plan runs behind early in each year). */
+  shortMonths: number;
+  /** The monthly schedule: with the spare payments as extra principal ('held-principal'), or the plain schedule ('held'). */
+  schedule: Amortization;
+}
+
+/**
+ * US crediting of a biweekly or weekly plan (12 CFR 1026.36(c)(1)(ii)).
+ * Assumptions, stated on the page:
+ * - the loan stays a monthly loan: interest is charged monthly at the rate
+ *   compounded monthly that matches `ratePct` (amortize), and monthly
+ *   payment m falls due on day m × 365 / 12;
+ * - part-payments of frequencyPayment(monthly, f) arrive every 14 days
+ *   (7 for weekly), the first on day `firstPartDay` (default one interval in:
+ *   day 14, or day 7 for weekly, so the first two half-payments or four
+ *   quarter-payments land before payment 1 is due);
+ * - each due payment is credited from suspense on its due date;
+ * - spare: `spare` 'next-payment' (crediting 'held', the rule's default)
+ *   credits a full payment built up in suspense as the next periodic payment,
+ *   so interest follows the plain schedule and the plan only covers the last
+ *   payment sooner by the calendar; 'principal' (crediting 'held-principal')
+ *   applies it to principal the same month.
+ * A due date the part-payments have not yet covered (a plain plan early in a
+ * year) is treated as paid on time for the interest and counted in
+ * shortMonths; a servicer may treat that payment as late.
+ * Returns null for monthly and semi-monthly, which credit the same as monthly.
+ */
+export function usHeldFrequencyPlan(
+  principal: number, ratePct: number, months: number, compoundingPerYear: number, f: PaymentFrequency,
+  opts: { firstPartDay?: number; spare?: 'next-payment' | 'principal' } = {},
+): HeldFrequencyPlan | null {
+  const step = PART_PAYMENT_DAYS[f];
+  if (!step) return null;
+  if (!finite(principal, ratePct, months, compoundingPerYear) || principal <= 0 || months < 1 || ratePct < 0 || compoundingPerYear <= 0) return null;
+  const firstPartDay = opts.firstPartDay ?? step;
+  if (!Number.isFinite(firstPartDay) || firstPartDay < 0) return null;
+  const toPrincipal = opts.spare === 'principal';
+  const j = monthlyEquivalentRatePct(ratePct, compoundingPerYear);
+  const base = amortize(principal, j, months);
+  const monthly = base.payment;
+  const part = frequencyPayment(monthly, f);
+  const perYear = FREQUENCY_PER_YEAR[f];
+  const oneTime: { month: number; amount: number }[] = [];
+  const short: number[] = [];
+  let susp = 0;
+  let k = 0;
+  for (let m = 1; m <= months; m++) {
+    while (firstPartDay + step * k <= (m * DAYS_PER_YEAR) / 12 + EPS) { susp += part; k++; }
+    susp -= monthly;
+    if (susp < -1e-6) short.push(m);
+    // 'next-payment' keeps the spare in the running balance: it pays the next due payment.
+    if (toPrincipal && susp >= monthly - 1e-6) { oneTime.push({ month: m, amount: monthly }); susp -= monthly; }
+  }
+  const schedule = toPrincipal ? amortize(principal, j, months, { oneTime }) : base;
+  const n = schedule.months;
+  // Spares actually applied (an extra after payoff, or one the balance had no room for, does not count).
+  const extras = toPrincipal ? schedule.rows.filter((r) => r.extra > 1e-9) : [];
+  // Part-payments needed to cover everything owed on the schedule, and when the last one arrives.
+  const lastPart = Math.max(1, Math.ceil(schedule.totalPaid / part - 1e-9));
+  const lastPartDay = firstPartDay + step * (lastPart - 1);
+  const calendarMonths = toPrincipal ? n : Math.max(1, Math.ceil((lastPartDay * 12) / DAYS_PER_YEAR - 1e-9));
+  return {
+    frequency: f,
+    crediting: toPrincipal ? 'held-principal' : 'held',
+    paymentsPerYear: perYear,
+    payment: part,
+    payments: lastPart,
+    years: calendarMonths / 12,
+    totalInterest: schedule.totalInterest,
+    interestSaved: base.totalInterest - schedule.totalInterest,
+    yearsSaved: (base.months - calendarMonths) / 12,
+    firstPartDay,
+    months: n,
+    calendarMonths,
+    lastPart,
+    lastPartDay,
+    extraPayments: extras.length,
+    firstExtraMonth: extras[0]?.month ?? 0,
+    paidAheadMonths: toPrincipal ? 0 : Math.max(0, n - calendarMonths),
+    shortMonths: short.filter((m) => m <= n).length,
+    schedule,
+  };
+}
+
+/** The plan for frequency `f` under `crediting`: held (US) for part-payment frequencies, otherwise credited on arrival. */
+export function frequencyPlanFor(
+  principal: number, ratePct: number, months: number, compoundingPerYear: number, f: PaymentFrequency, crediting: Crediting,
+): FrequencyPlan | HeldFrequencyPlan | null {
+  if (crediting !== 'arrival' && PART_PAYMENT_FREQUENCIES.includes(f)) {
+    return usHeldFrequencyPlan(principal, ratePct, months, compoundingPerYear, f, { spare: crediting === 'held-principal' ? 'principal' : 'next-payment' });
+  }
+  return paymentFrequencyPlan(principal, ratePct, months, compoundingPerYear, f);
+}
+
+export const isHeldPlan = (p: FrequencyPlan | HeldFrequencyPlan | null): p is HeldFrequencyPlan => !!p && 'firstPartDay' in p;
+
 // ---------------------------------------------------------------------------
 // Generic amortization with extra payments
 // ---------------------------------------------------------------------------

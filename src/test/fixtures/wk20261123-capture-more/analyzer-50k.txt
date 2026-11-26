@@ -1,0 +1,24 @@
+307,455 nodes  ·  798,577 edges  ·  40.1 MiB shallow
+
+by node type
+   30.9 MiB     161,817 ×  string
+    3.2 MiB      52,749 ×  object
+    2.3 MiB       1,082 ×  array
+    1.4 MiB      25,435 ×  code
+    783 KiB      50,102 ×  number
+    456 KiB       4,920 ×  object shape
+    386 KiB         134 ×  native
+    358 KiB       6,198 ×  closure
+
+top constructors (objects and closures, shallow)
+    3.1 MiB      50,001 ×  Session
+   73.4 KiB         826 ×  system / Context
+   61.4 KiB       1,005 ×  
+   40.9 KiB         718 ×  Object
+   34.3 KiB         586 ×  NodeError
+   28.7 KiB         368 ×  BuiltinModule
+   22.1 KiB         471 ×  native_bind
+   16.7 KiB         306 ×  toString
+   13.5 KiB         244 ×  get
+    6.0 KiB         109 ×  set
+

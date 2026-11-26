@@ -39,6 +39,7 @@ const sayWorking = (text: string, v: Record<string, unknown> = {}): Pick<ReportS
 import {
   calculateApr, calculateLease, calculateAutoLoan, calculateMortgage, calculateAffordability, calculateRefinance,
   calculateStudentLoan, calculateDti, simulatePayoff, monthlyRate, canadaApr, paymentDate, PAYOFF_MONTH_CAP, monthlyEquivalentRatePct,
+  frequencyPlanFor, isHeldPlan, periodicRate, type PaymentFrequency, type Crediting,
   type AprInput, type LeaseInput, type AutoLoanInput, type MortgageInput, type AffordabilityInput, type RefinanceInput,
   type StudentLoanInput, type Debt, type PayoffStrategy, type RateBasis,
 } from '../calculators/loans';
@@ -247,12 +248,70 @@ export function autoLoanSteps(i: AutoLoanInput, cur = 'USD'): ReportStep[] {
   return steps;
 }
 
-/** Mortgage PITI: loan, P&I by the amortization formula, escrow, PMI. Last step: total monthly payment. */
-export function mortgageSteps(i: MortgageInput, cur = 'USD'): ReportStep[] {
+/** Each frequency's payment from the monthly payment M (FCAC "Choosing a mortgage"). */
+const FREQUENCY_FORMULA: Partial<Record<PaymentFrequency, [string, string]>> = {
+  'semi-monthly': [msg('payment = M ÷ 2, twice a month'), '÷ 2'],
+  biweekly: [msg('payment = M × 12 ÷ 26, every two weeks'), '× 12 ÷ 26'],
+  'accelerated-biweekly': [msg('payment = M ÷ 2, every two weeks'), '÷ 2'],
+  weekly: [msg('payment = M × 12 ÷ 52, every week'), '× 12 ÷ 52'],
+  'accelerated-weekly': [msg('payment = M ÷ 4, every week'), '÷ 4'],
+};
+
+/**
+ * Steps for a non-monthly payment frequency: the payment, then the payoff
+ * under the chosen crediting (usHeldFrequencyPlan or paymentFrequencyPlan).
+ * Its result is the frequency tile's sub-line.
+ */
+function frequencySteps(loan: number, i: MortgageInput, monthly: number, f: PaymentFrequency, crediting: Crediting, cur: string): ReportStep[] {
+  const n = Math.round(i.termYears * 12);
+  const comp = i.compoundingPerYear ?? 12;
+  const plan = frequencyPlanFor(loan, i.ratePct, n, comp, f, crediting);
+  const fx = FREQUENCY_FORMULA[f];
+  if (!plan || !fx) return [];
+  const m = (v: number) => loanMoney(v, cur);
+  const years = plan.years.toFixed(1);
+  const outcome = plan.interestSaved > 0.5
+    ? said(msg('{years} years; {saved} less interest than monthly'), { years, saved: loanMoney(plan.interestSaved, cur, 0) })
+    : said(msg('{years} years; {interest} interest in total'), { years, interest: loanMoney(plan.totalInterest, cur, 0) });
+  const steps: ReportStep[] = [{ label: msg('Payment each period'), formula: fx[0], working: `${m(monthly)} ${fx[1]}`, result: m(plan.payment) }];
+  if (isHeldPlan(plan) && plan.crediting === 'held') {
+    steps.push({
+      label: msg('Payoff, the spare credited as the next payment (US rule)'),
+      formula: msg('monthly loan: a full payment built up in suspense is credited as the next periodic payment (12 CFR 1026.36(c)(1)(ii)(B)); interest follows the monthly schedule'),
+      ...sayWorking(msg('first part-payment on day {day}; {parts} part-payments cover all {months} payments by day {lastDay}, {ahead} payments ahead of the schedule; due dates short: {short}'), { day: plan.firstPartDay, parts: plan.lastPart, months: plan.months, lastDay: plan.lastPartDay, ahead: plan.paidAheadMonths, short: plan.shortMonths }),
+      ...said(msg('last payment covered after {years} years; no interest saved'), { years }),
+    });
+  } else if (isHeldPlan(plan)) {
+    steps.push({
+      label: msg('Payoff, the spare sent to principal on your instruction (US)'),
+      formula: msg('monthly loan: each payment is credited from suspense on its due date (day = payment number × 365 / 12); a spare full payment goes to principal under a principal-only instruction'),
+      ...(plan.extraPayments > 0
+        ? sayWorking(msg('first part-payment on day {day}; spare payments sent to principal: {count}, the first with payment {first}; paid off at payment {months}; due dates short: {short}'), { day: plan.firstPartDay, count: plan.extraPayments, first: plan.firstExtraMonth, months: plan.months, short: plan.shortMonths })
+        : sayWorking(msg('first part-payment on day {day}; no spare payment builds up; paid off at payment {months}; due dates short: {short}'), { day: plan.firstPartDay, months: plan.months, short: plan.shortMonths })),
+      ...outcome,
+    });
+  } else {
+    steps.push({
+      label: msg('Payoff, each payment credited when it arrives'),
+      ...sayFormula(msg('interest each period = balance × i, i = (1 + rate / {k})^({k}/{per}) − 1'), { k: comp, per: plan.paymentsPerYear }),
+      ...sayWorking(msg('i = {i}% a period; {count} payments'), { i: plain(periodicRate(i.ratePct, comp, plan.paymentsPerYear) * 100, 5), count: plan.payments }),
+      ...outcome,
+    });
+  }
+  return steps;
+}
+
+/**
+ * Mortgage PITI: loan, P&I by the amortization formula, escrow, PMI, then
+ * (with `freq`, a non-monthly payment frequency and how the lender credits
+ * it) the frequency payment and payoff. Last step: total monthly payment.
+ */
+export function mortgageSteps(i: MortgageInput, cur = 'USD', freq?: { frequency: PaymentFrequency; crediting: Crediting }): ReportStep[] {
   const r = calculateMortgage(i);
   if (!r) return [];
   const m = (v: number) => loanMoney(v, cur);
   const n = Math.round(i.termYears * 12);
+  const tail = freq && freq.frequency !== 'monthly' ? frequencySteps(r.loanAmount, i, r.principalAndInterest, freq.frequency, freq.crediting, cur) : [];
   return [
     r.insurancePremium > 0
       ? { label: msg('Loan amount'), formula: msg('P = home price − down payment + CMHC premium'), working: `${lw(i.homePrice, cur)} − ${lw(i.downPayment, cur)} + ${loanPct(r.insurancePremiumPct, 2)} × ${m(r.baseLoanAmount)}`, ...said(msg('{amount} ({ltv} loan-to-value before the premium)'), { amount: m(r.loanAmount), ltv: loanPct(r.ltvPct, 1) }) }
@@ -267,6 +326,7 @@ export function mortgageSteps(i: MortgageInput, cur = 'USD'): ReportStep[] {
     r.monthlyPmi > 0
       ? { label: msg('PMI'), formula: msg('PMI = loan × annual PMI rate / 12, while the balance is above 78% of the price'), working: `${m(r.loanAmount)} × ${plain(i.pmiRatePct)}% / 12`, ...said(msg('{amount} until payment {n}'), { amount: m(r.monthlyPmi), n: r.pmiLastMonth }) }
       : { label: msg('PMI'), formula: msg('charged only when the loan is more than 80% of the price'), ...(i.pmiRatePct > 0 ? sayWorking(msg('loan-to-value {ltvPct}'), { ltvPct: loanPct(r.ltvPct, 1) }) : sayWorking(msg('loan-to-value {ltvPct}, PMI rate 0%'), { ltvPct: loanPct(r.ltvPct, 1) })), result: m(0) },
+    ...tail,
     {
       label: msg('Total monthly payment'),
       formula: msg('total = P&I + tax + insurance + PMI + HOA'),
