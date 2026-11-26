@@ -1,9 +1,9 @@
 # Vendored from the RedBison repository
 
-Do not edit these files. They are copied unchanged by `npm run sync`
-(scripts/sync.mjs) from https://github.com/redbison-dev/redbison-tools, at the
-same relative paths, so the extension answers with the code the redbison CLI,
-the VS Code extension and the IntelliJ plugin run. `site-tools.json` is the
+Do not edit these files. They are copied unchanged from
+https://github.com/redbison-dev/redbison-tools, at the same relative paths,
+so the extension answers with the code the redbison CLI, the VS Code
+extension and the IntelliJ plugin run. `site-tools.json` is the
 public catalogue at https://redbison.dev/ai-tools.json, reduced to the fields
 the Search Tools command shows.
 
@@ -19,6 +19,7 @@ the Search Tools command shows.
 - src/lib/tools/binary-json-formats.ts
 - src/lib/tools/gc-log-analyzer.ts
 - src/lib/tools/har-analyzer.ts
+- src/lib/tools/html-beautify.ts
 - src/lib/tools/json-tree.ts
 - src/lib/tools/jvm-thread-dump.ts
 - src/lib/tools/lorem-generator.ts

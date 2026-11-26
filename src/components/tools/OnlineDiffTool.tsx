@@ -13,7 +13,7 @@ import { useDropzone } from 'react-dropzone';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { useToast } from '@/hooks/use-toast';
 import ToolBreadcrumb from '@/components/ui/ToolBreadcrumb';
-import { computeLineDiff } from '@/lib/tools/online-diff-tool';
+import { computeLineDiff, DiffTooLargeError } from '@/lib/tools/online-diff-tool';
 import { useT } from '@/i18n';
 
 interface OnlineDiffToolProps {
@@ -100,8 +100,15 @@ const OnlineDiffTool: React.FC<OnlineDiffToolProps> = ({ onToolSelect }) => {
     multiple: false
   });
 
-  const diffResult: DiffResult = useMemo(() => {
-    return computeLineDiff(leftText, rightText, { ignoreWhitespace, ignoreCase });
+  // Past MAX_EDIT_DISTANCE changed lines the comparison is refused rather
+  // than run on every keystroke; the limit is shown instead of a result.
+  const { diffResult, tooLargeLimit } = useMemo((): { diffResult: DiffResult; tooLargeLimit: number | null } => {
+    try {
+      return { diffResult: computeLineDiff(leftText, rightText, { ignoreWhitespace, ignoreCase }), tooLargeLimit: null };
+    } catch (e) {
+      if (!(e instanceof DiffTooLargeError)) throw e;
+      return { diffResult: { hunks: [], additions: 0, deletions: 0, totalChanges: 0 }, tooLargeLimit: e.limit };
+    }
   }, [leftText, rightText, ignoreWhitespace, ignoreCase]);
 
   const allDiffLines = diffResult.hunks.flatMap(hunk => hunk.lines.filter(line => line.type !== 'context'));
@@ -477,7 +484,14 @@ ${diffResult.hunks.map((hunk, hunkIndex) => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {leftText.trim() || rightText.trim() ? (
+                {tooLargeLimit !== null ? (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      {t('These texts differ in more than {n} lines, too many to compare here. Compare smaller sections.', { n: tooLargeLimit })}
+                    </AlertDescription>
+                  </Alert>
+                ) : leftText.trim() || rightText.trim() ? (
                   <div className="space-y-4">
                     {/* GitHub-style diff stats bar */}
                     <div className="flex items-center gap-4 p-3 bg-muted/30 rounded-lg">

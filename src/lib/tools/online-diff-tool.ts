@@ -11,6 +11,21 @@ const normalizer = ({ ignoreWhitespace, ignoreCase }: DiffOptions) => (line: str
   return out;
 };
 
+/**
+ * The most lines two texts may differ by (additions plus deletions) before
+ * the comparison is refused. Myers keeps one frontier per edit step to walk
+ * the answer back, about 4·D² bytes, so 4,000 is about 64 MB. Typed frontiers
+ * replaced object copies on 2026-11-26: a 2,000-line rewrite had taken 2 s
+ * and 730 MB per keystroke, and 5,000 lines 17 s and 1.3 GB (Bun, measured).
+ */
+export const MAX_EDIT_DISTANCE = 4000;
+
+export class DiffTooLargeError extends Error {
+  constructor(readonly limit: number) {
+    super(`The texts differ in more than ${limit} lines, too many to compare here.`);
+  }
+}
+
 /** Myers O(ND) shortest edit script over lines. */
 export function myersDiff(oldLines: string[], newLines: string[], options: DiffOptions = {}): EditOperation[] {
   const norm = normalizer(options);
@@ -19,28 +34,35 @@ export function myersDiff(oldLines: string[], newLines: string[], options: DiffO
   const N = a.length, M = b.length;
   if (N === 0) return newLines.map((content, newIndex) => ({ type: 'insert', oldIndex: -1, newIndex, content }));
   if (M === 0) return oldLines.map((content, oldIndex) => ({ type: 'delete', oldIndex, newIndex: -1, content }));
-  const v: Record<number, number> = { 1: 0 };
-  const trace: Record<number, number>[] = [];
+  // v[k] lives at v[k + off]; -1 stands for "not reached", which the walk
+  // back reads the way the object version read a missing key.
+  const off = N + M + 1;
+  const v = new Int32Array(2 * off + 1).fill(-1);
+  v[1 + off] = 0;
+  // trace[d] is v over k in [-d-1, d+1] before step d: all the walk back reads.
+  const trace: Int32Array[] = [];
   for (let d = 0; d <= N + M; d++) {
-    trace.push({ ...v });
+    if (d > MAX_EDIT_DISTANCE) throw new DiffTooLargeError(MAX_EDIT_DISTANCE);
+    trace.push(v.slice(off - d - 1, off + d + 2));
     for (let k = -d; k <= d; k += 2) {
-      let x = k === -d || (k !== d && v[k - 1] < v[k + 1]) ? v[k + 1] : v[k - 1] + 1;
+      let x = k === -d || (k !== d && v[k - 1 + off] < v[k + 1 + off]) ? v[k + 1 + off] : v[k - 1 + off] + 1;
       let y = x - k;
       while (x < N && y < M && a[x] === b[y]) { x++; y++; }
-      v[k] = x;
+      v[k + off] = x;
       if (x >= N && y >= M) return backtrack(trace, oldLines, newLines, x, y, d);
     }
   }
   return [];
 }
 
-function backtrack(trace: Record<number, number>[], oldLines: string[], newLines: string[], x: number, y: number, d: number): EditOperation[] {
+function backtrack(trace: Int32Array[], oldLines: string[], newLines: string[], x: number, y: number, d: number): EditOperation[] {
   const ops: EditOperation[] = [];
   for (let depth = d; depth >= 0; depth--) {
-    const v = trace[depth];
+    const snap = trace[depth];
+    const at = (k: number) => snap[k + depth + 1];
     const k = x - y;
-    const prevK = k === -depth || (k !== depth && (v[k - 1] ?? -1) < (v[k + 1] ?? -1)) ? k + 1 : k - 1;
-    const prevX = depth === 0 ? 0 : v[prevK] ?? 0;
+    const prevK = k === -depth || (k !== depth && at(k - 1) < at(k + 1)) ? k + 1 : k - 1;
+    const prevX = depth === 0 ? 0 : Math.max(at(prevK), 0);
     const prevY = depth === 0 ? 0 : prevX - prevK;
     while (x > prevX && y > prevY) {
       ops.unshift({ type: 'equal', oldIndex: x - 1, newIndex: y - 1, content: oldLines[x - 1] });

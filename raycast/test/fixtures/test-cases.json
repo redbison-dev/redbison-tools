@@ -1139,6 +1139,21 @@
       "name": "refuses a partial byte",
       "input": "0100100",
       "throws": "eight"
+    },
+    {
+      "name": "UTF-8 text encodes to its bytes",
+      "input": "é",
+      "expect": "11000011 10101001"
+    },
+    {
+      "name": "UTF-8 bytes decode together, not one character per byte",
+      "input": "11000011 10101001",
+      "expect": "é"
+    },
+    {
+      "name": "bytes that are not UTF-8 are refused",
+      "input": "11000011",
+      "throws": "UTF-8"
     }
   ],
   "date-diff": [
@@ -1431,6 +1446,11 @@
       "name": "refuses an object at the top level",
       "input": "{\"a\":1}",
       "throws": "array"
+    },
+    {
+      "name": "a header key holding a comma or quote is quoted",
+      "input": "[{\"a,b\":1,\"say \\\"hi\\\"\":2}]",
+      "expect": "\"a,b\",\"say \"\"hi\"\"\"\n1,2"
     }
   ],
   "markdown-table": [
@@ -2063,6 +2083,14 @@
         "count": 5
       },
       "matches": "^(.+\\n){4}.+$"
+    },
+    {
+      "name": "a count past the published limit is refused",
+      "input": "",
+      "options": {
+        "count": 5000000
+      },
+      "throws": "count must"
     }
   ],
   "random-email": [
@@ -2113,6 +2141,16 @@
         "max": 1
       },
       "throws": "max must be"
+    },
+    {
+      "name": "a fractional count is refused",
+      "input": "",
+      "options": {
+        "min": 1,
+        "max": 10,
+        "count": 2.5
+      },
+      "throws": "whole number"
     }
   ],
   "json-to-yaml": [
@@ -2140,6 +2178,21 @@
       "name": "invalid JSON is refused",
       "input": "{not json",
       "throws": "JSON"
+    },
+    {
+      "name": "a string that reads as a boolean stays a string",
+      "input": "{\"a\":\"false\"}",
+      "expect": "a: \"false\""
+    },
+    {
+      "name": "a one-key nested object goes on its own line",
+      "input": "{\"c\":{\"d\":1}}",
+      "expect": "c:\n  d: 1"
+    },
+    {
+      "name": "a key that needs quoting is quoted",
+      "input": "{\"a: b\":1}",
+      "expect": "\"a: b\": 1"
     }
   ],
   "yaml-to-json": [
@@ -2157,6 +2210,11 @@
       "name": "a comment is ignored",
       "input": "a: 1 # note",
       "contains": "\"a\": 1"
+    },
+    {
+      "name": "a # inside quotes is not a comment",
+      "input": "color: \"#ffffff\" # note",
+      "contains": "\"color\": \"#ffffff\""
     }
   ],
   "yaml-beautify": [
@@ -2169,6 +2227,11 @@
       "name": "runs of blank lines collapse to one",
       "input": "a: 1\n\n\n\nb: 2",
       "expect": "a: 1\n\nb: 2"
+    },
+    {
+      "name": "a tab inside a quoted value stays",
+      "input": "value: \"a\tb\"  ",
+      "expect": "value: \"a\tb\""
     }
   ],
   "html-beautify": [
@@ -2189,6 +2252,11 @@
         "indent": 4
       },
       "contains": "    <p>"
+    },
+    {
+      "name": "pre content is copied as written",
+      "input": "<div><pre>  hello  </pre></div>",
+      "contains": "<pre>  hello  </pre>"
     }
   ],
   "xml-beautify": [
@@ -2206,6 +2274,11 @@
       "name": "a self-closing tag does not open a level",
       "input": "<r><a/><b/></r>",
       "matchesNot": "^\\s\\s\\s\\s<b"
+    },
+    {
+      "name": "a text value keeps its spaces",
+      "input": "<r><a>  hello  </a></r>",
+      "contains": "<a>  hello  </a>"
     }
   ],
   "sql-beautify": [
@@ -2223,6 +2296,16 @@
       "name": "AND is indented under the clause it belongs to",
       "input": "select a from t where x=1 and y=2",
       "contains": "\n  AND"
+    },
+    {
+      "name": "a string literal keeps its spaces and case",
+      "input": "select 'hello   from' from t",
+      "contains": "SELECT 'hello   from'\nFROM t"
+    },
+    {
+      "name": "a line comment still ends its line",
+      "input": "select a, -- first\nb from t",
+      "contains": "-- first\nb"
     }
   ],
   "cron": [

@@ -18,7 +18,7 @@
  * Re-run it after every change here, commit in the target, and publish from
  * there. The target's .git and node_modules are kept between runs.
  */
-import { cpSync, existsSync, mkdirSync, readdirSync, rmSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -41,6 +41,18 @@ if (target === ROOT || target.startsWith(ROOT + sep)) {
 /* What a published extension does not need; publish skips most of these too. */
 const SKIP = new Set(["node_modules", "raycast-env.d.ts", ".DS_Store", "dist", ".git"]);
 const KEEP_IN_TARGET = new Set([".git", "node_modules"]);
+/*
+ * Maintainer-only files that must never reach the Raycast store PR: our publishing notes, the scripts
+ * that sync and stage from our own repos, and the tests with their tooling. The store's rules keep an
+ * extension's tests in the author's own repository, so the suite stays here (and in redbison-tools)
+ * and the staged copy ships what Store users run. The first store PR (raycast/extensions#34044)
+ * shipped all of it and its review flagged the tests, configs, scripts and vitest (2026-11-27).
+ */
+const MAINTAINER_ONLY = ["PUBLISHING.md", "scripts", "test", "vitest.config.mts", "tsconfig.test.json"];
+/* `typecheck` only exists for the tests (tsconfig.test.json); `ray build` type-checks src itself. */
+const MAINTAINER_SCRIPTS = ["sync", "stage", "test", "typecheck"];
+/* Dependencies only the tests use. */
+const TEST_ONLY_DEPENDENCIES = ["vitest"];
 
 mkdirSync(target, { recursive: true });
 for (const name of readdirSync(target)) {
@@ -52,6 +64,35 @@ for (const name of readdirSync(EXT)) {
     recursive: true,
     filter: (src) => !src.split(sep).some((part) => SKIP.has(part)),
   });
+}
+
+for (const rel of MAINTAINER_ONLY) rmSync(join(target, rel), { recursive: true, force: true });
+const pkgPath = join(target, "package.json");
+const pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
+for (const name of MAINTAINER_SCRIPTS) delete pkg.scripts?.[name];
+for (const name of TEST_ONLY_DEPENDENCIES) delete pkg.devDependencies?.[name];
+writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
+
+/*
+ * The copied lockfile still pins vitest and everything it pulls in, so it is
+ * rebuilt from the trimmed package.json; `npm ci` in the store checks the two
+ * agree. --package-lock-only touches neither node_modules nor any scripts.
+ */
+try {
+  execFileSync("npm", ["install", "--package-lock-only", "--ignore-scripts", "--no-audit", "--no-fund"], {
+    cwd: target,
+    stdio: ["ignore", "ignore", "inherit"],
+  });
+} catch {
+  console.error(`[stage] Could not regenerate package-lock.json in ${target}. Run there: npm install --package-lock-only`);
+  process.exit(1);
+}
+const lock = readFileSync(join(target, "package-lock.json"), "utf8");
+for (const name of TEST_ONLY_DEPENDENCIES) {
+  if (lock.includes(`"node_modules/${name}"`)) {
+    console.error(`[stage] package-lock.json in ${target} still lists ${name}.`);
+    process.exit(1);
+  }
 }
 
 const git = (...args) => execFileSync("git", args, { cwd: target, encoding: "utf8" }).trim();

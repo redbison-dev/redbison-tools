@@ -117,7 +117,7 @@ for (const rel of [...files].sort()) {
     if (!line) throw new Error(`[sync] ${rel} no longer exports BINARY_TOOLS on one line`);
     writeFileSync(
       dest,
-      `// Reduced by integrations/raycast/scripts/sync.mjs from ${rel}: only the set of\n` +
+      `// Reduced from ${rel} in https://github.com/redbison-dev/redbison-tools: only the set of\n` +
         `// file-based tools, which a text selection cannot feed. Do not edit.\n${line}\n`,
     );
   } else {
@@ -129,10 +129,10 @@ writeFileSync(
   join(VENDOR, "README.md"),
   `# Vendored from the RedBison repository
 
-Do not edit these files. They are copied unchanged by \`npm run sync\`
-(scripts/sync.mjs) from https://github.com/redbison-dev/redbison-tools, at the
-same relative paths, so the extension answers with the code the redbison CLI,
-the VS Code extension and the IntelliJ plugin run. \`site-tools.json\` is the
+Do not edit these files. They are copied unchanged from
+https://github.com/redbison-dev/redbison-tools, at the same relative paths,
+so the extension answers with the code the redbison CLI, the VS Code
+extension and the IntelliJ plugin run. \`site-tools.json\` is the
 public catalogue at https://redbison.dev/ai-tools.json, reduced to the fields
 the Search Tools command shows.
 
